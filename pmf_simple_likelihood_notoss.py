@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+
+import scipy
+import ipdb
+import numpy as np
+import random
+from tqdm import tqdm
+
+# local imports
+
+import movielens
+import cftools
+import config
+
+def main():
+    R = movielens.small()
+
+    U = np.random.random((config.K,R.shape[0]))
+    V = np.random.random((config.K,R.shape[1]))
+
+    def new_eij():
+        ret = cftools.rating_error(Rij,U,i,V,j)
+        #print "eij",ret
+        return ret
+
+    training_set, testing_set = cftools.split_sets(R)
+
+    print "training pmf..."
+    for _ in tqdm(range(config.n_epochs)):
+        random.shuffle(training_set)
+        for curr in tqdm(training_set):
+            (i,j),Rij = curr
+            eij = new_eij()
+            V[:,j] = V[:,j] + config.lr * eij * U[:,i]
+            eij = new_eij()
+            U[:,i] = U[:,i] + config.lr * eij * V[:,j]
+
+
+        print "training RMSE: ",cftools.rmse(training_set,U,V)
+        print "testing RMSE: ",cftools.rmse(testing_set,U,V)
+
+if __name__=="__main__":
+    main()
