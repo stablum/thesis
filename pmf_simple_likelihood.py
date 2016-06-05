@@ -37,10 +37,10 @@ def main():
                 pass
             elif toss == 1:
                 eij = new_eij()
-                V[:,j] = V[:,j] + lr * eij * U[:,i]
+                cftools.update(V[:,j], eij * U[:,i])
             elif toss == 2:
                 eij = new_eij()
-                U[:,i] = U[:,i] + lr * eij * V[:,j]
+                cftools.update(U[:,i], eij * V[:,j])
 
 
         print "training RMSE: ",cftools.rmse(training_set,U,V)

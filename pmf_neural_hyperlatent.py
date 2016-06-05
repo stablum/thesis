@@ -21,6 +21,8 @@ def main():
     sigma_v = 1.
     sigma_wu = 1.
     sigma_wv = 1.
+    sigma_hu = 1.
+    sigma_hv = 1.
 
     R = movielens.small()
 
@@ -45,25 +47,22 @@ def main():
         #print "eij",ret
         return ret
 
-    training_set, testing_set = cftools.split_sets(R)
-
     print "training pmf with hyperlatent neural vectors..."
-    for _ in tqdm(range(config.n_epochs)):
-        random.shuffle(training_set)
+    for training_set in cftools.epochsloop(R,U,V):
         for curr in tqdm(training_set):
             (i,j),Rij = curr
 
             neural_output_v = numutils.sigmoid(np.dot(Wv.T,Hv[:,j]))
             grad_neural = V[:,j] - neural_output_v
             eijv = new_eij()
-            grad = 1./sigma * eijv * U[:,i] + (sigma_v/N) * grad_neural
-            V[:,j] = V[:,j] + config.lr * grad
+            grad = (-1.)/sigma * eijv * U[:,i] + (1./(sigma_v*N)) * grad_neural
+            cftools.update(V[:,j],grad)
 
             neural_output_u = numutils.sigmoid(np.dot(Wu.T,Hu[:,i]))
             grad_neural = U[:,i] - neural_output_u
             eijv = new_eij()
-            grad = 1./sigma * eijv * V[:,j] + (sigma_u/M) * grad_neural
-            U[:,i] = U[:,i] + config.lr * grad
+            grad = (-1.)/sigma * eijv * V[:,j] + (1./(sigma_u*M)) * grad_neural
+            cftools.update(U[:,i],grad)
 
             sigmoid_deriv_v = (neural_output_v) * (1 - neural_output_v)
             neural_output_wv_grad = np.dot(
@@ -93,31 +92,28 @@ def main():
                 error_u = neural_output_u[k] - U[k,i]
 
                 f_prime = neural_output_wv_grad[k,:]
-                error_term = 1./sigma_v * error_v * f_prime
+                error_term = 1./sigma_v * error_v * f_prime * Hv[:,k]
                 prior_term = 1./sigma_wv * Wv[:,k]
                 grad = error_term + prior_term
-                Wv[:,k] = Wv[:,k] + config.lr * grad
+                cftools.update(Wv[:,k],grad)
 
                 f_prime = neural_output_wu_grad[k,:]
-                error_term = 1./sigma_u * error_u * f_prime
+                error_term = 1./sigma_u * error_u * f_prime * Hu[:,k]
                 prior_term = 1./sigma_wu * Wu[:,k]
                 grad = error_term + prior_term
-                Wu[:,k] = Wu[:,k] + config.lr * grad
+                cftools.update(Wu[:,k],grad)
 
                 f_prime = neural_output_hv_grad
-                error_term = 1./sigma_v * error_v * f_prime
-                prior_term = 1./sigma_wv * Wv[:,k]
+                error_term = 1./sigma_v * error_v * f_prime * Wv[:,k]
+                prior_term = 1./sigma_hv * Hv[:,k]
                 grad = error_term + prior_term
-                Hv[:,k] = Hv[:,k] + config.lr * grad
+                cftools.update(Hv[:,k],grad)
 
                 f_prime = neural_output_hu_grad
-                error_term = 1./sigma_u * error_u * f_prime
-                prior_term = 1./sigma_wu * Wu[:,k]
+                error_term = 1./sigma_u * error_u * f_prime * Wu[:,k]
+                prior_term = 1./sigma_hu * Hu[:,k]
                 grad = error_term + prior_term
-                Hu[:,k] = Hu[:,k] + config.lr * grad
-
-        print "training RMSE: ",cftools.rmse(training_set,U,V)
-        print "testing RMSE: ",cftools.rmse(testing_set,U,V)
+                cftools.update(Hu[:,k],grad)
 
 if __name__=="__main__":
     main()

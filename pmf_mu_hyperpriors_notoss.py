@@ -36,32 +36,27 @@ def main():
         #print "eij",ret
         return ret
 
-    training_set, testing_set = cftools.split_sets(R)
-
     print "training pmf with mu hyperpriors..."
-    for _ in tqdm(range(config.n_epochs)):
-        random.shuffle(training_set)
+    for training_set in cftools.epochsloop(R,U,V):
         for curr in tqdm(training_set):
             (i,j),Rij = curr
 
             eijv = new_eij()
-            grad = eijv * U[:,i] + (1./N) * lambda_v * (V[:,j] - mu_v)
-            V[:,j] = V[:,j] + config.lr * grad
+            grad = -(eijv * U[:,i]) + (1./N) * lambda_v * (V[:,j] - mu_v)
+            cftools.update(V[:,j], grad)
 
             eiju = new_eij()
-            grad = eiju * V[:,j] + (1./M) * lambda_u * (U[:,i] - mu_u)
-            U[:,i] = U[:,i] + config.lr * grad
+            grad = -(eiju * V[:,j]) + (1./M) * lambda_u * (U[:,i] - mu_u)
+            cftools.update(U[:,i], grad)
 
-            grad = lambda_v * (V[:,j] - mu_v)
-            mu_v = mu_v + config.lr * grad
+            grad = lambda_v * (mu_v - V[:,j])
+            cftools.update(mu_v, grad)
 
-            grad = lambda_u * (U[:,i] - mu_u)
-            mu_u = mu_u + config.lr * grad
+            grad = lambda_u * (mu_u - U[:,i])
+            cftools.update(mu_u, grad)
 
         print "mu_v",mu_v
         print "mu_u",mu_u
-        print "training RMSE: ",cftools.rmse(training_set,U,V)
-        print "testing RMSE: ",cftools.rmse(testing_set,U,V)
 
 if __name__=="__main__":
     main()

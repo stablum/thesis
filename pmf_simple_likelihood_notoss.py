@@ -4,6 +4,7 @@ import scipy
 import ipdb
 import numpy as np
 import random
+import sys
 from tqdm import tqdm
 
 # local imports
@@ -23,11 +24,8 @@ def main():
         #print "eij",ret
         return ret
 
-    training_set, testing_set = cftools.split_sets(R)
-
     print "training pmf..."
-    for _ in tqdm(range(config.n_epochs)):
-        random.shuffle(training_set)
+    for training_set in cftools.epochsloop(R,U,V):
         for curr in tqdm(training_set):
             (i,j),Rij = curr
             eij = new_eij()
@@ -36,8 +34,6 @@ def main():
             U[:,i] = U[:,i] + config.lr * eij * V[:,j]
 
 
-        print "training RMSE: ",cftools.rmse(training_set,U,V)
-        print "testing RMSE: ",cftools.rmse(testing_set,U,V)
-
 if __name__=="__main__":
     main()
+

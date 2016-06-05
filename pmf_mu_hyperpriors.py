@@ -10,6 +10,7 @@ from tqdm import tqdm
 
 import movielens
 import cftools
+import config
 
 def wrong(x):
     return ((not np.isfinite(x)) or np.isnan(x) or x>10000. or x<-10000.)
@@ -17,21 +18,18 @@ def wrong(x):
 def main():
     np.set_printoptions(precision=4, suppress=True)
 
-    K=100
-    lr = 0.001
-    n_epochs = 1000
     lambda_v = 1.
     lambda_u = 1.
 
-    mu_u = np.random.random(K)*10. - 5.
-    mu_v = np.random.random(K)*10. - 5.
+    mu_u = np.random.random(config.K)*10. - 5.
+    mu_v = np.random.random(config.K)*10. - 5.
 
     R = movielens.small()
 
     N = R.shape[0]
     M = R.shape[1]
-    U = np.random.random((K,N))
-    V = np.random.random((K,M))
+    U = np.random.random((config.K,N))
+    V = np.random.random((config.K,M))
 
     def new_eij():
         ret = cftools.rating_error(Rij,U,i,V,j)
@@ -41,7 +39,7 @@ def main():
     training_set, testing_set = cftools.split_sets(R)
 
     print "training pmf with mu hyperpriors..."
-    for _ in tqdm(range(n_epochs)):
+    for _ in tqdm(range(config.n_epochs)):
         random.shuffle(training_set)
         for curr in tqdm(training_set):
             (i,j),Rij = curr
@@ -55,7 +53,7 @@ def main():
                 #    print "error introduced in eijv=%s"%(str(eijv))
                 #    import ipdb; ipdb.set_trace()
                 grad = eijv * U[:,i] + (1./N) * lambda_v * (V[:,j] - mu_v)
-                V[:,j] = V[:,j] + lr * grad
+                V[:,j] = V[:,j] + config.lr * grad
                 #if any([wrong(curr) for curr in V[:,j].tolist()]):
                 #    print "error introduced in V[:,%d]=%s"%(j,str(V[:,j]))
                 #    import ipdb; ipdb.set_trace()
@@ -66,18 +64,18 @@ def main():
                 #    print "error introduced in eiju=%s"%(str(eiju))
                 #    import ipdb; ipdb.set_trace()
                 grad = eiju * V[:,j] + (1./M) * lambda_u * (U[:,i] - mu_u)
-                U[:,i] = U[:,i] + lr * grad
+                U[:,i] = U[:,i] + config.lr * grad
                 #if any([wrong(curr) for curr in U[:,i].tolist()]):
                 #    print "error introduced in U[:,%d]=%s"%(i,str(U[:,i]))
                 #    import ipdb; ipdb.set_trace()
 
             elif toss == 3:
                 grad = lambda_v * (V[:,j] - mu_v)
-                mu_v = mu_v + lr * grad
+                mu_v = mu_v + config.lr * grad
 
             elif toss == 4:
                 grad = lambda_u * (U[:,i] - mu_u)
-                mu_u = mu_u + lr * grad
+                mu_u = mu_u + config.lr * grad
 
         print "mu_v",mu_v
         print "mu_u",mu_u

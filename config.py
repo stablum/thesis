@@ -1,3 +1,3 @@
-K=10
+K=3
 lr=0.0001
-n_epochs=100
+n_epochs=1000
