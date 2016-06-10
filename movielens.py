@@ -43,8 +43,12 @@ def small():
 
     print "converting to sparse matrix ..."
     R = flat_to_R(flat)
+    N = R.shape[0]
+    M = R.shape[1]
     print "converted to sparse matrix."
-    return R
+    print "N",N
+    print "M",M
+    return R,N,M
 
 def main():
     pass

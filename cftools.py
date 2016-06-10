@@ -4,13 +4,29 @@ from tqdm import tqdm
 import sys
 import time
 import random
-
+import theano
+import theano.tensor as T
 # local imports
 
 import config
 
+def create_training_set_matrix(training_set):
+    return np.array([
+        [_i,_j,_Rij]
+        for (_i,_j),_Rij
+        in training_set
+    ])
+
+def UV(R):
+    U_values = np.random.random((config.K,R.shape[0]))
+    V_values = np.random.random((config.K,R.shape[1]))
+    U = theano.shared(U_values)
+    V = theano.shared(V_values)
+    return U,V
+
 def wrong(x):
     return ((not np.isfinite(x)) or np.isnan(x) or x>10000. or x<-10000.)
+
 def split_sets(R):
     Ritems = R.items()
     sel = np.random.permutation(len(Ritems))
@@ -42,10 +58,18 @@ def check_grad(grad):
             import ipdb; ipdb.set_trace()
 
 def update(A, grad):
-    check_grad(grad)
+
     # minimization implies subtraction because we are dealing with gradients
     # of the negative loglikelihood
-    A -= config.lr * grad
+    if type(grad) is T.TensorVariable:
+        try:
+            return T.inc_subtensor(A, -1 * config.lr * grad)
+        except TypeError as e:
+            # I don't know any other way to check if A is a subtensor
+            return A - config.lr * grad
+    else:
+        check_grad(grad)
+        A -= config.lr * grad
 
 class Log(object):
     _file = None
@@ -54,13 +78,25 @@ class Log(object):
         prefix = os.path.splitext(os.path.basename(sys.argv[0]))[0]
         time_str = time.strftime('%Y%m%d_%H%M%S')
         log_filename = prefix + "_" + time_str + ".log"
-        self._file = open(log_filename, 'a')
-        self("logging to %s"%log_filename)
+        dirname = "logs"
+        try:
+            os.mkdir(dirname)
+        except Exception as e:
+            # cannot create dir (maybe it already exists?)
+            # loudly ignore the exception
+            print "cannot create dir %s: %s"%(dirname,str(e))
+
+        full_path = os.path.join(dirname,log_filename)
+        self._file = open(full_path, 'a')
+        self("logging to %s"%full_path)
         self("learning rate: %f"%config.lr)
         self("K: %d"%config.K)
         self("n_epochs: %d"%config.n_epochs)
 
     def __call__(self,msg):
+
+        time_str = time.strftime('%Y:%m:%d %H:%M:%S')
+        msg = time_str + " " + msg
         print msg
         self._file.write(msg+"\n")
 
@@ -78,6 +114,7 @@ class Log(object):
 class epochsloop(object):
 
     def __init__(self,R,U,V):
+        np.set_printoptions(precision=4, suppress=True)
         self._log = Log()
         self.training_set, self.testing_set = split_sets(R)
         self.U = U
@@ -89,7 +126,13 @@ class epochsloop(object):
 
     def next(self):
         epoch_nr = self._iter.next() # will raise StopIteration when done
-        self._log.statistics(epoch_nr, self.training_set,self.testing_set,self.U,self.V)
+        if type(self.U) is T.sharedvar.TensorSharedVariable:
+            _U = self.U.get_value()
+            _V = self.V.get_value()
+        else:
+            _U = self.U
+            _V = self.V
+        self._log.statistics(epoch_nr, self.training_set,self.testing_set,_U,_V)
         random.shuffle(self.training_set)
         return self.training_set
 
