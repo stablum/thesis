@@ -57,6 +57,9 @@ def check_grad(grad):
             print "gradient %f too far from 0"%curr
             import ipdb; ipdb.set_trace()
 
+def test_value(theano_var, _test_value):
+    pass#theano_var.tag.test_value = _test_value
+
 def update(A, grad):
 
     # minimization implies subtraction because we are dealing with gradients
@@ -135,4 +138,5 @@ class epochsloop(object):
         self._log.statistics(epoch_nr, self.training_set,self.testing_set,_U,_V)
         random.shuffle(self.training_set)
         return self.training_set
+
 

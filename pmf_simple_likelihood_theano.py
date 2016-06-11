@@ -31,8 +31,8 @@ def main():
         eij = Rij - T.dot(new_U[:,i].T, _V[:,j])
         new_V = T.inc_subtensor(_V[:,j], config.lr * eij * _U[:,i])
         return {
-            _U:new_U,
-            _V:new_V
+            _U[:,i]:new_U[:,i],
+            _V[:,j]:new_V[:,j]
         }
 
     values, updates = theano.scan(
