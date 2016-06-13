@@ -11,15 +11,34 @@ import theano.tensor as T
 import config
 
 def create_training_set_matrix(training_set):
+    print("creating training set matrix..")
     return np.array([
         [_i,_j,_Rij]
         for (_i,_j),_Rij
-        in training_set
+        in tqdm(training_set)
     ])
 
-def UV(R):
+def create_training_set_apart(training_set):
+    i_l = []
+    j_l = []
+    Rij_l = []
+    print("creating training set vectors..")
+    for (_i,_j),_Rij in tqdm(training_set):
+        i_l.append([_i])
+        j_l.append([_j])
+        Rij_l.append([_Rij])
+    return \
+        np.array(i_l).astype('int32'), \
+        np.array(j_l).astype('int32'), \
+        np.array(Rij_l)
+
+def UV_np(R):
     U_values = np.random.random((config.K,R.shape[0]))
     V_values = np.random.random((config.K,R.shape[1]))
+    return U_values,V_values
+
+def UV(R):
+    U_values,V_values = UV_np(R)
     U = theano.shared(U_values)
     V = theano.shared(V_values)
     return U,V
@@ -58,7 +77,9 @@ def check_grad(grad):
             import ipdb; ipdb.set_trace()
 
 def test_value(theano_var, _test_value):
-    pass#theano_var.tag.test_value = _test_value
+    if type(_test_value) is tuple:
+        _test_value = np.random.random(_test_value)
+    theano_var.tag.test_value = _test_value
 
 def update(A, grad):
 
@@ -66,9 +87,11 @@ def update(A, grad):
     # of the negative loglikelihood
     if type(grad) is T.TensorVariable:
         try:
+            # subtensor..
             return T.inc_subtensor(A, -1 * config.lr * grad)
         except TypeError as e:
-            # I don't know any other way to check if A is a subtensor
+            # not subtensor..
+            # I didn't know any other way to check if A is a subtensor
             return A - config.lr * grad
     else:
         check_grad(grad)

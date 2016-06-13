@@ -24,10 +24,8 @@ def main():
     mu_u = np.random.random(config.K)*10. - 5.
     mu_v = np.random.random(config.K)*10. - 5.
 
-    R = movielens.small()
+    R,N,M = movielens.small()
 
-    N = R.shape[0]
-    M = R.shape[1]
     U = np.random.random((config.K,N))
     V = np.random.random((config.K,M))
 
