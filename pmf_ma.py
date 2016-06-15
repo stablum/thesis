@@ -37,10 +37,10 @@ def main():
     sigma_wv = 1.
     sigma_hu = 1.
     sigma_hv = 1.
-    sigma_m_u = 1.
-    sigma_m_v = 1.
-    sigma_a_u = 1.
-    sigma_a_v = 1.
+    sigma_m_u = 20.
+    sigma_m_v = 20.
+    sigma_a_u = 20.
+    sigma_a_v = 20.
     R,N,M = movielens.small()
     U,V = cftools.UV_np(R)
 
@@ -48,24 +48,12 @@ def main():
     D = config.K * 2
     print "D",D
     # neural network (encoding) weights
-    Wu_values = np.random.random((D,config.K))
-    Wv_values = np.random.random((D,config.K))
-    Wu = theano.shared(Wu_values)
-    Wu.name = 'Wu'
-    Wv = theano.shared(Wv_values)
-    Wv.name = 'Wv'
-    m_u_values = np.random.random((config.K))
-    m_u = theano.shared(m_u_values)
-    m_u.name = 'm_u'
-    m_v_values = np.random.random((config.K))
-    m_v = theano.shared(m_v_values)
-    m_v.name = 'm_v'
-    a_u_values = np.random.random((config.K))
-    a_u = theano.shared(a_u_values)
-    a_u.name = 'a_u'
-    a_v_values = np.random.random((config.K))
-    a_v = theano.shared(a_v_values)
-    a_v.name = 'a_v'
+    Wu = np.random.random((D,config.K))
+    Wv = np.random.random((D,config.K))
+    m_u = np.random.random((config.K))
+    m_v = np.random.random((config.K))
+    a_u = np.random.random((config.K))
+    a_v = np.random.random((config.K))
 
     # hyper latent vectors
     Hu = np.random.random((D,N))
@@ -170,7 +158,7 @@ def main():
             cftools.test_value(f_prime, np.random.random((D)))
             error_term = T.tile(1./sigma_u * error_u * (-1) * _m_u[k], D) * f_prime * _hui[k]
             prior_term = (1./(N*M*sigma_wu)) * _Wu[:,k]
-            cftools.test_value(prior_term, np.random.random((D)))
+            #cftools.test_value(prior_term, np.random.random((D)))
             grad = error_term + prior_term
             _Wu = cftools.update(_Wu[:,k],grad)
 
@@ -179,13 +167,13 @@ def main():
             error_term = T.tile(1./sigma_v * error_v * (-1) * _m_v[k],D) * f_prime * _hvj[k]
             cftools.test_value(error_term, np.random.random((D)))
             prior_term = (1./(N*M*sigma_wv)) * _Wv[:,k]
-            cftools.test_value(prior_term, np.random.random((D)))
+            #cftools.test_value(prior_term, np.random.random((D)))
             grad = error_term + prior_term
             _Wv = cftools.update(_Wv[:,k],grad)
 
             #H*
             f_prime = sigmoid_deriv_u[k]
-            error_term = T.tile(1./sigma_u * error_u * (-1) * _m_u[k], D) *  f_prime * _Wu[:,k]
+            error_term = 1./sigma_u * T.tile(error_u,D) * (-1) * _m_u[k] *  f_prime * _Wu[:,k]
             cftools.test_value(error_term, np.random.random((D)))
             prior_term = 1./sigma_hu * _hui[k]
             cftools.test_value(prior_term, np.random.random((D)))
@@ -193,7 +181,7 @@ def main():
             _hui = cftools.update(_hui[k],grad)
 
             f_prime = sigmoid_deriv_v[k]
-            error_term = T.tile(1./sigma_v * error_v * (-1) *_m_v[k], D) * f_prime * _Wv[:,k]
+            error_term = 1./sigma_v * T.tile(error_v,D) * (-1) *_m_v[k] * f_prime * _Wv[:,k]
             cftools.test_value(error_term, np.random.random((D)))
             prior_term = 1./sigma_hv * _hvj[k]
             cftools.test_value(prior_term, np.random.random((D)))
@@ -202,33 +190,33 @@ def main():
 
             #m*
             error_term = 1./sigma * error_u * (-1) * neural_output_u[k]
-            prior_term = (1./(sigma_m_u * N * M)) * _m_u
+            prior_term = (1./(sigma_m_u * N * M)) * _m_u[k]
             grad = error_term + prior_term
             _m_u = cftools.update(_m_u[k],grad)
 
             error_term = 1./sigma * error_v * (-1) * neural_output_v[k]
-            prior_term = (1./(sigma_m_v * N * M)) * _m_v
+            prior_term = (1./(sigma_m_v * N * M)) * _m_v[k]
             grad = error_term + prior_term
             _m_v = cftools.update(_m_v[k],grad)
 
             #a*
-            error_term = 1./sigma * error_u
-            prior_term = (1./(sigma_a_u * N * M))*_a_u
+            error_term = 1./sigma * error_u * (-1)
+            prior_term = (1./(sigma_a_u * N * M))*_a_u[k]
             grad = error_term + prior_term
             _a_u = cftools.update(_a_u[k],grad)
 
-            error_term = 1./sigma * error_v
-            prior_term = (1./(sigma_a_v * N * M))*_a_v
+            error_term = 1./sigma * error_v * (-1) #FIXME: check (-1) in derivation
+            prior_term = (1./(sigma_a_v * N * M))*_a_v[k]
             grad = error_term + prior_term
             _a_v = cftools.update(_a_v[k],grad)
 
         return collections.OrderedDict([
             ('ui',_ui),
             ('vj',_vj),
-            ('hui',_hui),
-            ('hvj',_hvj),
             ('Wu',_Wu),
             ('Wv',_Wv),
+            ('hui',_hui),
+            ('hvj',_hvj),
             ('m_u',_m_u),
             ('m_v',_m_v),
             ('a_u',_a_u),
@@ -240,10 +228,16 @@ def main():
     vj = T.dvector('vj')
     hui = T.dvector('hui')
     hvj = T.dvector('hvj')
-    new = step(Rij,ui,vj,Wu,Wv,hui,hvj,m_u,m_v,a_u,a_v)
+    Wu_ = T.dmatrix('Wu')
+    Wv_ = T.dmatrix('Wv')
+    m_u_ = T.dvector('m_u')
+    m_v_ = T.dvector('m_v')
+    a_u_ = T.dvector('a_u')
+    a_v_ = T.dvector('a_v')
+    new = step(Rij,ui,vj,Wu_,Wv_,hui,hvj,m_u_,m_v_,a_u_,a_v_)
 
     step_fn = function(
-        [Rij,ui,vj,hui,hvj],
+        [Rij,ui,vj,Wu_,Wv_,hui,hvj,m_u_,m_v_,a_u_,a_v_],
         new.values()
     )
 
@@ -258,16 +252,16 @@ def main():
             _vj = V[:,j]
             _hui = Hu[:,i]
             _hvj = Hv[:,j]
-            _ui,_vj,_hui,_hvj,_Wu,_Wv,_m_u,_m_v,_a_u,_a_v = step_fn(_Rij,_ui,_vj,_hui,_hvj)
+            _ui,_vj,Wu,Wv,_hui,_hvj,m_u,m_v,a_u,a_v = step_fn(_Rij,_ui,_vj,Wu,Wv,_hui,_hvj,m_u,m_v,a_u,a_v)
             U[:,i] = _ui
             V[:,j] = _vj
             Hu[:,i] = _hui
             Hv[:,j] = _hvj
 
-        print 'm_u',m_u.get_value()
-        print 'm_v',m_v.get_value()
-        print 'a_u',a_u.get_value()
-        print 'a_v',a_v.get_value()
+        print 'm_u',m_u
+        print 'm_v',m_v
+        print 'a_u',a_u
+        print 'a_v',a_v
 
 if __name__=="__main__":
     main()

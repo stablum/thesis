@@ -88,8 +88,11 @@ def update(A, grad):
     if type(grad) is T.TensorVariable:
         try:
             # subtensor..
-            return T.inc_subtensor(A, -1 * config.lr * grad)
+            ret = T.inc_subtensor(A, -1 * config.lr * grad)
+            #print "update: A is a subtensor %s"%(str(A))
+            return ret
         except TypeError as e:
+            #print "update: A is NOT a subtensor %s (exception %s)"%(str(A),str(e))
             # not subtensor..
             # I didn't know any other way to check if A is a subtensor
             return A - config.lr * grad
