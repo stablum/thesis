@@ -17,16 +17,6 @@ import cftools
 import config
 import numutils
 
-#theano_mode = 'FAST_RUN'
-#theano.config.optimizer = 'fast_run'
-
-theano_mode = 'DebugMode'
-theano.config.optimizer = 'None'
-
-theano.mode = theano_mode
-theano.config.exception_verbosity = 'high'
-#theano.config.compute_test_value = 'raise'
-
 def main():
     np.set_printoptions(precision=4, suppress=True)
 
@@ -100,13 +90,13 @@ def main():
         eiju.name = 'eiju'
         grad = (-1.)/sigma * eiju * _vj + (1./(sigma_u*M)) * grad_computed_u
         grad.name = 'grad_u'
-        _ui = cftools.update(_ui,grad)
+        new_ui = cftools.update(_ui,grad)
 
         eijv = new_eij()
         eijv.name = 'eijv'
         grad = (-1.)/sigma * eijv * _ui + (1./(sigma_v*N)) * grad_computed_v
         grad.name = 'grad_v'
-        _vj = cftools.update(_vj,grad)
+        new_vj = cftools.update(_vj,grad)
 
         sigmoid_deriv_u = (neural_output_u) * (1 - neural_output_u)
         sigmoid_deriv_u.name = 'sigmoid_deriv_u'
@@ -160,7 +150,7 @@ def main():
             prior_term = (1./(N*M*sigma_wu)) * _Wu[:,k]
             #cftools.test_value(prior_term, np.random.random((D)))
             grad = error_term + prior_term
-            _Wu = cftools.update(_Wu[:,k],grad)
+            new_Wu = cftools.update(_Wu[:,k],grad)
 
             f_prime = sigmoid_deriv_v[k]
             cftools.test_value(f_prime, np.random.random((D)))
@@ -169,7 +159,7 @@ def main():
             prior_term = (1./(N*M*sigma_wv)) * _Wv[:,k]
             #cftools.test_value(prior_term, np.random.random((D)))
             grad = error_term + prior_term
-            _Wv = cftools.update(_Wv[:,k],grad)
+            new_Wv = cftools.update(_Wv[:,k],grad)
 
             #H*
             f_prime = sigmoid_deriv_u[k]
@@ -178,7 +168,7 @@ def main():
             prior_term = 1./sigma_hu * _hui[k]
             cftools.test_value(prior_term, np.random.random((D)))
             grad = error_term + prior_term
-            _hui = cftools.update(_hui[k],grad)
+            new_hui = cftools.update(_hui[k],grad)
 
             f_prime = sigmoid_deriv_v[k]
             error_term = 1./sigma_v * T.tile(error_v,D) * (-1) *_m_v[k] * f_prime * _Wv[:,k]
@@ -186,41 +176,41 @@ def main():
             prior_term = 1./sigma_hv * _hvj[k]
             cftools.test_value(prior_term, np.random.random((D)))
             grad = error_term + prior_term
-            _hvj = cftools.update(_hvj[k],grad)
+            new_hvj = cftools.update(_hvj[k],grad)
 
-            #m*
-            error_term = 1./sigma * error_u * (-1) * neural_output_u[k]
-            prior_term = (1./(sigma_m_u * N * M)) * _m_u[k]
-            grad = error_term + prior_term
-            _m_u = cftools.update(_m_u[k],grad)
+        #m*
+        error_term = 1./sigma * grad_computed_u * (-1) * neural_output_u[k]
+        prior_term = (1./(sigma_m_u * N * M)) * _m_u
+        grad = error_term + prior_term
+        new_m_u = cftools.update(_m_u,grad)
 
-            error_term = 1./sigma * error_v * (-1) * neural_output_v[k]
-            prior_term = (1./(sigma_m_v * N * M)) * _m_v[k]
-            grad = error_term + prior_term
-            _m_v = cftools.update(_m_v[k],grad)
+        error_term = 1./sigma * grad_computed_v * (-1) * neural_output_v[k]
+        prior_term = (1./(sigma_m_v * N * M)) * _m_v
+        grad = error_term + prior_term
+        new_m_v = cftools.update(_m_v,grad)
 
-            #a*
-            error_term = 1./sigma * error_u * (-1)
-            prior_term = (1./(sigma_a_u * N * M))*_a_u[k]
-            grad = error_term + prior_term
-            _a_u = cftools.update(_a_u[k],grad)
+        #a*
+        error_term = 1./sigma * grad_computed_u * (-1)
+        prior_term = (1./(sigma_a_u * N * M))*_a_u
+        grad = error_term + prior_term
+        new_a_u = cftools.update(_a_u,grad)
 
-            error_term = 1./sigma * error_v * (-1) #FIXME: check (-1) in derivation
-            prior_term = (1./(sigma_a_v * N * M))*_a_v[k]
-            grad = error_term + prior_term
-            _a_v = cftools.update(_a_v[k],grad)
+        error_term = 1./sigma * grad_computed_v * (-1) #FIXME: check (-1) in derivation
+        prior_term = (1./(sigma_a_v * N * M))*_a_v
+        grad = error_term + prior_term
+        new_a_v = cftools.update(_a_v,grad)
 
         return collections.OrderedDict([
-            ('ui',_ui),
-            ('vj',_vj),
-            ('Wu',_Wu),
-            ('Wv',_Wv),
-            ('hui',_hui),
-            ('hvj',_hvj),
-            ('m_u',_m_u),
-            ('m_v',_m_v),
-            ('a_u',_a_u),
-            ('a_v',_a_v),
+            ('ui',new_ui),
+            ('vj',new_vj),
+            ('Wu',new_Wu),
+            ('Wv',new_Wv),
+            ('hui',new_hui),
+            ('hvj',new_hvj),
+            ('m_u',new_m_u),
+            ('m_v',new_m_v),
+            ('a_u',new_a_u),
+            ('a_v',new_a_v),
         ])
 
     Rij = T.dscalar('Rij')
@@ -234,15 +224,16 @@ def main():
     m_v_ = T.dvector('m_v')
     a_u_ = T.dvector('a_u')
     a_v_ = T.dvector('a_v')
+    cftools.lr = T.dscalar('lr')
     new = step(Rij,ui,vj,Wu_,Wv_,hui,hvj,m_u_,m_v_,a_u_,a_v_)
 
     step_fn = function(
-        [Rij,ui,vj,Wu_,Wv_,hui,hvj,m_u_,m_v_,a_u_,a_v_],
+        [cftools.lr,Rij,ui,vj,Wu_,Wv_,hui,hvj,m_u_,m_v_,a_u_,a_v_],
         new.values()
     )
 
     print "training pmf with hyperlatent neural vectors..."
-    for training_set in cftools.epochsloop(R,U,V):
+    for training_set,_lr in cftools.epochsloop(R,U,V):
         training_set_matrix = cftools.create_training_set_matrix(training_set)
         print("\ndatapoints loop..")
         for i,j,_Rij in tqdm(training_set_matrix):
@@ -252,12 +243,13 @@ def main():
             _vj = V[:,j]
             _hui = Hu[:,i]
             _hvj = Hv[:,j]
-            _ui,_vj,Wu,Wv,_hui,_hvj,m_u,m_v,a_u,a_v = step_fn(_Rij,_ui,_vj,Wu,Wv,_hui,_hvj,m_u,m_v,a_u,a_v)
+            _ui,_vj,Wu,Wv,_hui,_hvj,m_u,m_v,a_u,a_v = step_fn(_lr,_Rij,_ui,_vj,Wu,Wv,_hui,_hvj,m_u,m_v,a_u,a_v)
             U[:,i] = _ui
             V[:,j] = _vj
             Hu[:,i] = _hui
             Hv[:,j] = _hvj
-
+        print 'Wu',Wu
+        print 'Wv',Wv
         print 'm_u',m_u
         print 'm_v',m_v
         print 'a_u',a_u

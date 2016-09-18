@@ -25,13 +25,15 @@ def main():
         return ret
 
     print "training pmf..."
-    for training_set in cftools.epochsloop(R,U,V):
+    for training_set,lr in cftools.epochsloop(R,U,V):
         for curr in tqdm(training_set):
             (i,j),Rij = curr
             eij = new_eij()
-            V[:,j] = V[:,j] + config.lr * eij * U[:,i]
+            new_ui = U[:,i] + lr * eij * V[:,j]
             eij = new_eij()
-            U[:,i] = U[:,i] + config.lr * eij * V[:,j]
+            new_vj = V[:,j] + lr * eij * U[:,i]
+            U[:,i] = new_ui
+            V[:,j] = new_vj
 
 
 if __name__=="__main__":

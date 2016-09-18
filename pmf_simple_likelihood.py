@@ -22,7 +22,6 @@ def main():
 
     def new_eij():
         ret = cftools.rating_error(Rij,U,i,V,j)
-        #print "eij",ret
         return ret
 
     training_set, testing_set = cftools.split_sets(R)

@@ -6,9 +6,11 @@ import time
 import random
 import theano
 import theano.tensor as T
+
 # local imports
 
 import config
+import update_algorithms
 
 def create_training_set_matrix(training_set):
     print("creating training set matrix..")
@@ -32,10 +34,42 @@ def create_training_set_apart(training_set):
         np.array(j_l).astype('int32'), \
         np.array(Rij_l)
 
-def UV_np(R):
-    U_values = np.random.random((config.K,R.shape[0]))
-    V_values = np.random.random((config.K,R.shape[1]))
+def UV_np(R,initialization=config.initialization):
+    """
+    R: ratings matrix
+    """
+
+    U_values = initialization((config.K,R.shape[0]))
+    V_values = initialization((config.K,R.shape[1]))
     return U_values,V_values
+
+def UV_vectors_np(R):
+    U_values,V_values = UV_np(R)
+    U = []
+    V = []
+    for i in tqdm(range(U_values.shape[1]),desc="ui shared vectors"):
+        ui = U_values[:,i]
+        U.append(ui)
+
+    for j in tqdm(range(V_values.shape[1]),desc="vj shared vectors"):
+        vj = V_values[:,j]
+        V.append(vj)
+
+    return U,V
+
+def UV_vectors(R):
+    U_values,V_values = UV_np(R)
+    U = []
+    V = []
+    for i in tqdm(range(U_values.shape[1]),desc="ui shared vectors"):
+        ui = theano.shared(U_values[:,i])
+        U.append(ui)
+
+    for j in tqdm(range(V_values.shape[1]),desc="vj shared vectors"):
+        vj = theano.shared(V_values[:,j])
+        V.append(vj)
+
+    return U,V
 
 def UV(R):
     U_values,V_values = UV_np(R)
@@ -47,9 +81,9 @@ def wrong(x):
     return ((not np.isfinite(x)) or np.isnan(x) or x>10000. or x<-10000.)
 
 def split_sets(R):
-    Ritems = R.items()
+    Ritems = list(R.items())
     sel = np.random.permutation(len(Ritems))
-    midpoint = int(len(Ritems)/2)
+    midpoint = int(len(Ritems)*0.9)
     training_set = []
     testing_set = []
     for curr in sel[:midpoint]:
@@ -58,47 +92,36 @@ def split_sets(R):
         testing_set.append(Ritems[curr])
     return training_set, testing_set
 
-def rating_error(Rij,U,i,V,j):
-    ret = Rij - np.dot(U[:,i].T, V[:,j])
+def rating_error(Rij,U,i,V,j,prediction_function):
+    #print("rating error Rij={}, i={}, j={}".format(Rij,i,j),flush=True)
+    ui = U[i]
+    vj = V[j]
+    prediction = prediction_function(ui,vj)
+    ret = Rij - prediction
     return ret
 
-def rmse(subset,U,V):
+def rmse(subset,U,V,prediction_function):
     errors = []
-    for curr in subset:
+    print("rmse..")
+    for curr in tqdm(subset):
         (i,j),Rij = curr
-        eij = rating_error(Rij,U,i,V,i)
+        eij = rating_error(Rij,U,i,V,i,prediction_function)
         errors.append(eij**2)
     return np.sqrt(np.mean(errors))
 
-def check_grad(grad):
-    for curr in grad.tolist():
-        if np.abs(curr) > 10000:
-            print "gradient %f too far from 0"%curr
-            import ipdb; ipdb.set_trace()
+def predictions(subset,U,V,prediction_function):
+    ret = []
+    print("predictions..")
+    for curr in tqdm(subset):
+        (i,j),Rij = curr
+        prediction = prediction_function(U[i],V[j])
+        ret.append(prediction)
+    return ret
 
 def test_value(theano_var, _test_value):
     if type(_test_value) is tuple:
         _test_value = np.random.random(_test_value)
     theano_var.tag.test_value = _test_value
-
-def update(A, grad):
-
-    # minimization implies subtraction because we are dealing with gradients
-    # of the negative loglikelihood
-    if type(grad) is T.TensorVariable:
-        try:
-            # subtensor..
-            ret = T.inc_subtensor(A, -1 * config.lr * grad)
-            #print "update: A is a subtensor %s"%(str(A))
-            return ret
-        except TypeError as e:
-            #print "update: A is NOT a subtensor %s (exception %s)"%(str(A),str(e))
-            # not subtensor..
-            # I didn't know any other way to check if A is a subtensor
-            return A - config.lr * grad
-    else:
-        check_grad(grad)
-        A -= config.lr * grad
 
 class Log(object):
     _file = None
@@ -113,12 +136,15 @@ class Log(object):
         except Exception as e:
             # cannot create dir (maybe it already exists?)
             # loudly ignore the exception
-            print "cannot create dir %s: %s"%(dirname,str(e))
+            print("cannot create dir %s: %s"%(dirname,str(e)))
 
         full_path = os.path.join(dirname,log_filename)
         self._file = open(full_path, 'a')
         self("logging to %s"%full_path)
-        self("learning rate: %f"%config.lr)
+        self("initial learning rate: %f"%config.lr_begin)
+        self("lr annealing T: %f"%config.lr_annealing_T)
+        self("update algorithm: %s"%config.update_algorithm)
+        self("adam_beta1: %f adam_beta2: %f"%(config.adam_beta1,config.adam_beta2))
         self("K: %d"%config.K)
         self("n_epochs: %d"%config.n_epochs)
 
@@ -126,43 +152,72 @@ class Log(object):
 
         time_str = time.strftime('%Y:%m:%d %H:%M:%S')
         msg = time_str + " " + msg
-        print msg
+        print(msg)
         self._file.write(msg+"\n")
 
-    def statistics(self,epoch_nr, training_set, testing_set, U, V):
-        training_rmse = rmse(training_set,U,V)
-        testing_rmse = rmse(testing_set,U,V)
-        U_std, U_mean = np.std(U.tolist()), np.mean(U.tolist())
-        V_std, V_mean = np.std(V.tolist()), np.mean(V.tolist())
+    def statistics(self, _lr, epoch_nr, training_set, testing_set, U, V, prediction_function):
+        training_rmse = rmse(training_set,U,V,prediction_function)
+        testing_rmse = rmse(testing_set,U,V,prediction_function)
+        _predictions = predictions(training_set,U,V,prediction_function)
+        meanstd = lambda l: "%f %f"%(np.mean(l),np.std(l))
+        U_stats = meanstd(U)
+        V_stats = meanstd(V)
+        p_stats = meanstd(_predictions)
         self("epoch %d"%epoch_nr)
+        self("learning rate: %f"%_lr)
+        if config.update_algorithm == 'adam':
+            U_adam_m_stats = meanstd([ curr.m for curr in U])
+            U_adam_v_stats = meanstd([ curr.v for curr in U])
+            U_adam_t_stats = meanstd([ curr.t for curr in U])
+            self("U adam 'm' mean and std: %s"%U_adam_m_stats)
+            self("U adam 'v' mean and std: %s"%U_adam_v_stats)
+            self("U adam 't' mean and std: %s"%U_adam_t_stats)
+            V_adam_m_stats = meanstd([ curr.m for curr in V])
+            V_adam_v_stats = meanstd([ curr.v for curr in V])
+            V_adam_t_stats = meanstd([ curr.t for curr in V])
+            self("V adam 'm' mean and std: %s"%V_adam_m_stats)
+            self("V adam 'v' mean and std: %s"%V_adam_v_stats)
+            self("V adam 't' mean and std: %s"%V_adam_t_stats)
         self("training RMSE: %s"%training_rmse)
         self("testing RMSE: %s"%testing_rmse)
-        self("U mean: %f std: %f"%(U_mean,U_std))
-        self("V mean: %f std: %f"%(V_mean,V_std))
+        self("U mean and std: %s"%U_stats)
+        self("V mean and std: %s"%V_stats)
+        self("predictions mean and std: %s"%p_stats)
 
 class epochsloop(object):
 
-    def __init__(self,R,U,V):
+    def __init__(self,R,U,V,prediction_function):
         np.set_printoptions(precision=4, suppress=True)
         self._log = Log()
         self.training_set, self.testing_set = split_sets(R)
         self.U = U
         self.V = V
+        self.prediction_function = prediction_function
 
     def __iter__(self):
-        self._iter = iter(tqdm(range(config.n_epochs))) # internal "hidden" iterator
+        self._iter = iter(tqdm(list(range(config.n_epochs)))) # internal "hidden" iterator
         return self
 
-    def next(self):
-        epoch_nr = self._iter.next() # will raise StopIteration when done
+    def __next__(self):
+        epoch_nr = next(self._iter) # will raise StopIteration when done
+
+        _lr = update_algorithms.calculate_lr(epoch_nr)
+
         if type(self.U) is T.sharedvar.TensorSharedVariable:
             _U = self.U.get_value()
             _V = self.V.get_value()
         else:
             _U = self.U
             _V = self.V
-        self._log.statistics(epoch_nr, self.training_set,self.testing_set,_U,_V)
+        self._log.statistics(
+            _lr,
+            epoch_nr,
+            self.training_set,
+            self.testing_set,
+            _U,
+            _V,
+            self.prediction_function
+        )
         random.shuffle(self.training_set)
-        return self.training_set
-
+        return self.training_set,_lr
 
