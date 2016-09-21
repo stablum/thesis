@@ -1,6 +1,7 @@
 import theano
 import ipdb; ipdb.set_trace
 import initializations
+import split_dataset_schemas
 
 theano_mode = 'FAST_RUN'
 theano.config.optimizer = 'fast_run'
@@ -12,7 +13,7 @@ theano.config.optimizer = 'fast_run'
 
 theano.mode = theano_mode
 
-n_epochs=2000
+n_epochs=200
 
 K=10#3
 lr_begin=0.005#0.001#0.005
@@ -25,5 +26,10 @@ update_algorithm = 'adam_symbolic'
 adam_beta1 = 0.9
 adam_beta2 = 0.99
 
+split_dataset_schema = split_dataset_schemas.ChunkyRandomCompleteEpochs
+
 initialization = initializations.normal
 
+chunk_len =64*1024
+
+movielens_which='1m'

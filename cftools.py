@@ -34,31 +34,31 @@ def create_training_set_apart(training_set):
         np.array(j_l).astype('int32'), \
         np.array(Rij_l)
 
-def UV_np(R,initialization=config.initialization):
+def UV_np(dataset,initialization=config.initialization,K=config.K):
     """
     R: ratings matrix
     """
 
-    U_values = initialization((config.K,R.shape[0]))
-    V_values = initialization((config.K,R.shape[1]))
+    U_values = initialization((K,dataset.N))
+    V_values = initialization((K,dataset.M))
     return U_values,V_values
 
-def UV_vectors_np(R):
-    U_values,V_values = UV_np(R)
+def UV_vectors_np(dataset):
+    U_values,V_values = UV_np(dataset)
     U = []
     V = []
-    for i in tqdm(range(U_values.shape[1]),desc="ui shared vectors"):
+    for i in tqdm(range(dataset.N),desc="ui numpy vectors"):
         ui = U_values[:,i]
         U.append(ui)
 
-    for j in tqdm(range(V_values.shape[1]),desc="vj shared vectors"):
+    for j in tqdm(range(dataset.M),desc="vj numpy vectors"):
         vj = V_values[:,j]
         V.append(vj)
 
     return U,V
 
-def UV_vectors(R):
-    U_values,V_values = UV_np(R)
+def UV_vectors(dataset):
+    U_values,V_values = UV_np(dataset)
     U = []
     V = []
     for i in tqdm(range(U_values.shape[1]),desc="ui shared vectors"):
@@ -71,26 +71,14 @@ def UV_vectors(R):
 
     return U,V
 
-def UV(R):
-    U_values,V_values = UV_np(R)
+def UV(dataset):
+    U_values,V_values = UV_np(dataset)
     U = theano.shared(U_values)
     V = theano.shared(V_values)
     return U,V
 
 def wrong(x):
     return ((not np.isfinite(x)) or np.isnan(x) or x>10000. or x<-10000.)
-
-def split_sets(R):
-    Ritems = list(R.items())
-    sel = np.random.permutation(len(Ritems))
-    midpoint = int(len(Ritems)*0.9)
-    training_set = []
-    testing_set = []
-    for curr in sel[:midpoint]:
-        training_set.append(Ritems[curr])
-    for curr in sel[midpoint+1:]:
-        testing_set.append(Ritems[curr])
-    return training_set, testing_set
 
 def rating_error(Rij,U,i,V,j,prediction_function):
     #print("rating error Rij={}, i={}, j={}".format(Rij,i,j),flush=True)
@@ -102,17 +90,15 @@ def rating_error(Rij,U,i,V,j,prediction_function):
 
 def rmse(subset,U,V,prediction_function):
     errors = []
-    print("rmse..")
-    for curr in tqdm(subset):
+    for curr in tqdm(subset,desc="rmse"):
         (i,j),Rij = curr
-        eij = rating_error(Rij,U,i,V,i,prediction_function)
+        eij = rating_error(Rij,U,i,V,j,prediction_function)
         errors.append(eij**2)
     return np.sqrt(np.mean(errors))
 
 def predictions(subset,U,V,prediction_function):
     ret = []
-    print("predictions..")
-    for curr in tqdm(subset):
+    for curr in tqdm(subset,desc="predictions"):
         (i,j),Rij = curr
         prediction = prediction_function(U[i],V[j])
         ret.append(prediction)
@@ -152,13 +138,14 @@ class Log(object):
 
         time_str = time.strftime('%Y:%m:%d %H:%M:%S')
         msg = time_str + " " + msg
-        print(msg)
+        print(msg, flush=True)
         self._file.write(msg+"\n")
+        self._file.flush()
 
-    def statistics(self, _lr, epoch_nr, training_set, testing_set, U, V, prediction_function):
-        training_rmse = rmse(training_set,U,V,prediction_function)
-        testing_rmse = rmse(testing_set,U,V,prediction_function)
-        _predictions = predictions(training_set,U,V,prediction_function)
+    def statistics(self, _lr, epoch_nr, splitter, U, V, prediction_function):
+        training_rmse = rmse(splitter.training_set,U,V,prediction_function)
+        testing_rmse = rmse(splitter.validation_set,U,V,prediction_function)
+        _predictions = predictions(splitter.training_set,U,V,prediction_function)
         meanstd = lambda l: "%f %f"%(np.mean(l),np.std(l))
         U_stats = meanstd(U)
         V_stats = meanstd(V)
@@ -186,19 +173,22 @@ class Log(object):
 
 class epochsloop(object):
 
-    def __init__(self,R,U,V,prediction_function):
+    def __init__(self,dataset,U,V,prediction_function):
+        self.dataset = dataset
         np.set_printoptions(precision=4, suppress=True)
         self._log = Log()
-        self.training_set, self.testing_set = split_sets(R)
+        self.splitter = config.split_dataset_schema(self.dataset)
+        self.validation_set = self.splitter.validation_set
         self.U = U
         self.V = V
         self.prediction_function = prediction_function
 
     def __iter__(self):
-        self._iter = iter(tqdm(list(range(config.n_epochs)))) # internal "hidden" iterator
+        self._iter = iter(tqdm(list(range(config.n_epochs)),desc="epochs")) # internal "hidden" iterator
         return self
 
     def __next__(self):
+        self.splitter.prepare_new_training_set()
         epoch_nr = next(self._iter) # will raise StopIteration when done
 
         _lr = update_algorithms.calculate_lr(epoch_nr)
@@ -212,12 +202,16 @@ class epochsloop(object):
         self._log.statistics(
             _lr,
             epoch_nr,
-            self.training_set,
-            self.testing_set,
+            self.splitter,
             _U,
             _V,
             self.prediction_function
         )
-        random.shuffle(self.training_set)
-        return self.training_set,_lr
+        return self.splitter.training_set,_lr
 
+def mainloop(process_datapoint,dataset,U,V,prediction_function):
+    for training_set,_lr in epochsloop(dataset,U,V,prediction_function):
+        # WARNING: _lr is not updated in theano expressions
+        for curr in tqdm(training_set,desc="training"):
+            (i,j),Rij = curr
+            process_datapoint(i,j,Rij,_lr)
