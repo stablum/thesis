@@ -21,12 +21,7 @@ import augmented_types as at
 
 import update_algorithms
 
-theano.config.exception_verbosity="high"
-theano.config.optimizer='None'
-theano.config.on_unused_input='ignore'
-
 update =update_algorithms.get_func()
-
 #g = lambda x:x
 g = theano.tensor.nnet.sigmoid
 
@@ -66,12 +61,12 @@ def main():
 
     print("creating update functions..")
 
-    ui_sym = T.dvector('ui')
-    vj_sym = T.dvector('vj')
-    Rij_sym = T.dscalar('Rij')
-    t_prev_sym = T.dscalar('t_prev')
-    m_prev_sym = T.dvector('m_prev')
-    v_prev_sym = T.dvector('v_prev')
+    ui_sym = T.fvector('ui')
+    vj_sym = T.fvector('vj')
+    Rij_sym = T.fscalar('Rij')
+    t_prev_sym = T.fscalar('t_prev')
+    m_prev_sym = T.fvector('m_prev')
+    v_prev_sym = T.fvector('v_prev')
 
     # instead of calculating a different count of latent vectors of each
     # (other side) latent vector, a global estimate (average) is performed

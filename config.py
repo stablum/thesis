@@ -33,3 +33,23 @@ initialization = initializations.normal
 chunk_len =64*1024
 
 movielens_which='1m'
+
+optimizer = "cpu"
+
+if optimizer == "debug":
+    theano.config.exception_verbosity="high"
+    theano.config.optimizer='None'
+    theano.config.on_unused_input='ignore'
+    theano.config.floatX='float32'
+
+elif optimizer == "cpu":
+    theano.config.optimizer='fast_run'
+    theano.config.floatX='float32'
+
+elif optimizer == "gpu":
+    theano.config.optimizer='fast_run'
+    theano.config.openmp=False
+    theano.config.openmp_elemwise_minsize=8
+    #theano.config.device='gpu'
+    theano.config.floatX='float32'
+    theano.config.assert_no_cpu_op='raise'

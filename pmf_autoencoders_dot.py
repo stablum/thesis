@@ -21,10 +21,6 @@ import augmented_types as at
 
 import update_algorithms
 
-theano.config.exception_verbosity="high"
-theano.config.optimizer='None'
-theano.config.on_unused_input='ignore'
-
 update =update_algorithms.get_func()
 adam_shared = lasagne.updates.adam # FIXME: generalize like the 'update' placeholder
 #g = lambda x:x
@@ -86,12 +82,12 @@ def main():
 
     print("creating update functions..")
 
-    ui_sym = T.dvector('ui')
-    vj_sym = T.dvector('vj')
-    Rij_sym = T.dscalar('Rij')
-    t_prev_sym = T.dscalar('t_prev')
-    m_prev_sym = T.dvector('m_prev')
-    v_prev_sym = T.dvector('v_prev')
+    ui_sym = T.fvector('ui')
+    vj_sym = T.fvector('vj')
+    Rij_sym = T.fscalar('Rij')
+    t_prev_sym = T.fscalar('t_prev')
+    m_prev_sym = T.fvector('m_prev')
+    v_prev_sym = T.fvector('v_prev')
 
     predict_to_1_sym,params = make_predict_to_1(ui_sym,vj_sym)
 

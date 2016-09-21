@@ -21,16 +21,6 @@ import augmented_types as at
 
 import update_algorithms
 
-#theano.config.exception_verbosity="high"
-#theano.config.optimizer='None'
-#theano.config.on_unused_input='ignore'
-
-theano.config.optimizer='fast_run'
-theano.config.openmp=False
-theano.config.openmp_elemwise_minsize=8
-#theano.config.device='gpu'
-theano.config.floatX='float32'
-
 update =update_algorithms.get_func()
 adam_shared = lasagne.updates.adam # FIXME: generalize like the 'update' placeholder
 #g = lambda x:x
