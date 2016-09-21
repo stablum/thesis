@@ -106,7 +106,7 @@ def predictions(subset,U,V,prediction_function):
 
 def test_value(theano_var, _test_value):
     if type(_test_value) is tuple:
-        _test_value = np.random.random(_test_value)
+        _test_value = np.random.random(_test_value).astype('float32')
     theano_var.tag.test_value = _test_value
 
 class Log(object):
