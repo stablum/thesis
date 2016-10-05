@@ -55,6 +55,21 @@ class DataSet(object):
         print("N_compressed",self.N_compressed)
         print("M_compressed",self.M_compressed)
 
+    def read_entire(self):
+        """
+        warning: this method loads the entire dataset into memory
+        """
+
+        reader = self.reopen()
+        ret = []
+        for df in tqdm(reader,desc="reading entire dataset into memory"):
+            for index, row in tqdm(df.iterrows(),desc="getting ratings in chunk"):
+                i = self.user_new_index[row.userId]
+                j = self.movie_new_index[row.movieId]
+                Rij = row.rating
+                ret.append(((i,j),Rij))
+        return ret
+
     def chunk(self, chunk_id):
         reader = self.reopen()
         for curr_id, df in tqdm(enumerate(reader),desc="finding chunk_id={}".format(chunk_id)):

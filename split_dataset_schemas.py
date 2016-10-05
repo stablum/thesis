@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 class PermList(object):
     """
@@ -22,13 +23,35 @@ class Splitter(object):
     def __init__(self,dataset):
         self.dataset = dataset
 
+    def prepare_new_training_set(self):
+        raise Exception("prepare_new_training_set needs to be implemented!")
+
+class MemoryRandomCompleteEpochs(Splitter):
+
+    def __init__(self,dataset):
+        super().__init__(dataset)
+        self.entire = self.dataset.read_entire()
+        random.shuffle(self.entire)
+        splitpoint = int(self.dataset.num_ratings / 10)
+        self._validation_set = self.entire[:splitpoint]
+        self._training_set = self.entire[splitpoint:]
+
+    @property
+    def validation_set(self):
+        return self._validation_set
+
+    def prepare_new_training_set(self):
+        perm = np.random.permutation(len(self._training_set))
+        self._training_set_perm = PermList(chunk_training,perm)
+
+    @property
+    def training_set(self):
+        return self._training_set_perm
+
 class Chunky(Splitter):
     def __init__(self,dataset):
         super().__init__(dataset)
         self._validation_set = None
-
-    def prepare_new_training_set(self):
-        raise Exception("prepare_new_training_set needs to be implemented!")
 
     @property
     def validation_set(self):

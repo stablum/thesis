@@ -26,7 +26,8 @@ update_algorithm = 'adam_symbolic'
 adam_beta1 = 0.9
 adam_beta2 = 0.999
 
-split_dataset_schema = split_dataset_schemas.ChunkyRandomCompleteEpochs
+#split_dataset_schema = split_dataset_schemas.ChunkyRandomCompleteEpochs
+split_dataset_schema = split_dataset_schemas.MemoryRandomCompleteEpochs
 
 initialization = initializations.normal
 
