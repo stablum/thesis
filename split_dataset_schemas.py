@@ -42,7 +42,7 @@ class MemoryRandomCompleteEpochs(Splitter):
 
     def prepare_new_training_set(self):
         perm = np.random.permutation(len(self._training_set))
-        self._training_set_perm = PermList(chunk_training,perm)
+        self._training_set_perm = PermList(self._training_set,perm)
 
     @property
     def training_set(self):
