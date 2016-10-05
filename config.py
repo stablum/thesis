@@ -34,7 +34,7 @@ chunk_len =64*1024
 
 movielens_which='1m'
 
-optimizer = "cpu"
+optimizer = "gpu"
 
 if optimizer == "debug":
     theano.config.exception_verbosity="high"
