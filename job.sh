@@ -1,5 +1,5 @@
 #!/bin/bash --login
-#$ -l gpu=C2050
+#$ -l fat,gpu=K20
 #$ -l h_rt=24:00:00
 module add python/3.3.2
 module add python/default
