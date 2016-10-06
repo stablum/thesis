@@ -116,7 +116,6 @@ def main():
     predict_to_5_fn = theano.function([ui_sym,vj_sym], [make_predict_to_5(predict_to_1_sym)])
     predict_to_1_fn = theano.function([ui_sym,vj_sym], [predict_to_1_sym])
 
-
     def train_with_datapoint(i,j,Rij,lr):
         Rij = (Rij - 1.) / (config.max_rating - 1.)
         log("Rij",Rij)
