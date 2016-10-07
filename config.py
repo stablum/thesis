@@ -32,10 +32,10 @@ split_dataset_schema = split_dataset_schemas.MemoryRandomCompleteEpochs
 initialization = initializations.normal
 
 chunk_len =64*1024
-
+minibatch_size = 64
 movielens_which='1m'
 
-optimizer = "gpu_omp"
+optimizer = "debug"
 
 if optimizer == "debug":
     theano.config.exception_verbosity="high"
