@@ -113,13 +113,34 @@ def adam_symbolic(
     one = T.constant(1)
 
     t = t_prev + 1
-    a_t = lr*T.sqrt(one-beta2**t)/(one-beta1**t)
+    t.name = "t"
+    a_t_numer = lr*T.sqrt(one-beta2**t)
+    a_t_numer.name = "a_t_numer"
+    a_t_denom = (one-beta1**t)
+    a_t_denom.name="a_t_denom"
+    a_t = a_t_numer/a_t_denom
+    a_t.name="a_t"
 
-    m_t = beta1*m_prev + (1-beta1)*g_t
-    v_t = beta2*v_prev + (1-beta2)*g_t**2
-    step = a_t*m_t/(T.sqrt(v_t) + epsilon)
-
+    m_t_term1 = beta1*m_prev
+    m_t_term1.name = "m_t_term1"
+    m_t_term2 = (1-beta1)*g_t
+    m_t_term2.name = "m_t_term2"
+    m_t = m_t_term1 + m_t_term2
+    m_t.name = "m_t"
+    v_t_term1 = beta2*v_prev
+    v_t_term1.name = "v_t_term1"
+    v_t_term2 = (1-beta2)*(g_t**2)
+    m_t_term2.name = "v_t_term2"
+    v_t = v_t_term1 + v_t_term2
+    v_t.name = "v_t"
+    denom = (T.sqrt(v_t) + epsilon)
+    denom.name = "denom"
+    numer = a_t*m_t
+    numer.name = "numer"
+    step = numer/denom
+    step.name = "step"
     new_A = A - step
+    new_A.name = "new_A"
     return new_A, t, m_t, v_t
 
 def get_func():

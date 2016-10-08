@@ -48,11 +48,11 @@ def UV_vectors_np(dataset):
     U = []
     V = []
     for i in tqdm(range(dataset.N),desc="ui numpy vectors"):
-        ui = U_values[:,i]
+        ui = U_values[:,i].astype('float32')
         U.append(ui)
 
     for j in tqdm(range(dataset.M),desc="vj numpy vectors"):
-        vj = V_values[:,j]
+        vj = V_values[:,j].astype('float32')
         V.append(vj)
 
     return U,V
@@ -80,28 +80,44 @@ def UV(dataset):
 def wrong(x):
     return ((not np.isfinite(x)) or np.isnan(x) or x>10000. or x<-10000.)
 
-def rating_error(Rij,U,i,V,j,prediction_function):
+def rating_error(Rij_mb,ui_mb,vj_mb,prediction_function):
     #print("rating error Rij={}, i={}, j={}".format(Rij,i,j),flush=True)
-    ui = U[i]
-    vj = V[j]
-    prediction = prediction_function(ui,vj)
-    ret = Rij - prediction
+    predictions_mb = prediction_function(ui_mb,vj_mb)
+    ret = Rij_mb - predictions_mb
     return ret
+
+def split_minibatch(subset,U,V,title):
+    ui_mb_l = []
+    vj_mb_l = []
+    Rij_mb_l = []
+    for curr in tqdm(subset,desc=title):
+        (i,j),Rij = curr
+        ui_mb_l.append(U[i])
+        vj_mb_l.append(V[j])
+        Rij_mb_l.append(Rij)
+        if len(ui_mb_l) >= config.minibatch_size:
+            ui_mb = np.vstack(ui_mb_l)
+            vj_mb = np.vstack(vj_mb_l)
+            Rij_mb = np.vstack(Rij_mb_l)
+            ui_mb_l = []
+            vj_mb_l = []
+            Rij_mb_l = []
+            yield Rij_mb,ui_mb,vj_mb
 
 def rmse(subset,U,V,prediction_function):
     errors = []
-    for curr in tqdm(subset,desc="rmse"):
-        (i,j),Rij = curr
-        eij = rating_error(Rij,U,i,V,j,prediction_function)
-        errors.append(eij**2)
-    return np.sqrt(np.mean(errors))
+    for Rij_mb, ui_mb, vj_mb in split_minibatch(subset,U,V,"rmse"):
+        eij_mb = rating_error(Rij_mb,ui_mb,vj_mb,prediction_function)
+        errors.append(eij_mb**2)
+    errors_np = np.vstack(errors)
+    return np.sqrt(np.mean(errors_np))
 
 def predictions(subset,U,V,prediction_function):
-    ret = []
-    for curr in tqdm(subset,desc="predictions"):
-        (i,j),Rij = curr
-        prediction = prediction_function(U[i],V[j])
-        ret.append(prediction)
+    l = []
+    for Rij_mb, ui_mb, vj_mb in split_minibatch(subset,U,V,"predictions"):
+        prediction = prediction_function(ui_mb,vj_mb)
+        l.append(prediction)
+    ret = np.vstack(l)
     return ret
 
 def test_value(theano_var, _test_value):
