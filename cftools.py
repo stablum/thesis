@@ -152,6 +152,8 @@ class Log(object):
         self("update algorithm: %s"%config.update_algorithm)
         self("adam_beta1: %f adam_beta2: %f"%(config.adam_beta1,config.adam_beta2))
         self("K: %d"%config.K)
+        self("movielens_which: %s"%config.movielens_which)
+        self("optimizer: %s"%config.optimizer)
         self("n_epochs: %d"%config.n_epochs)
 
     def __call__(self,msg):

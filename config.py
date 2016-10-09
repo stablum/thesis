@@ -33,9 +33,9 @@ initialization = initializations.normal
 
 chunk_len =64*1024
 minibatch_size = 64
-movielens_which='small'#'1m'
+movielens_which='1m'
 
-optimizer = "debug"#"gpu_omp"
+optimizer = "gpu_omp"
 
 if optimizer == "debug":
     theano.config.exception_verbosity="high"
