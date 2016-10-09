@@ -12,5 +12,5 @@ read COMMIT_MESSAGE
 git commit -m "$COMMIT_MESSAGE"
 git push das4vu master
 echo "after submitting the job will sleep for $SLEEPTIME seconds before retrieving outputs"
-$SSH "cd thesis; git stash; qstat | grep fstablum ; qsub -N '$@'-o $TIMESTAMP.out -e $TIMESTAMP.err -cwd -l fat,gpu=K20 -l h_rt=96:00:00 job.sh -- $@ ; sleep $SLEEPTIME; tail -f $TIMESTAMP.out & tail -f $TIMESTAMP.err "
+$SSH "cd thesis; git stash; qstat | grep fstablum ; qsub -N '$@' -o $TIMESTAMP.out -e $TIMESTAMP.err -cwd -l fat,gpu=K20 -l h_rt=96:00:00 job.sh -- $@ ; sleep $SLEEPTIME; tail -f $TIMESTAMP.out & tail -f $TIMESTAMP.err "
  
