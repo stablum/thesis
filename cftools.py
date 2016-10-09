@@ -34,17 +34,17 @@ def create_training_set_apart(training_set):
         np.array(j_l).astype('int32'), \
         np.array(Rij_l)
 
-def UV_np(dataset,initialization=config.initialization,K=config.K):
+def UV_np(dataset,initialization=config.initialization,latent_len=config.K):
     """
     R: ratings matrix
     """
 
-    U_values = initialization((K,dataset.N))
-    V_values = initialization((K,dataset.M))
+    U_values = initialization((latent_len,dataset.N))
+    V_values = initialization((latent_len,dataset.M))
     return U_values,V_values
 
-def UV_vectors_np(dataset,expand_dims=False):
-    U_values,V_values = UV_np(dataset)
+def UV_vectors_np(dataset,expand_dims=False,latent_len=config.K):
+    U_values,V_values = UV_np(dataset,latent_len=latent_len)
     U = []
     V = []
     for i in tqdm(range(dataset.N),desc="ui numpy vectors"):
