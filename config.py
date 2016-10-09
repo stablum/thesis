@@ -13,7 +13,7 @@ theano.config.optimizer = 'fast_run'
 
 theano.mode = theano_mode
 
-n_epochs=200
+n_epochs=1000
 
 K=10#3
 lr_begin=0.005#0.001#0.005
