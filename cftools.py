@@ -43,16 +43,20 @@ def UV_np(dataset,initialization=config.initialization,K=config.K):
     V_values = initialization((K,dataset.M))
     return U_values,V_values
 
-def UV_vectors_np(dataset):
+def UV_vectors_np(dataset,expand_dims=False):
     U_values,V_values = UV_np(dataset)
     U = []
     V = []
     for i in tqdm(range(dataset.N),desc="ui numpy vectors"):
         ui = U_values[:,i].astype('float32')
+        if expand_dims is True:
+            ui = np.expand_dims(ui,0)
         U.append(ui)
 
     for j in tqdm(range(dataset.M),desc="vj numpy vectors"):
         vj = V_values[:,j].astype('float32')
+        if expand_dims is True:
+            vj = np.expand_dims(vj,0)
         V.append(vj)
 
     return U,V

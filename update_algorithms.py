@@ -65,19 +65,24 @@ def adam_np(A,grad):
     #print("done.")
     return A
 
-def adam_for(l):
+def adam_for(l,two_dims=False):
     ts = []
     ms = []
     vs = []
     for param in l:
         t = 0
+        if two_dims is True:
+            t = np.array([[t]], dtype='float32')
         ts.append(t)
+        m = np.zeros(param.shape, dtype='float32')
+        v = np.zeros(param.shape, dtype='float32')
 
-        m = np.zeros(param.shape, dtype=param.dtype)
+        if two_dims is True and len(param.shape) ==1:
+            m = np.expand_dims(m,0)
+            v = np.expand_dims(v,0)
         ms.append(m)
-
-        v = np.zeros(param.shape, dtype=param.dtype)
         vs.append(v)
+
     return ts,ms,vs
 
 def adam_symbolic(
