@@ -178,10 +178,17 @@ class Log(object):
         training_rmse = rmse(splitter.training_set,U,V,prediction_function)
         testing_rmse = rmse(splitter.validation_set,U,V,prediction_function)
         _predictions = predictions(splitter.training_set,U,V,prediction_function)
-        meanstd = lambda l: "%f %f"%(np.mean(l),np.std(l))
+        def meanstd(l,axis=0):
+            m = np.mean(l,axis=axis)
+            s = np.std(l,axis=axis)
+            if axis==0:
+                a = np.vstack([range(len(m)),m,s])
+                return str(a)
+            else:
+                return "{} {}".format(m,s)
         U_stats = meanstd(U)
         V_stats = meanstd(V)
-        p_stats = meanstd(_predictions)
+        p_stats = meanstd(_predictions,axis=None)
         self("epoch %d"%epoch_nr)
         self("learning rate: %f"%_lr)
         if config.update_algorithm == 'adam':
@@ -207,7 +214,7 @@ class epochsloop(object):
 
     def __init__(self,dataset,U,V,prediction_function):
         self.dataset = dataset
-        np.set_printoptions(precision=4, suppress=True)
+        np.set_printoptions(precision=3, suppress=True)
         self.make_and_cd_experiment_dir()
         self._log = Log(dirname='.')
         self.splitter = config.split_dataset_schema(self.dataset)
@@ -232,7 +239,6 @@ class epochsloop(object):
             os.system("cp %s %s -vf"%(curr,dirname+"/"))
 
         os.chdir(dirname)
-
     def __iter__(self):
         self._iter = iter(tqdm(list(range(config.n_epochs)),desc="epochs")) # internal "hidden" iterator
         return self
