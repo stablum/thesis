@@ -77,7 +77,7 @@ def adam_for(l,two_dims=False):
         m = np.zeros(param.shape, dtype='float32')
         v = np.zeros(param.shape, dtype='float32')
 
-        if two_dims tkis True and len(param.shape) ==1:
+        if two_dims is True and len(param.shape) ==1:
             m = np.expand_dims(m,0)
             v = np.expand_dims(v,0)
         ms.append(m)
