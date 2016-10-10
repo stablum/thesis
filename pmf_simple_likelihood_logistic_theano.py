@@ -95,6 +95,7 @@ def main():
         new_ui, U_t[i], U_m[i], U_v[i],eij_1,gu1,gv1 = ui_update_fn(U_t[i],U_m[i],U_v[i],Rij,U[i],V[j])
         #log("U[i]",U[i],"new_ui",new_ui,"diff",U[i]-new_ui)
         #log("eij_1",eij_1,"gu1",gu1,"gv1",gv1)
+        #log("U_t[i]",U_t[i],"U_m[i]",U_m[i],"U_v[i]",U_v[i])
         new_vj, V_t[j], V_m[j], V_v[j],eij_2,gu2,gv2 = vj_update_fn(V_t[j],V_m[j],V_v[j],Rij,U[i],V[j])
         #log("V[j]",V[j],"new_vj",new_vj,"diff",V[j]-new_vj)
         #log("eij_2",eij_2,"gu2",gu2,"gv2",gv2)

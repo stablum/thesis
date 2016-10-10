@@ -77,7 +77,7 @@ def adam_for(l,two_dims=False):
         m = np.zeros(param.shape, dtype='float32')
         v = np.zeros(param.shape, dtype='float32')
 
-        if two_dims is True and len(param.shape) ==1:
+        if two_dims tkis True and len(param.shape) ==1:
             m = np.expand_dims(m,0)
             v = np.expand_dims(v,0)
         ms.append(m)
@@ -135,7 +135,7 @@ def adam_symbolic(
     v_t_term1 = beta2*v_prev
     v_t_term1.name = "v_t_term1"
     v_t_term2 = (1-beta2)*(g_t**2)
-    m_t_term2.name = "v_t_term2"
+    v_t_term2.name = "v_t_term2"
     v_t = v_t_term1 + v_t_term2
     v_t.name = "v_t"
     denom = (T.sqrt(v_t) + epsilon)

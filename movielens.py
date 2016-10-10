@@ -29,7 +29,10 @@ def new_index(l):
 
 class DataSet(object):
     def __init__(self, path, chunk_len=128*1024):
-        self.path = path
+
+        # absolute path, to prevent problems for subsequent chdirs
+        self.path = os.path.abspath(path)
+
         self.chunk_len = chunk_len
 
         user_id_set = set()

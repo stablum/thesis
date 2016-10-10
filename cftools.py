@@ -12,6 +12,17 @@ import theano.tensor as T
 import config
 import update_algorithms
 
+backup_files = [
+    sys.argv[0],
+    "cftools.py",
+    "update_algorithms.py",
+    "movielens.py",
+    "augmented_types.py",
+    "config.py",
+    "job.sh",
+    "engage.sh"
+]
+
 def create_training_set_matrix(training_set):
     print("creating training set matrix..")
     return np.array([
@@ -132,11 +143,10 @@ def test_value(theano_var, _test_value):
 class Log(object):
     _file = None
 
-    def __init__(self):
+    def __init__(self,dirname="logs"):
         prefix = os.path.splitext(os.path.basename(sys.argv[0]))[0]
         time_str = time.strftime('%Y%m%d_%H%M%S')
         log_filename = prefix + "_" + time_str + ".log"
-        dirname = "logs"
         try:
             os.mkdir(dirname)
         except Exception as e:
@@ -198,12 +208,30 @@ class epochsloop(object):
     def __init__(self,dataset,U,V,prediction_function):
         self.dataset = dataset
         np.set_printoptions(precision=4, suppress=True)
-        self._log = Log()
+        self.make_and_cd_experiment_dir()
+        self._log = Log(dirname='.')
         self.splitter = config.split_dataset_schema(self.dataset)
         self.validation_set = self.splitter.validation_set
         self.U = U
         self.V = V
         self.prediction_function = prediction_function
+
+    def make_and_cd_experiment_dir(self):
+        scriptname_component= os.path.splitext(os.path.basename(sys.argv[0]))[0]
+        time_str = time.strftime('%Y%m%d_%H%M%S')
+        dirname = "harvest_"+ scriptname_component + "_" + time_str
+        try:
+            os.mkdir(dirname)
+        except Exception as e:
+            # cannot create dir (maybe it already exists?)
+            # loudly ignore the exception
+            print("cannot create dir %s: %s"%(dirname,str(e)))
+
+        # backup copy of source files
+        for curr in backup_files:
+            os.system("cp %s %s -vf"%(curr,dirname+"/"))
+
+        os.chdir(dirname)
 
     def __iter__(self):
         self._iter = iter(tqdm(list(range(config.n_epochs)),desc="epochs")) # internal "hidden" iterator
