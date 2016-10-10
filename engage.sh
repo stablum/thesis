@@ -7,6 +7,7 @@ ssh-add $KEY
 TIMESTAMP=$(date +%Y%m%d_%H%M%S_%N)
 git diff
 git add -u
+git add $1
 echo -n "commit message:"
 read COMMIT_MESSAGE
 git commit -m "$COMMIT_MESSAGE"
