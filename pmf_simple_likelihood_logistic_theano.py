@@ -57,8 +57,8 @@ def main():
         # by how many terms (error term) contain that vector
         ret += (0.5/(dataset.N_compressed * sigma_u)) * T.sum(ui**2)
         ret += (0.5/(dataset.M_compressed * sigma_v)) * T.sum(vj**2)
-        ret = T.sum(ret)
-        return ret
+        ret = ret.reshape((),ndim=0)
+        return ret,eij
 
     print("creating update functions..")
 
@@ -72,15 +72,15 @@ def main():
 
     # instead of calculating a different count of latent vectors of each
     # (other side) latent vector, a global estimate (average) is performed
-    nll_term = make_objective_term(Rij_sym,ui_sym,vj_sym)
+    nll_term,eij_ = make_objective_term(Rij_sym,ui_sym,vj_sym)
     grads_ui = T.grad(nll_term, ui_sym)
     grads_vj = T.grad(nll_term, vj_sym)
     updates_kwargs = dict(t_prev=t_prev_sym,m_prev=m_prev_sym,v_prev=v_prev_sym)
     new_for_ui = list(update(ui_sym,grads_ui,**updates_kwargs))
     new_for_vj = list(update(vj_sym,grads_vj,**updates_kwargs))
     common = [ t_prev_sym,m_prev_sym,v_prev_sym,Rij_sym,ui_sym,vj_sym ]
-    ui_update_fn = theano.function(common,new_for_ui)
-    vj_update_fn = theano.function(common,new_for_vj)
+    ui_update_fn = theano.function(common,new_for_ui+[eij_,grads_ui,grads_vj])
+    vj_update_fn = theano.function(common,new_for_vj+[eij_,grads_ui,grads_vj])
     predict_to_5_fn = theano.function([ui_sym,vj_sym], [make_predict_to_5(ui_sym,vj_sym)])
     predict_to_1_fn = theano.function([ui_sym,vj_sym], [make_predict_to_1(ui_sym,vj_sym)])
 
@@ -92,11 +92,12 @@ def main():
         #log("Rij",Rij)
         #log("predict_to_1_fn",predict_to_1_fn(U[i],V[j]))
         #log("predict_to_5_fn",predict_to_5_fn(U[i],V[j]))
-        new_ui, U_t[i], U_m[i], U_v[i] = ui_update_fn(U_t[i],U_m[i],U_v[i],Rij,U[i],V[j])
+        new_ui, U_t[i], U_m[i], U_v[i],eij_1,gu1,gv1 = ui_update_fn(U_t[i],U_m[i],U_v[i],Rij,U[i],V[j])
         #log("U[i]",U[i],"new_ui",new_ui,"diff",U[i]-new_ui)
-
-        new_vj, V_t[j], V_m[j], V_v[j] = vj_update_fn(V_t[j],V_m[j],V_v[j],Rij,U[i],V[j])
+        #log("eij_1",eij_1,"gu1",gu1,"gv1",gv1)
+        new_vj, V_t[j], V_m[j], V_v[j],eij_2,gu2,gv2 = vj_update_fn(V_t[j],V_m[j],V_v[j],Rij,U[i],V[j])
         #log("V[j]",V[j],"new_vj",new_vj,"diff",V[j]-new_vj)
+        #log("eij_2",eij_2,"gu2",gu2,"gv2",gv2)
 
         U[i] = new_ui
         V[j] = new_vj
