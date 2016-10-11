@@ -31,7 +31,8 @@ sigma_u = 100.
 sigma_v = 1000.
 
 fc_dim = 10
-hid_dim = 100
+hid_dim = config.hid_dim
+
 #log = print
 log = lambda *args: print(*args)#None
 

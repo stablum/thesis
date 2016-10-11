@@ -1,6 +1,10 @@
 #!/bin/bash --login
-#$ -l fat,gpu=K20
+#$ -l gpu=C2050
 #$ -l h_rt=96:00:00
+
+
+#### DEACTIVATED -l fat,gpu=K20
+
 module add python/3.3.2
 module add python/default
 module add git/1.8.3.4
