@@ -80,7 +80,7 @@ def main():
         o_vj.name = "o_vj"
         comb = T.concatenate([o_ui,o_vj],axis=1)
         comb.name = "comb"
-        prediction,net_comb_params = make_net(comb,2*config.K,hid_dim,1,"net_comb")
+        prediction,net_comb_params = make_net(comb,2*fc_dim,hid_dim,1,"net_comb")
         prediction.name = "prediction"
         print("prediction:",prediction.type,prediction.ndim)
         return prediction, net_ui_params+net_vj_params+net_comb_params
