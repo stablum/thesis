@@ -30,7 +30,7 @@ sigma = 1.
 sigma_u = 100.
 sigma_v = 1000.
 
-fc_dim = config.K
+chan_out_dim = config.chan_out_dim
 hid_dim = config.hid_dim
 #log = print
 log = lambda *args: print(*args)#None
@@ -56,7 +56,7 @@ def main():
         net_params = lasagne.layers.get_all_params([l_in,l_hid,l_out])
         return net_output, net_params
 
-    def make_channel(in_var,name):
+    def make_chan(in_var,name):
 
         epsilon = T.shared_randomstreams.RandomStreams().normal((config.minibatch_size,config.K),avg=0.0,std=1.0)
         epsilon.name = 'epsilon_'+name
@@ -70,17 +70,17 @@ def main():
         sample = mu + (epsilon * (sigma**0.5))
         sample.name = name+'_sample'
 
-        o,net_params = make_net(sample,config.K,hid_dim,fc_dim,"net_"+name)
+        o,net_params = make_net(sample,config.K,hid_dim,chan_out_dim,"net_"+name)
         o.name = "o_"+name
         return o,net_params
 
     def make_predict_to_1(ui,vj):
-        o_ui,net_ui_params = make_channel(ui,"u")
-        o_vj,net_vj_params = make_channel(vj,"v")
+        o_ui,net_ui_params = make_chan(ui,"u")
+        o_vj,net_vj_params = make_chan(vj,"v")
         o_vj.name = "o_vj"
         comb = T.concatenate([o_ui,o_vj],axis=1)
         comb.name = "comb"
-        prediction,net_comb_params = make_net(comb,2*fc_dim,hid_dim,1,"net_comb")
+        prediction,net_comb_params = make_net(comb,2*chan_out_dim,hid_dim,1,"net_comb")
         prediction.name = "prediction"
         print("prediction:",prediction.type,prediction.ndim)
         return prediction, net_ui_params+net_vj_params+net_comb_params

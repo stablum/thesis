@@ -15,5 +15,5 @@ git push das4vu master
 #NODETYPE="fat,gpu=K20"
 NODETYPE="gpu=C2050"
 echo "after submitting the job will sleep for $SLEEPTIME seconds before retrieving outputs"
-$SSH "cd thesis; git stash; qstat | grep fstablum ; qsub -N '$@' -o $TIMESTAMP.out -e $TIMESTAMP.err -cwd -l $NODETYPE -l h_rt=96:00:00 job.sh -- $@ ; sleep $SLEEPTIME; tail -f $TIMESTAMP.out & tail -f $TIMESTAMP.err "
+$SSH "quota -m; cd thesis; git stash; qstat | grep fstablum ; qsub -N '$@' -o $TIMESTAMP.out -e $TIMESTAMP.err -cwd -l $NODETYPE -l h_rt=96:00:00 job.sh -- $@ ; sleep $SLEEPTIME; tail -f $TIMESTAMP.out & tail -f $TIMESTAMP.err "
  

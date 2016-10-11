@@ -28,7 +28,7 @@ def create_training_set_matrix(training_set):
     return np.array([
         [_i,_j,_Rij]
         for (_i,_j),_Rij
-        in tqdm(training_set)
+        in tqdm(training_set,mininterval=2)
     ])
 
 def create_training_set_apart(training_set):
@@ -36,7 +36,7 @@ def create_training_set_apart(training_set):
     j_l = []
     Rij_l = []
     print("creating training set vectors..")
-    for (_i,_j),_Rij in tqdm(training_set):
+    for (_i,_j),_Rij in tqdm(training_set,mininterval=2):
         i_l.append([_i])
         j_l.append([_j])
         Rij_l.append([_Rij])
@@ -58,13 +58,13 @@ def UV_vectors_np(dataset,expand_dims=False,latent_len=config.K):
     U_values,V_values = UV_np(dataset,latent_len=latent_len)
     U = []
     V = []
-    for i in tqdm(range(dataset.N),desc="ui numpy vectors"):
+    for i in tqdm(range(dataset.N),desc="ui numpy vectors",mininterval=2):
         ui = U_values[:,i].astype('float32')
         if expand_dims is True:
             ui = np.expand_dims(ui,0)
         U.append(ui)
 
-    for j in tqdm(range(dataset.M),desc="vj numpy vectors"):
+    for j in tqdm(range(dataset.M),desc="vj numpy vectors",mininterval=2):
         vj = V_values[:,j].astype('float32')
         if expand_dims is True:
             vj = np.expand_dims(vj,0)
@@ -105,7 +105,7 @@ def split_minibatch(subset,U,V,title):
     ui_mb_l = []
     vj_mb_l = []
     Rij_mb_l = []
-    for curr in tqdm(subset,desc=title):
+    for curr in tqdm(subset,desc=title,mininterval=2):
         (i,j),Rij = curr
         ui_mb_l.append(U[i])
         vj_mb_l.append(V[j])
@@ -162,6 +162,8 @@ class Log(object):
         self("update algorithm: %s"%config.update_algorithm)
         self("adam_beta1: %f adam_beta2: %f"%(config.adam_beta1,config.adam_beta2))
         self("K: %d"%config.K)
+        self("hid_dim: %d"%config.hid_dim)
+        self("chan_out_dim: %d"%config.chan_out_dim)
         self("movielens_which: %s"%config.movielens_which)
         self("optimizer: %s"%config.optimizer)
         self("n_epochs: %d"%config.n_epochs)
@@ -268,6 +270,6 @@ class epochsloop(object):
 def mainloop(process_datapoint,dataset,U,V,prediction_function):
     for training_set,_lr in epochsloop(dataset,U,V,prediction_function):
         # WARNING: _lr is not updated in theano expressions
-        for curr in tqdm(training_set,desc="training"):
+        for curr in tqdm(training_set,desc="training",mininterval=2):
             (i,j),Rij = curr
             process_datapoint(i,j,Rij,_lr)

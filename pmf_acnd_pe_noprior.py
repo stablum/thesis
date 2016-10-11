@@ -30,7 +30,7 @@ sigma = 1.
 sigma_u = 100.
 sigma_v = 1000.
 
-fc_dim = config.K
+chan_out_dim = config.chan_out_dim
 hid_dim = config.hid_dim
 
 #log = print
@@ -58,13 +58,13 @@ def main():
         return net_output, net_params
 
     def make_predict_to_1(ui,vj):
-        o_ui,net_ui_params = make_net(ui,config.K,hid_dim,fc_dim,"net_u")
+        o_ui,net_ui_params = make_net(ui,config.K,hid_dim,chan_out_dim,"net_u")
         o_ui.name = "o_ui"
-        o_vj,net_vj_params = make_net(vj,config.K,hid_dim,fc_dim,"net_v")
+        o_vj,net_vj_params = make_net(vj,config.K,hid_dim,chan_out_dim,"net_v")
         o_vj.name = "o_vj"
         comb = T.concatenate([o_ui,o_vj],axis=1)
         comb.name = "comb"
-        prediction,net_comb_params = make_net(comb,2*fc_dim,hid_dim,1,"net_comb")
+        prediction,net_comb_params = make_net(comb,2*chan_out_dim,hid_dim,1,"net_comb")
         prediction.name = "prediction"
         print("prediction:",prediction.type,prediction.ndim)
         return prediction, net_ui_params+net_vj_params+net_comb_params
