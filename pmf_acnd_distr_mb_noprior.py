@@ -30,7 +30,7 @@ sigma = 1.
 sigma_u = 100.
 sigma_v = 1000.
 
-fc_dim = 10
+fc_dim = config.K
 hid_dim = 100
 #log = print
 log = lambda *args: print(*args)#None
