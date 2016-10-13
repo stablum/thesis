@@ -17,7 +17,7 @@ n_epochs=1000
 
 K=10#3
 hid_dim=100
-chan_out_dim=K
+chan_out_dim=100
 lr_begin=0.005#0.001#0.005
 lr_annealing_T=n_epochs
 max_rating=5.
