@@ -31,7 +31,7 @@ sigma = 1.
 sigma_u = 100.
 sigma_v = 1000.
 
-chan_out_dim = config.chan_out_dimchan_out_dim
+chan_out_dim = config.chan_out_dim
 hid_dim = config.hid_dim
 #log = print
 log = lambda *args: print(*args)#None
