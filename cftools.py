@@ -169,9 +169,11 @@ class Log(object):
         self("n_epochs: %d"%config.n_epochs)
         self("minibatch_size: %d"%config.minibatch_size)
         self("validation_set_fraction: {}".format(config.validation_set_fraction))
+        self("g_in:",config.g_in)
+        self("g_rij:",config.g_rij)
 
-    def __call__(self,msg):
-
+    def __call__(self,*args):
+        msg = " ".join(map(str,args))
         time_str = time.strftime('%Y:%m:%d %H:%M:%S')
         msg = time_str + " " + msg
         print(msg, flush=True)

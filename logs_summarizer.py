@@ -23,6 +23,8 @@ not_shortened = [
     "chan_out_dim",
     "optimizer",
     "n_epochs",
+    "g_in",
+    "g_rij"
 ]
 
 defaults = {

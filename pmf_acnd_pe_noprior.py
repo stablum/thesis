@@ -18,13 +18,14 @@ import cftools
 import config
 import numutils as nu
 import augmented_types as at
-
+import activation_functions
 import update_algorithms
 
 update =update_algorithms.get_func()
 adam_shared = lasagne.updates.adam # FIXME: generalize like the 'update' placeholder
 #g = lambda x:x
-g = theano.tensor.nnet.sigmoid
+g_in = activation_functions.get(config.g_in)
+g_rij = activation_functions.get(config.g_rij)
 
 sigma = 1.
 sigma_u = 100.
@@ -43,14 +44,14 @@ def main():
     U_t, U_m, U_v = update_algorithms.adam_for(U)
     V_t, V_m, V_v = update_algorithms.adam_for(V)
 
-    def make_net(input_var,in_dim,hid_dim,out_dim,name):
+    def make_net(input_var,in_dim,hid_dim,out_dim,name,g_hid,g_out):
         l_in = lasagne.layers.InputLayer((config.minibatch_size,in_dim),input_var=input_var,name=name+"_input")
         l_in_os = l_in.get_output_shape_for((config.minibatch_size,in_dim))
         print(l_in.name,l_in_os)
-        l_hid = lasagne.layers.DenseLayer(l_in,hid_dim,nonlinearity=g,name=name+"_hid")
+        l_hid = lasagne.layers.DenseLayer(l_in,hid_dim,nonlinearity=g_hid,name=name+"_hid")
         l_hid_os = l_hid.get_output_shape_for(l_in_os)
         print(l_hid.name,l_hid_os)
-        l_out = lasagne.layers.DenseLayer(l_hid,out_dim,nonlinearity=g,name=name+"_out")
+        l_out = lasagne.layers.DenseLayer(l_hid,out_dim,nonlinearity=g_out,name=name+"_out")
         l_out_os = l_out.get_output_shape_for(l_hid_os)
         print(l_out.name,l_out_os)
         net_output = lasagne.layers.get_output(l_out)
@@ -58,13 +59,13 @@ def main():
         return net_output, net_params
 
     def make_predict_to_1(ui,vj):
-        o_ui,net_ui_params = make_net(ui,config.K,hid_dim,chan_out_dim,"net_u")
+        o_ui,net_ui_params = make_net(ui,config.K,hid_dim,chan_out_dim,"net_u",g_in,g_in)
         o_ui.name = "o_ui"
-        o_vj,net_vj_params = make_net(vj,config.K,hid_dim,chan_out_dim,"net_v")
+        o_vj,net_vj_params = make_net(vj,config.K,hid_dim,chan_out_dim,"net_v",g_in,g_in)
         o_vj.name = "o_vj"
         comb = T.concatenate([o_ui,o_vj],axis=1)
         comb.name = "comb"
-        prediction,net_comb_params = make_net(comb,2*chan_out_dim,hid_dim,1,"net_comb")
+        prediction,net_comb_params = make_net(comb,2*chan_out_dim,hid_dim,1,"net_comb",g_in,g_rij)
         prediction.name = "prediction"
         print("prediction:",prediction.type,prediction.ndim)
         return prediction, net_ui_params+net_vj_params+net_comb_params

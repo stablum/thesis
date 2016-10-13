@@ -34,11 +34,14 @@ validation_set_fraction=0.05
 
 initialization = initializations.normal
 
+g_rij = "sigmoid"
+g_in = "elu"
+
 chunk_len =64*1024
 minibatch_size = 64
-movielens_which='small'
+movielens_which='1m'
 
-optimizer = "debug"
+optimizer = "gpu_omp"
 
 if optimizer == "debug":
     theano.config.exception_verbosity="high"
