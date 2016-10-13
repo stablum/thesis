@@ -3,6 +3,8 @@ import os
 import sys
 import re
 import pandas as pd
+pd.set_option('display.max_colwidth', -1)
+
 eventual_timestamp_regex = "[0-9 :]*"
 parser = re.compile(eventual_timestamp_regex+"(.*):[ ]*(.*)")
 epoch_parser = re.compile(eventual_timestamp_regex+"epoch[: ]*([0-9]*)")
@@ -66,8 +68,9 @@ def check_match(parser,line):
 
 def process_file(filename):
     params = {}
-    max_epoch = 0
+    max_epoch = None
     last_testing_rmse = 999
+    best_testing_rmse = 999
     with open(filename,'r') as f:
         for line in f:
             param = process_line(line)
@@ -79,11 +82,16 @@ def process_file(filename):
                     max_epoch = tmp
                 tmp = check_match(testing_rmse_parser,line)
                 if tmp is not None:
-                    last_testing_rmse = tmp
+                    last_testing_rmse = float(tmp)
+                if last_testing_rmse < best_testing_rmse:
+                    best_testing_rmse = last_testing_rmse
 
-    params['max_epoch'] = max_epoch
-    params['last_testing_rmse'] = last_testing_rmse
-    params = complete_default(params)
+    if max_epoch is not None:
+        params['max_epoch'] = max_epoch
+    if last_testing_rmse != 999:
+        params['last_testing_rmse'] = last_testing_rmse
+    if best_testing_rmse != 999:
+        params['best_testing_rmse'] = best_testing_rmse
     return params
 
 process_notes_file = process_log_file = process_file
@@ -135,23 +143,21 @@ def process_single_harvest(harvest_dir):
     if os.path.isfile(notes_filename):
         notes_params = process_notes_file(notes_filename)
         params = merge_params(params,notes_params)
-    print("HA",harvest_dir)
-    params['name'] = harvest_parser.match(harvest_dir).groups()[0]
+    params['harvest_dir'] = harvest_dir
 
     return params
 
 def create_table(paramss):
     df = pd.DataFrame(paramss)
-    print(df)
-
+    return df
 def process_multiple(args):
     paramss = []
     for arg in args:
         curr = process_single_arg(arg)
         if curr is not None:
             paramss.append(curr)
-    print(paramss)
-    create_table(paramss)
+    df = create_table(paramss)
+    print(df)
 
 def process_single_arg(arg):
     if os.path.isfile(arg):
@@ -160,6 +166,7 @@ def process_single_arg(arg):
         params = process_single_harvest(arg)
     if params is None or len(params.keys()) == 0:
         return
+    params = complete_default(params)
     return params
 
 def main():
