@@ -32,7 +32,7 @@ class MemoryRandomCompleteEpochs(Splitter):
         super().__init__(dataset)
         self.entire = self.dataset.read_entire()
         random.shuffle(self.entire)
-        splitpoint = int(self.dataset.num_ratings / 10)
+        splitpoint = int(self.dataset.num_ratings * config.validation_set_fraction)
         self._validation_set = self.entire[:splitpoint]
         self._training_set = self.entire[splitpoint:]
 

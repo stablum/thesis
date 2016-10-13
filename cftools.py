@@ -76,11 +76,11 @@ def UV_vectors(dataset):
     U_values,V_values = UV_np(dataset)
     U = []
     V = []
-    for i in tqdm(range(U_values.shape[1]),desc="ui shared vectors"):
+    for i in tqdm(range(U_values.shape[1]),desc="ui shared vectors",mininterval=2):
         ui = theano.shared(U_values[:,i])
         U.append(ui)
 
-    for j in tqdm(range(V_values.shape[1]),desc="vj shared vectors"):
+    for j in tqdm(range(V_values.shape[1]),desc="vj shared vectors",mininterval=2):
         vj = theano.shared(V_values[:,j])
         V.append(vj)
 
@@ -167,6 +167,8 @@ class Log(object):
         self("movielens_which: %s"%config.movielens_which)
         self("optimizer: %s"%config.optimizer)
         self("n_epochs: %d"%config.n_epochs)
+        self("minibatch_size: %d"%config.minibatch_size)
+        self("validation_set_fraction: {}".format(config.validation_set_fraction))
 
     def __call__(self,msg):
 

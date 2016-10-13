@@ -7,6 +7,7 @@ eventual_timestamp_regex = "[0-9 :]*"
 parser = re.compile(eventual_timestamp_regex+"(.*):[ ]*(.*)")
 epoch_parser = re.compile(eventual_timestamp_regex+"epoch[: ]*([0-9]*)")
 testing_rmse_parser = re.compile(eventual_timestamp_regex+"testing RMSE[: ]*(.*)")
+harvest_parser = re.compile("[\./]*harvest_([a-z_]*[a-z]).*")
 shorten_dict = {
     "learning rate":"lr",
     "learning_rate":"lr",
@@ -118,6 +119,7 @@ def process_single_harvest(harvest_dir):
     """
     a harvest_dir will contain a *.log file and an optional notes.txt file
     """
+
     log_filenames = glob.glob(os.path.join(harvest_dir,"*.log"))
     if len(log_filenames) == 0:
         return None
@@ -133,6 +135,9 @@ def process_single_harvest(harvest_dir):
     if os.path.isfile(notes_filename):
         notes_params = process_notes_file(notes_filename)
         params = merge_params(params,notes_params)
+    print("HA",harvest_dir)
+    params['name'] = harvest_parser.match(harvest_dir).groups()[0]
+
     return params
 
 def create_table(paramss):

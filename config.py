@@ -30,6 +30,7 @@ adam_beta2 = 0.999
 
 #split_dataset_schema = split_dataset_schemas.ChunkyRandomCompleteEpochs
 split_dataset_schema = split_dataset_schemas.MemoryRandomCompleteEpochs
+validation_set_fraction=0.05
 
 initialization = initializations.normal
 
