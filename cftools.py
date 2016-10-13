@@ -18,6 +18,7 @@ backup_files = [
     "update_algorithms.py",
     "movielens.py",
     "augmented_types.py",
+    "activation_functions.py",
     "config.py",
     "job.sh",
     "engage.sh"
