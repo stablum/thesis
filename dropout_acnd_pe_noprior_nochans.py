@@ -51,15 +51,22 @@ def main():
         l_hid = lasagne.layers.DenseLayer(l_in,hid_dim,nonlinearity=g_hid,name=name+"_hid")
         l_hid_os = l_hid.get_output_shape_for(l_in_os)
         print(l_hid.name,l_hid_os)
-        l_drop_hid = lasagne.layers.DropoutLayer(l_hid,p=0.5,rescale=True,name=name+"_drop_hid")
-
-        l_out = lasagne.layers.DenseLayer(l_drop_hid,out_dim,nonlinearity=g_out,name=name+"_out")
+        if config.dropout_p > 0:
+            l_after_hid = lasagne.layers.DropoutLayer(l_hid,p=config.dropout_p,rescale=True,name=name+"_drop_hid")
+        else:
+            l_after_hid = l_hid
+        l_out = lasagne.layers.DenseLayer(l_after_hid,out_dim,nonlinearity=g_out,name=name+"_out")
         l_out_os = l_out.get_output_shape_for(l_hid_os)
         print(l_out.name,l_out_os)
         net_output_det = lasagne.layers.get_output(l_out,deterministic=True)
         net_output_lea = lasagne.layers.get_output(l_out,deterministic=False)
         net_params = lasagne.layers.get_all_params([l_in,l_hid,l_out])
-        return net_output_det, net_output_lea, net_params
+
+        regularizer_term = lasagne.regularization.regularize_network_params(
+            l_out,
+            lasagne.regularization.l2
+        )
+        return net_output_det, net_output_lea, net_params, regularizer_term
 
     def make_predict_to_1(ui,vj):
         #o_ui,net_ui_params = make_net(ui,config.K,hid_dim,chan_out_dim,"net_u",g_in,g_in)
@@ -68,16 +75,16 @@ def main():
         #o_vj.name = "o_vj"
         comb = T.concatenate([ui,vj],axis=1)
         comb.name = "comb"
-        prediction_det, prediction_lea, net_comb_params = make_net(comb,2*chan_out_dim,hid_dim,1,"net_comb",g_in,g_rij)
+        prediction_det, prediction_lea, net_comb_params, regularizer_term = make_net(comb,2*chan_out_dim,hid_dim,1,"net_comb",g_in,g_rij)
         prediction_det.name = "prediction_det"
         prediction_lea.name = "prediction_lea"
-        return prediction_det, prediction_lea, net_comb_params
+        return prediction_det, prediction_lea, net_comb_params, regularizer_term
 
     def make_predict_to_5(predict_to_1_sym):
         ret = (predict_to_1_sym * (config.max_rating - 1. )) + 1.
         return ret
 
-    def make_objective_term(ui_mb,vj_mb,Rij_mb,predict_to_1_sym):
+    def make_objective_term(ui_mb,vj_mb,Rij_mb,predict_to_1_sym,regularizer_term):
         eij = ( Rij_mb - predict_to_1_sym ) ** 2
         ret = 0.5 * 1./(sigma**2) * eij # error term (gaussian centered in the prediction)
 
@@ -100,6 +107,9 @@ def main():
         #ret.name = "obj_before_sum"
         ret = T.sum(ret) # on all axes: cost needs to be a scalar
         ret.name = "obj_after_sum"
+        if config.regularization_lambda > 0:
+            ret = ret + config.regularization_lambda * regularizer_term
+            ret.name = "obj_with_regularizer"
         return ret
 
     print("creating update functions..")
@@ -113,11 +123,11 @@ def main():
     m_mb_prev_sym = T.fmatrix('m_mb_prev')
     v_mb_prev_sym = T.fmatrix('v_mb_prev')
 
-    predict_to_1_sym_det, predict_to_1_sym_lea, params = make_predict_to_1(ui_mb_sym,vj_mb_sym)
+    predict_to_1_sym_det, predict_to_1_sym_lea, params, regularizer_term = make_predict_to_1(ui_mb_sym,vj_mb_sym)
 
     # instead of calculating a different count of latent vectors of each
     # (other side) latent vector, a global estimate (average) is performed
-    obj_term = make_objective_term(ui_mb_sym,vj_mb_sym,Rij_mb_sym,predict_to_1_sym_lea)
+    obj_term = make_objective_term(ui_mb_sym,vj_mb_sym,Rij_mb_sym,predict_to_1_sym_lea, regularizer_term)
 
     grads_ui = T.grad(obj_term, ui_mb_sym)
     grads_vj = T.grad(obj_term, vj_mb_sym)

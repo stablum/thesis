@@ -24,7 +24,9 @@ not_shortened = [
     "optimizer",
     "n_epochs",
     "g_in",
-    "g_rij"
+    "g_rij",
+    "dropout_p",
+    "regularization_lambda",
 ]
 
 defaults = {

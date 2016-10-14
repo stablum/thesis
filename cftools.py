@@ -174,7 +174,8 @@ class Log(object):
         self("validation_set_fraction: {}".format(config.validation_set_fraction))
         self("g_in:",config.g_in)
         self("g_rij:",config.g_rij)
-
+        self("regularization_lambda:",config.regularization_lambda)
+        self("dropout_p:",config.dropout_p)
     def __call__(self,*args):
         msg = " ".join(map(str,args))
         time_str = time.strftime('%Y:%m:%d %H:%M:%S')
