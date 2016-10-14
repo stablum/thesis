@@ -28,6 +28,7 @@ not_shortened = [
     "g_rij",
     "dropout_p",
     "regularization_lambda",
+    "minibatch_size",
 ]
 
 defaults = {
