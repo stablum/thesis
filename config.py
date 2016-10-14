@@ -17,7 +17,7 @@ n_epochs=1000
 
 K=10#3
 hid_dim=100
-chan_out_dim=100
+chan_out_dim=K
 lr_begin=0.005#0.001#0.005
 lr_annealing_T=n_epochs
 max_rating=5.
@@ -39,9 +39,14 @@ g_in = "elu"
 
 chunk_len =64*1024
 minibatch_size = 64
-movielens_which='1m'
 
-optimizer = "gpu_omp"
+debug=False
+if debug:
+    movielens_which='small'
+    optimizer = "debug"
+else:
+    movielens_which='1m'
+    optimizer = "gpu_omp"
 
 if optimizer == "debug":
     theano.config.exception_verbosity="high"

@@ -24,12 +24,14 @@ backup_files = [
     "engage.sh"
 ]
 
+tqdm_mininterval=5
+
 def create_training_set_matrix(training_set):
     print("creating training set matrix..")
     return np.array([
         [_i,_j,_Rij]
         for (_i,_j),_Rij
-        in tqdm(training_set,mininterval=2)
+        in tqdm(training_set,mininterval=tqdm_mininterval)
     ])
 
 def create_training_set_apart(training_set):
@@ -37,7 +39,7 @@ def create_training_set_apart(training_set):
     j_l = []
     Rij_l = []
     print("creating training set vectors..")
-    for (_i,_j),_Rij in tqdm(training_set,mininterval=2):
+    for (_i,_j),_Rij in tqdm(training_set,mininterval=tqdm_mininterval):
         i_l.append([_i])
         j_l.append([_j])
         Rij_l.append([_Rij])
@@ -59,13 +61,13 @@ def UV_vectors_np(dataset,expand_dims=False,latent_len=config.K):
     U_values,V_values = UV_np(dataset,latent_len=latent_len)
     U = []
     V = []
-    for i in tqdm(range(dataset.N),desc="ui numpy vectors",mininterval=2):
+    for i in tqdm(range(dataset.N),desc="ui numpy vectors",mininterval=tqdm_mininterval):
         ui = U_values[:,i].astype('float32')
         if expand_dims is True:
             ui = np.expand_dims(ui,0)
         U.append(ui)
 
-    for j in tqdm(range(dataset.M),desc="vj numpy vectors",mininterval=2):
+    for j in tqdm(range(dataset.M),desc="vj numpy vectors",mininterval=tqdm_mininterval):
         vj = V_values[:,j].astype('float32')
         if expand_dims is True:
             vj = np.expand_dims(vj,0)
@@ -77,11 +79,11 @@ def UV_vectors(dataset):
     U_values,V_values = UV_np(dataset)
     U = []
     V = []
-    for i in tqdm(range(U_values.shape[1]),desc="ui shared vectors",mininterval=2):
+    for i in tqdm(range(U_values.shape[1]),desc="ui shared vectors",mininterval=tqdm_mininterval):
         ui = theano.shared(U_values[:,i])
         U.append(ui)
 
-    for j in tqdm(range(V_values.shape[1]),desc="vj shared vectors",mininterval=2):
+    for j in tqdm(range(V_values.shape[1]),desc="vj shared vectors",mininterval=tqdm_mininterval):
         vj = theano.shared(V_values[:,j])
         V.append(vj)
 
@@ -106,7 +108,7 @@ def split_minibatch(subset,U,V,title):
     ui_mb_l = []
     vj_mb_l = []
     Rij_mb_l = []
-    for curr in tqdm(subset,desc=title,mininterval=2):
+    for curr in tqdm(subset,desc=title,mininterval=tqdm_mininterval):
         (i,j),Rij = curr
         ui_mb_l.append(U[i])
         vj_mb_l.append(V[j])
@@ -275,6 +277,6 @@ class epochsloop(object):
 def mainloop(process_datapoint,dataset,U,V,prediction_function):
     for training_set,_lr in epochsloop(dataset,U,V,prediction_function):
         # WARNING: _lr is not updated in theano expressions
-        for curr in tqdm(training_set,desc="training",mininterval=2):
+        for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
             (i,j),Rij = curr
             process_datapoint(i,j,Rij,_lr)
