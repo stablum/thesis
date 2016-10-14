@@ -9,6 +9,7 @@ eventual_timestamp_regex = "[0-9 :]*"
 parser = re.compile(eventual_timestamp_regex+"(.*):[ ]*(.*)")
 epoch_parser = re.compile(eventual_timestamp_regex+"epoch[: ]*([0-9]*)")
 testing_rmse_parser = re.compile(eventual_timestamp_regex+"testing RMSE[: ]*(.*)")
+training_rmse_parser = re.compile(eventual_timestamp_regex+"training RMSE[: ]*(.*)")
 harvest_parser = re.compile("[\./]*harvest_([a-z_]*[a-z]).*")
 shorten_dict = {
     "learning rate":"lr",
@@ -73,8 +74,10 @@ def check_match(parser,line):
 def process_file(filename):
     params = {}
     max_epoch = None
-    last_testing_rmse = 999
-    best_testing_rmse = 999
+    last_testing_rmse = 99999
+    best_testing_rmse = 99999
+    last_training_rmse = 99999
+    best_training_rmse = 99999
     with open(filename,'r') as f:
         for line in f:
             param = process_line(line)
@@ -89,13 +92,22 @@ def process_file(filename):
                     last_testing_rmse = float(tmp)
                 if last_testing_rmse < best_testing_rmse:
                     best_testing_rmse = last_testing_rmse
+                tmp = check_match(training_rmse_parser,line)
+                if tmp is not None:
+                    last_training_rmse = float(tmp)
+                if last_training_rmse < best_training_rmse:
+                    best_training_rmse = last_training_rmse
 
     if max_epoch is not None:
         params['max_epoch'] = max_epoch
-    if last_testing_rmse != 999:
+    if last_testing_rmse != 99999:
         params['last_testing_rmse'] = last_testing_rmse
-    if best_testing_rmse != 999:
+    if best_testing_rmse != 99999:
         params['best_testing_rmse'] = best_testing_rmse
+    if last_training_rmse != 99999:
+        params['last_training_rmse'] = last_training_rmse
+    if best_training_rmse != 99999:
+        params['best_training_rmse'] = best_training_rmse
     return params
 
 process_notes_file = process_log_file = process_file
