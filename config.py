@@ -19,8 +19,8 @@ K=10
 hid_dim=100
 chan_out_dim=K
 
-regularization_lambda=0.1
-dropout_p=0.5
+regularization_lambda=0.01
+dropout_p=0.15
 lr_begin=0.005#0.001#0.005
 lr_annealing_T=n_epochs
 max_rating=5.
@@ -41,7 +41,7 @@ g_rij = "sigmoid"
 g_in = "elu"
 
 chunk_len =64*1024
-minibatch_size = 256
+minibatch_size = 64
 
 debug=False
 if debug:
