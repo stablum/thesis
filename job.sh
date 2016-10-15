@@ -1,5 +1,5 @@
 #!/bin/bash --login
-#$ -l gpu=GTX480
+#$ -l fat,gpu=K20
 #$ -l h_rt=96:00:00
 
 
