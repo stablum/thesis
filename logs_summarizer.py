@@ -31,6 +31,7 @@ not_shortened_dict = dict([
     ("dropout_p",float),
     ("regularization_lambda",float),
     ("minibatch_size",int),
+    ("n_hid_layers",int),
 ])
 
 additional_column_types = {

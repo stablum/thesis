@@ -20,6 +20,7 @@ import numutils as nu
 import augmented_types as at
 import activation_functions
 import update_algorithms
+import model_build
 
 update =update_algorithms.get_func()
 adam_shared = lasagne.updates.adam # FIXME: generalize like the 'update' placeholder
@@ -44,30 +45,6 @@ def main():
     U_t, U_m, U_v = update_algorithms.adam_for(U)
     V_t, V_m, V_v = update_algorithms.adam_for(V)
 
-    def make_net(input_var,in_dim,hid_dim,out_dim,name,g_hid,g_out):
-        l_in = lasagne.layers.InputLayer((config.minibatch_size,in_dim),input_var=input_var,name=name+"_input")
-        l_in_os = l_in.get_output_shape_for((config.minibatch_size,in_dim))
-        print(l_in.name,l_in_os)
-        l_hid = lasagne.layers.DenseLayer(l_in,hid_dim,nonlinearity=g_hid,name=name+"_hid")
-        l_hid_os = l_hid.get_output_shape_for(l_in_os)
-        print(l_hid.name,l_hid_os)
-        if config.dropout_p > 0:
-            l_after_hid = lasagne.layers.DropoutLayer(l_hid,p=config.dropout_p,rescale=True,name=name+"_drop_hid")
-        else:
-            l_after_hid = l_hid
-        l_out = lasagne.layers.DenseLayer(l_after_hid,out_dim,nonlinearity=g_out,name=name+"_out")
-        l_out_os = l_out.get_output_shape_for(l_hid_os)
-        print(l_out.name,l_out_os)
-        net_output_det = lasagne.layers.get_output(l_out,deterministic=True)
-        net_output_lea = lasagne.layers.get_output(l_out,deterministic=False)
-        net_params = lasagne.layers.get_all_params([l_in,l_hid,l_out])
-
-        regularizer_term = lasagne.regularization.regularize_network_params(
-            l_out,
-            lasagne.regularization.l2
-        )
-        return net_output_det, net_output_lea, net_params, regularizer_term
-
     def make_predict_to_1(ui,vj):
         #o_ui,net_ui_params = make_net(ui,config.K,hid_dim,chan_out_dim,"net_u",g_in,g_in)
         #o_ui.name = "o_ui"
@@ -75,7 +52,7 @@ def main():
         #o_vj.name = "o_vj"
         comb = T.concatenate([ui,vj],axis=1)
         comb.name = "comb"
-        prediction_det, prediction_lea, net_comb_params, regularizer_term = make_net(comb,2*chan_out_dim,hid_dim,1,"net_comb",g_in,g_rij)
+        prediction_det, prediction_lea, net_comb_params, regularizer_term = model_build.make_net(comb,2*chan_out_dim,hid_dim,1,"net_comb",g_in,g_rij)
         prediction_det.name = "prediction_det"
         prediction_lea.name = "prediction_lea"
         return prediction_det, prediction_lea, net_comb_params, regularizer_term

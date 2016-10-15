@@ -17,6 +17,7 @@ n_epochs=1000
 
 K=10
 hid_dim=100
+n_hid_layers=2
 chan_out_dim=K
 
 regularization_lambda=0.01
@@ -43,7 +44,7 @@ g_in = "elu"
 chunk_len =64*1024
 minibatch_size = 64
 
-debug=False
+debug=True
 if debug:
     movielens_which='small'
     optimizer = "debug"

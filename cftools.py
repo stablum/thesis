@@ -166,6 +166,7 @@ class Log(object):
         self("adam_beta1: %f adam_beta2: %f"%(config.adam_beta1,config.adam_beta2))
         self("K: %d"%config.K)
         self("hid_dim: %d"%config.hid_dim)
+        self("n_hid_layers: %d"%config.n_hid_layers)
         self("chan_out_dim: %d"%config.chan_out_dim)
         self("movielens_which: %s"%config.movielens_which)
         self("optimizer: %s"%config.optimizer)
