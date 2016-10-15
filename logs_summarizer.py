@@ -3,6 +3,8 @@ import os
 import sys
 import re
 import pandas as pd
+import argparse
+
 pd.set_option('display.max_colwidth', -1)
 
 eventual_timestamp_regex = "[0-9 :]*"
@@ -12,41 +14,62 @@ testing_rmse_parser = re.compile(eventual_timestamp_regex+"testing RMSE[: ]*(.*)
 training_rmse_parser = re.compile(eventual_timestamp_regex+"training RMSE[: ]*(.*)")
 harvest_parser = re.compile("[\./]*harvest_([a-z_]*[a-z]).*")
 shorten_dict = {
-    "learning rate":"lr",
-    "learning_rate":"lr",
-    "lr annealing T":"T",
-    "update algorithm":"upd",
+    "learning rate":("lr",float),
+    "learning_rate":("lr",float),
+    "lr annealing T":("T",int),
+    "update algorithm":("upd",str),
 }
 
-not_shortened = [
-    "K",
-    "hid_dim",
-    "chan_out_dim",
-    "optimizer",
-    "n_epochs",
-    "g_in",
-    "g_rij",
-    "dropout_p",
-    "regularization_lambda",
-    "minibatch_size",
-]
+not_shortened_dict = dict([
+    ("K",int),
+    ("hid_dim",int),
+    ("chan_out_dim",int),
+    ("optimizer",str),
+    ("n_epochs",int),
+    ("g_in",str),
+    ("g_rij",str),
+    ("dropout_p",float),
+    ("regularization_lambda",float),
+    ("minibatch_size",int),
+])
+
+additional_column_types = {
+    'max_epoch':int,
+    'best_testing_rmse':float,
+    'best_testing_rmse':float,
+    'last_training_rmse':float,
+    'last_training_rmse':float,
+}
+
+all_column_types = {}
+all_column_types.update(additional_column_types)
+all_column_types.update(not_shortened_dict)
+all_column_types.update(dict(shorten_dict.values()))
 
 defaults = {
     'K':10,
     'hid_dim':100,
-    'chan_out_dim':10
+    'chan_out_dim':10,
 }
+
+def to_type(val,t):
+    if t is int:
+        return int(float(val))
+    else:
+        return t(val)
 
 def shorten(name):
     if name in shorten_dict.keys():
-        return shorten_dict[name]
+        shortened,t = shorten_dict[name]
+        return shortened,t
     else:
-        return name
+        t = not_shortened_dict[name]
+        return name,t
 
 def allowed(name):
     if name in shorten_dict.keys():
         return True
-    if name in not_shortened:
+    if name in not_shortened_dict.keys():
         return True
     return False
 
@@ -57,7 +80,9 @@ def process_line(line):
     name,val = match.groups()[-2:]
     if not allowed(name):
         return None
-    return shorten(name),val
+    short_name,t = shorten(name)
+    casted_val = to_type(val,t)
+    return short_name,casted_val
 
 def complete_default(params):
     for k,v in defaults.items():
@@ -164,17 +189,31 @@ def process_single_harvest(harvest_dir):
 
     return params
 
-def create_table(paramss):
-    df = pd.DataFrame(paramss)
+def cast_column(df,name,t):
+    if t in (float,int):
+        df[name] = df[name].fillna(-1)
+    df[name] = df[name].astype(t)
     return df
+
+def cast_table(df):
+    for name, t in all_column_types.items():
+        df = cast_column(df,name,t)
+    return df
+
+def create_table(paramss,sortby=None):
+    df = pd.DataFrame(paramss)
+    df = cast_table(df)
+    if sortby is not None:
+        df = df.sort(columns=[sortby])
+    return df
+
 def process_multiple(args):
     paramss = []
     for arg in args:
         curr = process_single_arg(arg)
         if curr is not None:
             paramss.append(curr)
-    df = create_table(paramss)
-    print(df)
+    return paramss
 
 def process_single_arg(arg):
     if os.path.isfile(arg):
@@ -187,12 +226,27 @@ def process_single_arg(arg):
     return params
 
 def main():
-    if len(sys.argv) == 1: # 0 args
-        tmp = glob.glob("./harvest_*")
-    elif len(sys.argv) >= 2: # 1 arg
-        tmp = sys.argv[1:]
+    parser = argparse.ArgumentParser(description='Logs summarizer.')
+    parser.add_argument(
+        'logs_or_dirs',
+        type=str,
+        nargs='*',
+        help='log files or harvest dirs'
+    )
+    parser.add_argument(
+        '-s',
+        help='sort by'
+    )
 
-    process_multiple(tmp)
+    args = parser.parse_args()
+    if len(args.logs_or_dirs) == 0:
+        tmp = glob.glob("./harvest_*")
+    elif len(args.logs_or_dirs) >= 1:
+        tmp = args.logs_or_dirs[1:]
+
+    paramss = process_multiple(tmp)
+    df = create_table(paramss,sortby=args.s)
+    print(df)
 
 if __name__ == "__main__":
     main()
