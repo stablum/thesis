@@ -7,9 +7,9 @@ import scipy
 import scipy.sparse
 import config
 
-from tqdm import tqdm
-tqdm.pandas()
-
+import tqdm as _tqdm
+_tqdm.tqdm.pandas()
+tqdm = lambda *args,**kwargs : _tqdm.tqdm(*args,**kwargs,mininterval=5)
 paths = {}
 paths['small'] = os.path.join(".","ml-latest-small","ratings.csv")
 paths['22m'] = os.path.join(".","ml-latest","ratings.csv.shuf")

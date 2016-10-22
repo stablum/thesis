@@ -46,19 +46,7 @@ def main():
     V_t, V_m, V_v = update_algorithms.adam_for(V)
 
     def make_chan(in_var,name):
-
-        epsilon = T.shared_randomstreams.RandomStreams().normal((config.minibatch_size,config.K),avg=0.0,std=1.0)
-        epsilon.name = 'epsilon_'+name
-
-        mu = in_var[:,0:config.K]
-        mu.name = name+'_mu'
-        log_sigma = in_var[:,config.K:config.K*2]
-        log_sigma.name = "log_"+name+"_sigma"
-        sigma = T.exp(log_sigma)
-        sigma.name = name+"_sigma"
-        sample = mu + (epsilon * (sigma**0.5))
-        sample.name = name+'_sample'
-
+        sample = model_build.reparameterization_trick(in_var,config.K,name)
         #o,net_params = make_net(sample,config.K,hid_dim,chan_out_dim,"net_"+name,g_in,g_in)
         #o.name = "o_"+name
         net_params=[]
@@ -71,7 +59,16 @@ def main():
         comb = T.concatenate([o_ui,o_vj],axis=1)
         comb.name = "comb"
 
-        prediction_det, prediction_lea, net_comb_params, regularizer_term = model_build.make_net(comb,2*chan_out_dim,hid_dim,1,"net_comb",g_in,g_rij)
+        prediction_det, prediction_lea, net_comb_params, regularizer_term = model_build.make_net(
+            comb,
+            2*chan_out_dim,
+            hid_dim,
+            1,
+            "net_comb",
+            g_in,
+            g_rij,
+            stochastic_output=config.stochastic_prediction
+        )
 
         prediction_det.name = "prediction_det"
         prediction_lea.name = "prediction_lea"
@@ -82,6 +79,7 @@ def main():
         return ret
 
     def make_objective_term(ui_mb,vj_mb,Rij_mb,predict_to_1_sym,regularizer_term):
+
         eij = ( Rij_mb - predict_to_1_sym ) ** 2
         ret = 0.5 * 1./(sigma**2) * eij # error term (gaussian centered in the prediction)
 

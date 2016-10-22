@@ -168,6 +168,7 @@ class Log(object):
         self("hid_dim: %d"%config.hid_dim)
         self("n_hid_layers: %d"%config.n_hid_layers)
         self("chan_out_dim: %d"%config.chan_out_dim)
+        self("stochastic_prediction: {}".format(config.stochastic_prediction))
         self("movielens_which: %s"%config.movielens_which)
         self("optimizer: %s"%config.optimizer)
         self("n_epochs: %d"%config.n_epochs)
