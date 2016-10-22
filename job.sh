@@ -1,7 +1,7 @@
 #!/bin/bash --login
-#$ -l gpu=GTX480
 #$ -l h_rt=96:00:00
 
+#### ignored option -l gpu=GTX480
 #### other possibility: -l gpu=GTX680
 #### other possibility: -l fat,gpu=K20
 #### other possibility: -l gpu=C2050
