@@ -32,7 +32,7 @@ not_shortened_dict = dict([
     ("regularization_lambda",float),
     ("minibatch_size",int),
     ("n_hid_layers",int),
-    ("stochastic_output",str),
+    ("stochastic_prediction",str),
 ])
 
 additional_column_types = {
