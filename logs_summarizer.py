@@ -6,6 +6,9 @@ import pandas as pd
 import argparse
 
 pd.set_option('display.max_colwidth', -1)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
+
 
 eventual_timestamp_regex = "[0-9 :]*"
 parser = re.compile(eventual_timestamp_regex+"(.*):[ ]*(.*)")
