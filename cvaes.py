@@ -68,7 +68,7 @@ class VaeChan(object):
         feat_sym is either ui or vj
         """
 
-        feat_sample_sym = model_build.reparameterization_trick(feat_sym,config.K,name)
+        feat_sample_sym = model_build.reparameterization_trick(feat_sym,name,dim=config.K)
         feat_dim = 1 + config.K
 
         x_sym = T.concatenate([r_sym,feat_sample_sym],axis=1)
@@ -76,10 +76,11 @@ class VaeChan(object):
 
         # variational approximation 'q' network
         (
-            (sample_det,mu_det,log_sigma_det,latent_distr_det),
-            (sample_lea,mu_lea,log_sigma_lea,latent_distr_lea),
+            recognition_layers,#(l_sampling,l_out_mu,l_out_log_sigma,l_merge_distr),
+            __ignored,
             q_phi_params,
-            q_regularizer
+            q_regularizer,
+            l_sampling
         ) = model_build.make_net(
             x_sym,
             feat_dim,
@@ -91,12 +92,10 @@ class VaeChan(object):
             stochastic_output=True,
             return_only_sample=False # because the sample is done externally to the net
         )
-        sigma_det = T.exp(log_sigma_det)
-        sigma_lea = T.exp(log_sigma_lea)
 
         # p_theta(r,feat1|feat2) "p(x|z)"
         p_theta_hid_layers = model_build.make_hid_part(
-            sample_lea,
+            l_sampling,
             config.K,
             hid_dim,
             "vae_p_"+name,
@@ -118,20 +117,28 @@ class VaeChan(object):
         p_theta_layers = p_theta_hid_layers + [r_out_layer,feat_out_layer]
         p_theta_params = lasagne.layers.get_all_params(p_theta_layers)
 
-        self.r_out_lea = lasagne.layers.get_output(r_out_layer,deterministic=False)
-        self.r_out_det = lasagne.layers.get_output(r_out_layer,deterministic=True)
-        self.feat_out_lea = lasagne.layers.get_output(feat_out_layer,deterministic=False)
-        self.feat_out_det = lasagne.layers.get_output(feat_out_layer,deterministic=True)
-        self.latent_distr_det = latent_distr_det
-        self.latent_distr_lea = latent_distr_lea
+        outputting_layers = recognition_layers + [r_out_layer, feat_out_layer]
+        (
+            self.sample_lea,
+            self.mu_lea,
+            self.log_sigma_lea,
+            self.latent_distr_lea,
+            self.r_out_lea,
+            self.feat_out_lea
+        ) = lasagne.layers.get_output(outputting_layers,deterministic=False)
 
+        (
+            self.sample_det,
+            self.mu_det,
+            self.log_sigma_det,
+            self.latent_distr_det,
+            self.r_out_det,
+            self.feat_out_det
+        ) = lasagne.layers.get_output(outputting_layers,deterministic=True)
+
+        self.sigma_lea = T.exp(self.log_sigma_lea)
         self.r_sym = r_sym
         self.feat_sym = feat_sym
-        self.sample_lea = sample_lea
-        self.mu_lea = mu_lea
-        self.sigma_lea = sigma_lea
-        self.mu_det = mu_det
-        self.sigma_det = sigma_det
         self.q_phi_params = q_phi_params
         self.p_theta_params = p_theta_params
 
@@ -214,7 +221,8 @@ class Model(object):
 
     @cached_property
     def predict_to_1_det(self):
-        ret = 0.5 * (self.vae_chan_latent_u.r_out_det + self.vae_chan_latent_v.r_out_det)
+        #ret = 0.5 * (self.vae_chan_latent_u.r_out_det + self.vae_chan_latent_v.r_out_det)
+        ret = self.vae_chan_latent_v.r_out_det
         return ret
 
     @cached_property

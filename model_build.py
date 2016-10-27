@@ -52,14 +52,14 @@ def make_net(
     )
     layers = [l_in]
 
-    layers += make_hid_part(input_var,in_dim,hid_dim,name,g_hid)
+    layers += make_hid_part(l_in,in_dim,hid_dim,name,g_hid)
     l_curr = layers[-1]
-    l_out = lasagne.layers.DenseLayer(l_curr,out_dim,nonlinearity=g_out,name=name+"_out")
-    layers.append(l_out)
+    l_out_mu = lasagne.layers.DenseLayer(l_curr,out_dim,nonlinearity=g_out,name=name+"_out")
+    layers.append(l_out_mu)
 
     if stochastic_output is True:
         # adding additional diagonal of covariance matrix output
-        # the usual output l_out is considered as being the mu parameter
+        # the usual output l_out_mu is considered as being the mu parameter
         l_out_log_sigma = lasagne.layers.DenseLayer(
             l_curr,
             out_dim,
@@ -67,45 +67,57 @@ def make_net(
             name=name+"_out"
         )
         layers.append(l_out_log_sigma)
-
-    net_output_det = lasagne.layers.get_output(l_out,deterministic=True)
-    net_output_lea = lasagne.layers.get_output(l_out,deterministic=False)
-
-    if stochastic_output is True:
-        net_output_log_sigma_det = lasagne.layers.get_output(l_out_log_sigma,deterministic=True)
-        net_output_log_sigma_lea = lasagne.layers.get_output(l_out_log_sigma,deterministic=False)
-        net_output_distr_det = T.concatenate([net_output_det,net_output_log_sigma_det],axis=1)
-        net_output_distr_det.name = "net_output_distr_det"
-        net_output_distr_lea = T.concatenate([net_output_lea,net_output_log_sigma_lea],axis=1)
-        net_output_distr_lea.name = "net_output_distr_lea"
-        net_output_det,net_output_log_sigma_det = split_distr(net_output_distr_det,out_dim)
-        net_output_lea,net_output_log_sigma_lea = split_distr(net_output_distr_lea,out_dim)
-        # output of the network is a sample
-        sampler = lambda curr: reparameterization_trick(curr,out_dim,name+"_out_sample")
-        sample_det = sampler([net_output_det,net_output_log_sigma_det])
-        sample_lea = sampler([net_output_lea,net_output_log_sigma_lea])
+        l_merge_distr = lasagne.layers.ConcatLayer([l_out_mu,l_out_log_sigma],name="concat")
+        l_sampling = SamplingLayer(l_merge_distr,dim=config.K,name="sampling")
+        layers.append(l_sampling)
         if return_only_sample is True:
-            net_output_det = sample_det
-            net_output_lea = sample_lea
+            net_output_det = lasagne.layers.get_output(l_out_log_sigma,deterministic=True)
+            net_output_lea = lasagne.layers.get_output(l_out_log_sigma,deterministic=False)
         else:
             # output of the network is sample and a (mu,sigma) distribution (tuple)
-            net_output_det = (sample_det, net_output_det, net_output_log_sigma_det, net_output_distr_det)
-            net_output_lea = (sample_lea, net_output_lea, net_output_log_sigma_lea, net_output_distr_lea)
+            outputting_layers = [
+                l_sampling,
+                l_out_mu,
+                l_out_log_sigma,
+                l_merge_distr
+            ]
+            net_output_det = outputting_layers# lasagne.layers.get_output(outputting_layers, deterministic=True)
+            net_output_lea = None# lasagne.layers.get_output(outputting_layers, deterministic=False)
+            #net_output_det = (sample_det, net_output_mu_det, net_output_log_sigma_det, net_output_distr_det)
+            #net_output_lea = (sample_lea, net_output_mu_lea, net_output_log_sigma_lea, net_output_distr_lea)
 
     net_params = lasagne.layers.get_all_params(layers)
 
     regularizer_term = lasagne.regularization.regularize_network_params(
-        l_out,
+        l_out_mu,
         lasagne.regularization.l2
     )
-    return net_output_det, net_output_lea, net_params, regularizer_term
+    return net_output_det, net_output_lea, net_params, regularizer_term, l_sampling
+
+class SamplingLayer(lasagne.layers.Layer):
+
+    def __init__(self, *args, **kwargs):
+        self.dim = kwargs.pop('dim',None)
+        super(SamplingLayer, self).__init__(*args, **kwargs)
+
+    def get_output_for(self, inputs, **kwargs):
+        if type(inputs) in (tuple,list):
+            assert len(inputs) == 2
+            mu = inputs[0]
+            log_sigma = inputs[1]
+            sample = reparameterization_trick([mu,log_sigma],"samplinglayersplit")
+        else:
+            assert self.dim is not None
+            sample = reparameterization_trick(inputs,"samplinglayermerged",dim=self.dim)
+
+        return sample
 
 def split_distr(in_var,dim):
     mu = in_var[:,0:dim]
     log_sigma = in_var[:,dim:dim*2]
     return mu, log_sigma
 
-def reparameterization_trick(in_var,dim,name):
+def reparameterization_trick(in_var,name,dim=None):
     epsilon = T.shared_randomstreams.RandomStreams().normal(
         ( config.minibatch_size, dim),
         avg=0.0,
@@ -117,9 +129,10 @@ def reparameterization_trick(in_var,dim,name):
         mu = in_var[0]
         log_sigma = in_var[1]
     else:
+        assert dim is not None
         mu, log_sigma = split_distr(in_var,dim)
-    mu.name = name+'_mu'
-    log_sigma.name = "log_"+name+"_sigma"
+        mu.name = name+'_splitmu'
+        log_sigma.name = name+"_splitlogsigma"
     sigma = T.exp(log_sigma)
     sigma.name = name+"_sigma"
     sample = mu + (epsilon * (sigma**0.5))
