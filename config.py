@@ -44,7 +44,7 @@ g_in = "elu"
 chunk_len =64*1024
 minibatch_size = 64
 
-debug=True
+debug=False
 if debug:
     movielens_which='small'
     optimizer = "debug"
