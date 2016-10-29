@@ -62,16 +62,16 @@ class cached_property(object):
 
 class VaeChan(object):
 
-    def __init__(self,r_sym, feat_sym,name):
+    def __init__(self,r_sym, feat_distr_sym,name):
         """
         r_sym represents a single rating
-        feat_sym is either ui or vj
+        feat_distr_sym is either a distribution on ui or vj
         """
 
-        feat_sample_sym = model_build.reparameterization_trick(feat_sym,name,dim=config.K)
+        self.feat_sample_sym = model_build.reparameterization_trick(feat_distr_sym,name,dim=config.K)
         feat_dim = 1 + config.K
 
-        x_sym = T.concatenate([r_sym,feat_sample_sym],axis=1)
+        x_sym = T.concatenate([r_sym,self.feat_sample_sym],axis=1)
         x_sym.name = "x_"+name
 
         # variational approximation 'q' network
@@ -96,7 +96,6 @@ class VaeChan(object):
         # p_theta(r,feat1|feat2) "p(x|z)"
         p_theta_hid_layers = model_build.make_hid_part(
             l_sampling,
-            config.K,
             hid_dim,
             "vae_p_"+name,
             g_in
@@ -138,7 +137,7 @@ class VaeChan(object):
 
         self.sigma_lea = T.exp(self.log_sigma_lea)
         self.r_sym = r_sym
-        self.feat_sym = feat_sym
+        self.feat_distr_sym = feat_distr_sym
         self.q_phi_params = q_phi_params
         self.p_theta_params = p_theta_params
 
@@ -154,7 +153,7 @@ class VaeChan(object):
         z_sigma = self.sigma_lea
         x_sigma = 1
         z_dim = config.K
-        x_orig = T.concatenate([self.r_sym,self.feat_sym],axis=1)
+        x_orig = T.concatenate([self.r_sym,self.feat_sample_sym],axis=1)
         x_out = T.concatenate([self.r_out_lea,self.feat_out_lea],axis=1)
 
         z_sigma_fixed = z_sigma
@@ -204,6 +203,7 @@ class Model(object):
     def reconstruction_obj(self):
         ret = self.vae_chan_latent_u.kl_for_r(self.Rij_mb_sym)
         ret = ret + self.vae_chan_latent_v.kl_for_r(self.Rij_mb_sym)
+        ret = T.sum(ret)
         ret = ret.reshape((),ndim=0)
         return ret
 
@@ -271,12 +271,15 @@ def main():
 
     model = Model()
 
-    updates_kwargs = dict(t_prev=t_mb_prev_sym,m_prev=m_mb_prev_sym,v_prev=v_mb_prev_sym)
-    new_for_ui = list(update(model.ui_mb_sym,model.grads_ui,**updates_kwargs))
-    new_for_vj = list(update(model.vj_mb_sym,model.grads_vj,**updates_kwargs))
+    #updates_kwargs = dict(t_prev=t_mb_prev_sym,m_prev=m_mb_prev_sym,v_prev=v_mb_prev_sym)
+    #new_for_ui = list(update(model.ui_mb_sym,model.grads_ui,**updates_kwargs))
+    #new_for_vj = list(update(model.vj_mb_sym,model.grads_vj,**updates_kwargs))
+    new_for_vj = [model.vae_chan_latent_v.latent_distr_det]
+    new_for_ui = [model.vae_chan_latent_u.latent_distr_det]
     params_updates = adam_shared(model.grads_params,model.params,learning_rate=config.lr_begin)
 
-    common = [ t_mb_prev_sym,m_mb_prev_sym,v_mb_prev_sym,model.Rij_mb_sym,model.ui_mb_sym,model.vj_mb_sym ]
+    #common = [ t_mb_prev_sym,m_mb_prev_sym,v_mb_prev_sym,model.Rij_mb_sym,model.ui_mb_sym,model.vj_mb_sym ]
+    common = [ model.Rij_mb_sym,model.ui_mb_sym,model.vj_mb_sym ]
     ui_update_fn = theano.function(common,new_for_ui)
     ui_update_fn.name="ui_update_fn"
     vj_update_fn = theano.function(common,new_for_vj)
@@ -356,26 +359,30 @@ def main():
             #log("predict_to_5_fn",predict_to_5_fn(ui_mb,vj_mb))
             #print("before ui_update_fn, vj_mb.shape=",vj_mb.shape)
             #print("before ui_update_fn, ui_mb.shape=",ui_mb.shape)
-            new_ui_mb, new_U_t_mb, new_U_m_mb, new_U_v_mb = ui_update_fn(
-                U_t_mb,U_m_mb,U_v_mb,Rij_mb,ui_mb,vj_mb
+            #new_ui_mb, new_U_t_mb, new_U_m_mb, new_U_v_mb = ui_update_fn(
+            new_ui_mb, = ui_update_fn(
+                #U_t_mb,U_m_mb,U_v_mb,Rij_mb,ui_mb,vj_mb
+                Rij_mb,ui_mb,vj_mb
             )
             #log("ui_mb",ui_mb,"new_ui_mb",new_ui_mb,"diff",ui_mb-new_ui_mb)
             #print("before vj_update_fn, vj_mb.shape=",vj_mb.shape)
             #print("before vj_update_fn, ui_mb.shape=",ui_mb.shape)
-            new_vj_mb, new_V_t_mb, new_V_m_mb, new_V_v_mb = vj_update_fn(
-                V_t_mb,V_m_mb,V_v_mb,Rij_mb,ui_mb,vj_mb
+            #new_vj_mb, new_V_t_mb, new_V_m_mb, new_V_v_mb = vj_update_fn(
+            new_vj_mb, = vj_update_fn(
+                #V_t_mb,V_m_mb,V_v_mb,Rij_mb,ui_mb,vj_mb
+                Rij_mb,ui_mb,vj_mb
             )
             #log("vj_mb",vj_mb,"new_vj_mb",new_vj_mb,"diff",vj_mb-new_vj_mb)
 
             for pos,(i,j) in enumerate(indices_mb_l):
                 U[i] = new_ui_mb[pos,:]
                 V[j] = new_vj_mb[pos,:]
-                U_t[i] = new_U_t_mb[pos,:]
-                U_m[i] = new_U_m_mb[pos,:]
-                U_v[i] = new_U_v_mb[pos,:]
-                V_t[j] = new_V_t_mb[pos,:]
-                V_m[j] = new_V_m_mb[pos,:]
-                V_v[j] = new_V_v_mb[pos,:]
+                #U_t[i] = new_U_t_mb[pos,:]
+                #U_m[i] = new_U_m_mb[pos,:]
+                #U_v[i] = new_U_v_mb[pos,:]
+                #V_t[j] = new_V_t_mb[pos,:]
+                #V_m[j] = new_V_m_mb[pos,:]
+                #V_v[j] = new_V_v_mb[pos,:]
             params_update_fn(Rij_mb,ui_mb,vj_mb)
 
             ui_mb_l = []

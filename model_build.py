@@ -2,10 +2,10 @@ import lasagne
 import config
 import theano
 from theano import tensor as T
+import copy
 
 def make_hid_part(
         l_in,
-        in_dim,
         hid_dim,
         name,
         g_hid
@@ -52,7 +52,7 @@ def make_net(
     )
     layers = [l_in]
 
-    layers += make_hid_part(l_in,in_dim,hid_dim,name,g_hid)
+    layers += make_hid_part(l_in,hid_dim,name,g_hid)
     l_curr = layers[-1]
     l_out_mu = lasagne.layers.DenseLayer(l_curr,out_dim,nonlinearity=g_out,name=name+"_out")
     layers.append(l_out_mu)
@@ -111,6 +111,13 @@ class SamplingLayer(lasagne.layers.Layer):
             sample = reparameterization_trick(inputs,"samplinglayermerged",dim=self.dim)
 
         return sample
+
+    def get_output_shape_for(self, input_shape):
+        if self.dim is not None:
+            output_shape = (input_shape[0], self.dim)
+        else:
+            output_shape = input_shape
+        return output_shape
 
 def split_distr(in_var,dim):
     mu = in_var[:,0:dim]
