@@ -135,11 +135,22 @@ class VaeChan(object):
             self.feat_out_det
         ) = lasagne.layers.get_output(outputting_layers,deterministic=True)
 
+        p_regularizer = lasagne.regularization.regularize_layer_params(
+            p_theta_layers,
+            lasagne.regularization.l2
+        )
+
+        self.q_regularizer = q_regularizer
+        self.p_regularizer = p_regularizer
         self.sigma_lea = T.exp(self.log_sigma_lea)
         self.r_sym = r_sym
         self.feat_distr_sym = feat_distr_sym
         self.q_phi_params = q_phi_params
         self.p_theta_params = p_theta_params
+
+    @cached_property
+    def regularizer_term(self):
+        return self.q_regularizer + self.p_regularizer
 
     @cached_property
     def latent_distr_lea(self):
@@ -212,6 +223,9 @@ class Model(object):
         ret = self.vae_chan_latent_u.obj \
             + self.vae_chan_latent_v.obj \
             + self.reconstruction_obj
+        if config.regularization_lambda > 0.:
+            ret += self.vae_chan_latent_u.regularizer_term * config.regularization_lambda
+            ret += self.vae_chan_latent_v.regularizer_term * config.regularization_lambda
         return ret
 
     @cached_property
