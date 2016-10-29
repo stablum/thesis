@@ -20,9 +20,9 @@ hid_dim=100
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
-regularization_lambda=0.01
-dropout_p=0.5
-lr_begin=0.0005#0.005
+regularization_lambda=0.#0.01
+dropout_p=0.#0.5
+lr_begin=0.005#0.0005#0.005
 lr_annealing_T=n_epochs
 max_rating=5.
 
