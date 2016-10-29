@@ -221,8 +221,8 @@ class Model(object):
 
     @cached_property
     def predict_to_1_det(self):
-        #ret = 0.5 * (self.vae_chan_latent_u.r_out_det + self.vae_chan_latent_v.r_out_det)
-        ret = self.vae_chan_latent_v.r_out_det
+        ret = 0.5 * (self.vae_chan_latent_u.r_out_det + self.vae_chan_latent_v.r_out_det)
+        #ret = self.vae_chan_latent_v.r_out_det
         return ret
 
     @cached_property
@@ -280,9 +280,16 @@ def main():
 
     #common = [ t_mb_prev_sym,m_mb_prev_sym,v_mb_prev_sym,model.Rij_mb_sym,model.ui_mb_sym,model.vj_mb_sym ]
     common = [ model.Rij_mb_sym,model.ui_mb_sym,model.vj_mb_sym ]
-    ui_update_fn = theano.function(common,new_for_ui)
+    ui_update_fn = theano.function(
+        [model.Rij_mb_sym,model.vj_mb_sym],
+        new_for_ui
+    )
     ui_update_fn.name="ui_update_fn"
-    vj_update_fn = theano.function(common,new_for_vj)
+
+    vj_update_fn = theano.function(
+        [model.Rij_mb_sym,model.ui_mb_sym],
+        new_for_vj
+    )
     vj_update_fn.name="vj_update_fn"
     params_update_fn = theano.function(
         [model.Rij_mb_sym,model.ui_mb_sym,model.vj_mb_sym],
@@ -362,7 +369,7 @@ def main():
             #new_ui_mb, new_U_t_mb, new_U_m_mb, new_U_v_mb = ui_update_fn(
             new_ui_mb, = ui_update_fn(
                 #U_t_mb,U_m_mb,U_v_mb,Rij_mb,ui_mb,vj_mb
-                Rij_mb,ui_mb,vj_mb
+                Rij_mb,vj_mb
             )
             #log("ui_mb",ui_mb,"new_ui_mb",new_ui_mb,"diff",ui_mb-new_ui_mb)
             #print("before vj_update_fn, vj_mb.shape=",vj_mb.shape)
@@ -370,7 +377,7 @@ def main():
             #new_vj_mb, new_V_t_mb, new_V_m_mb, new_V_v_mb = vj_update_fn(
             new_vj_mb, = vj_update_fn(
                 #V_t_mb,V_m_mb,V_v_mb,Rij_mb,ui_mb,vj_mb
-                Rij_mb,ui_mb,vj_mb
+                Rij_mb,ui_mb
             )
             #log("vj_mb",vj_mb,"new_vj_mb",new_vj_mb,"diff",vj_mb-new_vj_mb)
 

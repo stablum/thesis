@@ -15,7 +15,7 @@ theano.mode = theano_mode
 
 n_epochs=1000
 
-K=13
+K=10
 hid_dim=100
 n_hid_layers=1
 chan_out_dim=K
@@ -44,7 +44,7 @@ g_in = "elu"
 chunk_len =64*1024
 minibatch_size = 64
 
-debug=True
+debug=False
 if debug:
     movielens_which='small'
     optimizer = "debug"
