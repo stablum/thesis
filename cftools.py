@@ -20,8 +20,10 @@ backup_files = [
     "augmented_types.py",
     "activation_functions.py",
     "config.py",
+    "model_build.py",
+    "kl.py",
     "job.sh",
-    "engage.sh"
+    "engage.sh",
 ]
 
 tqdm_mininterval=5

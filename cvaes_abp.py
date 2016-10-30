@@ -22,6 +22,7 @@ import augmented_types as at
 import activation_functions
 import update_algorithms
 import model_build
+import kl
 
 update =update_algorithms.get_func()
 adam_shared = lasagne.updates.adam # FIXME: generalize like the 'update' placeholder
@@ -62,11 +63,16 @@ class cached_property(object):
 
 class VaeChan(object):
 
-    def __init__(self,r_sym, feat_distr_sym,name):
+    def __init__(self,r_sym, feat_distr_sym,z_prior_distr_sym,name):
         """
         r_sym represents a single rating
         feat_distr_sym is either a distribution on ui or vj
         """
+        self.z_prior_mu_sym,self.z_prior_log_sigma_sym = model_build.split_distr(
+            z_prior_distr_sym,
+            config.K
+        )
+        self.z_prior_sigma_sym = T.exp(self.z_prior_log_sigma_sym)
 
         self.feat_sample_sym = model_build.reparameterization_trick(feat_distr_sym,name,dim=config.K)
         feat_dim = 1 + config.K
@@ -178,7 +184,7 @@ class VaeChan(object):
         #reconstruction_error_const = (0.5*(x_dim*np.log(np.pi)+1)).astype('float32')
         reconstruction_error_proper = 0.5*T.sum((x_orig-x_out)**2)
         reconstruction_error = reconstruction_error_proper #+ reconstruction_error_const
-        regularizer = self.kl_normal_diagonal_vs_unit(z_mu,z_sigma,z_dim)
+        regularizer = kl.kl_normal_diagonal(z_mu,z_sigma,self.z_prior_mu_sym,self.z_prior_sigma_sym,z_dim)
         obj = reconstruction_error + regularizer
         obj_scalar = obj.reshape((),ndim=0)
         return obj_scalar
@@ -207,8 +213,8 @@ class Model(object):
         self.vj_mb_sym = T.fmatrix('vj_mb')
         self.Rij_mb_sym = T.fmatrix('Rij_mb')
 
-        self.vae_chan_latent_u = VaeChan(self.Rij_mb_sym,self.vj_mb_sym,"vaeu")
-        self.vae_chan_latent_v = VaeChan(self.Rij_mb_sym,self.ui_mb_sym,"vaev")
+        self.vae_chan_latent_u = VaeChan(self.Rij_mb_sym,self.vj_mb_sym,self.ui_mb_sym,"vaeu")
+        self.vae_chan_latent_v = VaeChan(self.Rij_mb_sym,self.ui_mb_sym,self.vj_mb_sym,"vaev")
 
     @cached_property
     def regression_error_obj(self):
