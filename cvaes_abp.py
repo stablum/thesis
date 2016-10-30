@@ -285,25 +285,18 @@ def main():
 
     model = Model()
 
-    #updates_kwargs = dict(t_prev=t_mb_prev_sym,m_prev=m_mb_prev_sym,v_prev=v_mb_prev_sym)
-    #new_for_ui = list(update(model.ui_mb_sym,model.grads_ui,**updates_kwargs))
-    #new_for_vj = list(update(model.vj_mb_sym,model.grads_vj,**updates_kwargs))
-    new_for_vj = [model.vae_chan_latent_v.latent_distr_det]
-    new_for_ui = [model.vae_chan_latent_u.latent_distr_det]
+    updates_kwargs = dict(t_prev=t_mb_prev_sym,m_prev=m_mb_prev_sym,v_prev=v_mb_prev_sym)
+    new_for_ui = list(update(model.ui_mb_sym,model.grads_ui,**updates_kwargs))
+    new_for_vj = list(update(model.vj_mb_sym,model.grads_vj,**updates_kwargs))
+    #new_for_vj = [model.vae_chan_latent_v.latent_distr_det]
+    #new_for_ui = [model.vae_chan_latent_u.latent_distr_det]
     params_updates = adam_shared(model.grads_params,model.params,learning_rate=config.lr_begin)
 
-    #common = [ t_mb_prev_sym,m_mb_prev_sym,v_mb_prev_sym,model.Rij_mb_sym,model.ui_mb_sym,model.vj_mb_sym ]
-    common = [ model.Rij_mb_sym,model.ui_mb_sym,model.vj_mb_sym ]
-    ui_update_fn = theano.function(
-        [model.Rij_mb_sym,model.vj_mb_sym],
-        new_for_ui
-    )
-    ui_update_fn.name="ui_update_fn"
+    common = [ t_mb_prev_sym,m_mb_prev_sym,v_mb_prev_sym,model.Rij_mb_sym,model.ui_mb_sym,model.vj_mb_sym ]
 
-    vj_update_fn = theano.function(
-        [model.Rij_mb_sym,model.ui_mb_sym],
-        new_for_vj
-    )
+    ui_update_fn = theano.function(common,new_for_ui)
+    ui_update_fn.name="ui_update_fn"
+    vj_update_fn = theano.function(common,new_for_vj)
     vj_update_fn.name="vj_update_fn"
     params_update_fn = theano.function(
         [model.Rij_mb_sym,model.ui_mb_sym,model.vj_mb_sym],
@@ -380,30 +373,26 @@ def main():
             #log("predict_to_5_fn",predict_to_5_fn(ui_mb,vj_mb))
             #print("before ui_update_fn, vj_mb.shape=",vj_mb.shape)
             #print("before ui_update_fn, ui_mb.shape=",ui_mb.shape)
-            #new_ui_mb, new_U_t_mb, new_U_m_mb, new_U_v_mb = ui_update_fn(
-            new_ui_mb, = ui_update_fn(
-                #U_t_mb,U_m_mb,U_v_mb,Rij_mb,ui_mb,vj_mb
-                Rij_mb,vj_mb
+            new_ui_mb, new_U_t_mb, new_U_m_mb, new_U_v_mb = ui_update_fn(
+                U_t_mb,U_m_mb,U_v_mb,Rij_mb,ui_mb,vj_mb
             )
             #log("ui_mb",ui_mb,"new_ui_mb",new_ui_mb,"diff",ui_mb-new_ui_mb)
             #print("before vj_update_fn, vj_mb.shape=",vj_mb.shape)
             #print("before vj_update_fn, ui_mb.shape=",ui_mb.shape)
-            #new_vj_mb, new_V_t_mb, new_V_m_mb, new_V_v_mb = vj_update_fn(
-            new_vj_mb, = vj_update_fn(
-                #V_t_mb,V_m_mb,V_v_mb,Rij_mb,ui_mb,vj_mb
-                Rij_mb,ui_mb
+            new_vj_mb, new_V_t_mb, new_V_m_mb, new_V_v_mb = vj_update_fn(
+                V_t_mb,V_m_mb,V_v_mb,Rij_mb,ui_mb,vj_mb
             )
             #log("vj_mb",vj_mb,"new_vj_mb",new_vj_mb,"diff",vj_mb-new_vj_mb)
 
             for pos,(i,j) in enumerate(indices_mb_l):
                 U[i] = new_ui_mb[pos,:]
                 V[j] = new_vj_mb[pos,:]
-                #U_t[i] = new_U_t_mb[pos,:]
-                #U_m[i] = new_U_m_mb[pos,:]
-                #U_v[i] = new_U_v_mb[pos,:]
-                #V_t[j] = new_V_t_mb[pos,:]
-                #V_m[j] = new_V_m_mb[pos,:]
-                #V_v[j] = new_V_v_mb[pos,:]
+                U_t[i] = new_U_t_mb[pos,:]
+                U_m[i] = new_U_m_mb[pos,:]
+                U_v[i] = new_U_v_mb[pos,:]
+                V_t[j] = new_V_t_mb[pos,:]
+                V_m[j] = new_V_m_mb[pos,:]
+                V_v[j] = new_V_v_mb[pos,:]
             params_update_fn(Rij_mb,ui_mb,vj_mb)
 
             ui_mb_l = []

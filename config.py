@@ -20,11 +20,13 @@ hid_dim=100
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
-regularization_lambda=0.01
-dropout_p=0.5
-lr_begin=0.005#0.0005#0.005
+regularization_lambda=0#0.01
+dropout_p=0#0.5
+lr_begin=0.00005#0.005
 lr_annealing_T=n_epochs
 max_rating=5.
+
+regression_error_coef=2.
 
 update_algorithm = 'adam_symbolic'
 #update_algorithm = 'sgd'
@@ -44,7 +46,7 @@ g_in = "elu"
 chunk_len =64*1024
 minibatch_size = 64
 
-debug=False
+debug=True
 if debug:
     movielens_which='small'
     optimizer = "debug"

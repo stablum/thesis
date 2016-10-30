@@ -178,6 +178,8 @@ class Log(object):
         self("g_rij:",config.g_rij)
         self("regularization_lambda:",config.regularization_lambda)
         self("dropout_p:",config.dropout_p)
+        self("regression_error_coef:",config.regression_error_coef)
+
     def __call__(self,*args):
         msg = " ".join(map(str,args))
         time_str = time.strftime('%Y:%m:%d %H:%M:%S')

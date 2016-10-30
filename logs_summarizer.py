@@ -36,6 +36,7 @@ not_shortened_dict = dict([
     ("minibatch_size",int),
     ("n_hid_layers",int),
     ("stochastic_prediction",str),
+    ("regression_error_coef",str),
 ])
 
 additional_column_types = {
