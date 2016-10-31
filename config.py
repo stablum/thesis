@@ -22,11 +22,11 @@ chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=0#0.01
 dropout_p=0#0.5
-lr_begin=0.5#0.005
+lr_begin=0.00005#0.5#0.005
 lr_annealing_T=n_epochs
 max_rating=5.
 
-regression_error_coef=1.#2.
+regression_error_coef=0#100.#1.#2.
 
 update_algorithm = 'adam_symbolic'
 #update_algorithm = 'sgd'
