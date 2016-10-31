@@ -22,7 +22,7 @@ chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=0#0.01
 dropout_p=0#0.5
-lr_begin=0.00005#0.5#0.005
+lr_begin=0.0005#0.5#0.005
 lr_annealing_T=n_epochs
 max_rating=5.
 
