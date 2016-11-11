@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import config
+import utils
 
 class PermList(object):
     """
@@ -21,6 +22,12 @@ class PermList(object):
         return self.l[actual_index]
 
 class Splitter(object):
+    """
+    Represents a dataset split into a training set and a testing set.
+    Moreover, the subclasses implement the preparation of a new training
+    set for each epoch (possibly, trough random permutation of the sole training
+    set)
+    """
     def __init__(self,dataset):
         self.dataset = dataset
 
@@ -28,14 +35,26 @@ class Splitter(object):
         raise Exception("prepare_new_training_set needs to be implemented!")
 
 class MemoryRandomCompleteEpochs(Splitter):
-
+    """
+    the dataset is going to be entirely stored in memory.
+    Each training set is randomized (permutation) at each epoch, and it's given
+    as complete (not a subset of training set).
+    """
     def __init__(self,dataset):
         super().__init__(dataset)
-        self.entire = self.dataset.read_entire()
-        random.shuffle(self.entire)
-        splitpoint = int(self.dataset.num_ratings * config.validation_set_fraction)
-        self._validation_set = self.entire[:splitpoint]
-        self._training_set = self.entire[splitpoint:]
+        self._validation_set = self.entire[:self.splitpoint]
+        self._training_set = self.entire[self.splitpoint:]
+
+    @utils.cached_property
+    def entire(self):
+        ret = self.dataset.read_entire()
+        random.shuffle(ret)
+        return ret
+
+    @property
+    def splitpoint(self):
+        ret = int(len(self.entire) * config.validation_set_fraction)
+        return ret
 
     @property
     def validation_set(self):

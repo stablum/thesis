@@ -23,6 +23,7 @@ backup_files = [
     "model_build.py",
     "kl.py",
     "job.sh",
+    "utils.py",
     "engage.sh",
 ]
 
@@ -271,14 +272,15 @@ class epochsloop(object):
         else:
             _U = self.U
             _V = self.V
-        self._log.statistics(
-            _lr,
-            epoch_nr,
-            self.splitter,
-            _U,
-            _V,
-            self.prediction_function
-        )
+        if None not in [_U,_V]: #FIXME
+            self._log.statistics(
+                _lr,
+                epoch_nr,
+                self.splitter,
+                _U,
+                _V,
+                self.prediction_function
+            )
         return self.splitter.training_set,_lr
 
 def mainloop(process_datapoint,dataset,U,V,prediction_function):
@@ -287,3 +289,15 @@ def mainloop(process_datapoint,dataset,U,V,prediction_function):
         for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
             (i,j),Rij = curr
             process_datapoint(i,j,Rij,_lr)
+
+
+def mainloop_rrows(process_rrow,dataset,prediction_function):
+    U = None
+    V = None
+    for training_set,_lr in epochsloop(dataset,U,V,prediction_function):
+        # WARNING: _lr is not updated in theano expressions
+        print("training_set",training_set,len(training_set))
+        for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
+            print("curr",curr)
+            i,Ri = curr
+            process_rrow(i,Ri,_lr)

@@ -6,6 +6,7 @@ import pandas as pd
 import scipy
 import scipy.sparse
 import config
+import utils
 
 import tqdm as _tqdm
 _tqdm.tqdm.pandas()
@@ -58,21 +59,6 @@ class DataSet(object):
         print("N_compressed",self.N_compressed)
         print("M_compressed",self.M_compressed)
 
-    def read_entire(self):
-        """
-        warning: this method loads the entire dataset into memory
-        """
-
-        reader = self.reopen()
-        ret = []
-        for df in tqdm(reader,desc="reading entire dataset into memory"):
-            for index, row in tqdm(df.iterrows(),desc="getting ratings in chunk"):
-                i = self.user_new_index[row.userId]
-                j = self.movie_new_index[row.movieId]
-                Rij = row.rating
-                ret.append(((i,j),Rij))
-        return ret
-
     def chunk(self, chunk_id):
         reader = self.reopen()
         for curr_id, df in tqdm(enumerate(reader),desc="finding chunk_id={}".format(chunk_id)):
@@ -105,27 +91,60 @@ class DataSet(object):
     def reopen(self):
         return pd.read_csv(self.path,iterator=True,chunksize=self.chunk_len)
 
-def flat_to_R(dataset): # FIXME DELME
+    def read_entire(self):
+        raise Exception("Please implement this method in subclass")
 
-    # making straightforward movieId -> column id access possible
-    R = scipy.sparse.dok_matrix((N,M))
+class DataSetIndividualRatings(DataSet):
+    def read_entire(self):
+        """
+        warning: this method loads the entire dataset into memory
+        """
 
-    for chunk in tqdm(reader,desc="getting the ratings chunk by chunk"):
-        #for index, row in tqdm(list(chunk.iterrows()),desc="getting ratings in chunk"):
-        for index, row in tqdm(chunk.iterrows(),desc="getting ratings in chunk"):
-        #for index, row in chunk.iterrows():
-            i = user_new_index[row.userId]
-            j = movie_new_index[row.movieId]
-            R[i,j] = row.rating
-    return R
+        reader = self.reopen()
+        ret = []
+        for df in tqdm(reader,desc="reading entire dataset into memory"):
+            for index, row in tqdm(df.iterrows(),desc="getting ratings in chunk"):
+                i = self.user_new_index[row.userId]
+                j = self.movie_new_index[row.movieId]
+                Rij = row.rating
+                ret.append(((i,j),Rij))
+        return ret
 
+class DataSetRrows(DataSet):
+
+    @utils.cached_property
+    def R(self):
+        """
+        sparse ratings matrix
+        """
+        reader = self.reopen()
+        # making straightforward movieId -> column id access possible
+        lil = scipy.sparse.lil_matrix((self.N,self.M))
+
+        for chunk in tqdm(reader,desc="getting the ratings chunk by chunk"):
+            #for index, row in tqdm(list(chunk.iterrows()),desc="getting ratings in chunk"):
+            for index, row in tqdm(chunk.iterrows(),desc="getting ratings in chunk"):
+            #for index, row in chunk.iterrows():
+                i = self.user_new_index[row.userId]
+                j = self.movie_new_index[row.movieId]
+                lil[i,j] = row.rating
+        csr = lil.tocsr()
+        return csr
+
+    def read_entire(self):
+        ret = []
+        for i in tqdm(range(self.N),desc="converting sparse matrix R to list of sparse rows"):
+            ret.append((i,self.R[i,:]))
+        return ret
+
+dataset_type = globals()[config.dataset_type]
 def load(name):
     path = paths[name]
-    dataset = DataSet(path,chunk_len=config.chunk_len)
+    dataset = dataset_type(path,chunk_len=config.chunk_len)
     return dataset
 
 def main():
-    dataset = DataSet(paths[sys.argv[1]],chunk_len=int(sys.argv[2]))
+    dataset = dataset_type(paths[sys.argv[1]],chunk_len=int(sys.argv[2]))
 
 if __name__=="__main__":
     main()

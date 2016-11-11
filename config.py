@@ -2,6 +2,7 @@ import theano
 import ipdb; ipdb.set_trace
 import initializations
 import split_dataset_schemas
+import movielens
 
 theano_mode = 'FAST_RUN'
 theano.config.optimizer = 'fast_run'
@@ -36,6 +37,7 @@ adam_beta2 = 0.999
 
 #split_dataset_schema = split_dataset_schemas.ChunkyRandomCompleteEpochs
 split_dataset_schema = split_dataset_schemas.MemoryRandomCompleteEpochs
+dataset_type = 'DataSetRrows'
 validation_set_fraction=0.05
 
 initialization = initializations.normal
@@ -46,7 +48,7 @@ g_in = "elu"
 chunk_len =64*1024
 minibatch_size = 256
 
-debug=False
+debug=True
 if debug:
     movielens_which='small'
     optimizer = "debug"

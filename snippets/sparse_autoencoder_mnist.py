@@ -18,12 +18,12 @@ n_epochs = 1000
 n_points = 60000
 n_hid=100
 latent_dim=30#3
-lr = 0.01#0.0001
+lr = 0.0001
 noise=0.0001
 point_len = 784
 sparsity = 0.05#0.20
 hid_g = lasagne.nonlinearities.elu
-cherries = [300,400,500,600,700,800,900,1000,1100,1200,1300]
+cherries = [300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400]
 def load_dataset():
     mndata = MNIST('/home/francesco/reimplementations/python-mnist/data/')
     mndata.load_training()
