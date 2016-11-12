@@ -138,15 +138,17 @@ def split_minibatch_UV(subset,U,V,title):
 
 def rmse_rrows(subset,prediction_function):
     errors = []
+    sum_mask = 0
     for Ri_mb in split_minibatch_rrows(subset,"rmse"):
         mask = (Ri_mb > 0.000001).todense().astype('float32')
         predictions, = prediction_function(Ri_mb)
         Ri_mb_masked = np.multiply(Ri_mb.todense(),mask)
         predictions_masked = np.multiply(predictions,mask)
         ei_mb = Ri_mb_masked - predictions_masked
-        error = np.sum(np.power(ei_mb,2))/np.sum(mask)
+        error = np.sum(np.power(ei_mb,2))
+        sum_mask += np.sum(mask)
         errors.append(error)
-    return np.sqrt(np.mean(errors))
+    return np.sqrt(np.sum(errors)/sum_mask)
 
 def predictions_rrows(subset,prediction_function):
     l = []

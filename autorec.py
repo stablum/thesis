@@ -115,7 +115,8 @@ class Model(object):
     @utils.cached_property
     def regression_error_obj(self):
         masked_loss_sq = self.loss_sq * self.mask
-        ret = masked_loss_sq.mean() # on both axes
+        ret = masked_loss_sq.sum() # on both axes
+        ret = ret
         ret = ret.reshape((),ndim=0) # to scalar
         return ret
 
