@@ -139,14 +139,14 @@ def split_minibatch_UV(subset,U,V,title):
 def rmse_rrows(subset,prediction_function):
     errors = []
     for Ri_mb in split_minibatch_rrows(subset,"rmse"):
-        mask = (Ri_mb > 0.000001).todense()
+        mask = (Ri_mb > 0.000001).todense().astype('float32')
         predictions, = prediction_function(Ri_mb)
         Ri_mb_masked = np.multiply(Ri_mb.todense(),mask)
         predictions_masked = np.multiply(predictions,mask)
         ei_mb = Ri_mb_masked - predictions_masked
-        errors.append(np.power(ei_mb,2))
-    errors_np = np.vstack(errors)
-    return np.sqrt(np.sum(errors_np)/np.sum(mask))
+        error = np.sum(np.power(ei_mb,2))/np.sum(mask)
+        errors.append(error)
+    return np.sqrt(np.mean(errors))
 
 def predictions_rrows(subset,prediction_function):
     l = []
@@ -331,8 +331,8 @@ def mainloop_rrows(process_rrow,dataset,prediction_function,epoch_hook=lambda *a
     U = None
     V = None
     for training_set,_lr in epochsloop(dataset,U,V,prediction_function):
-        epoch_hook()
         # WARNING: _lr is not updated in theano expressions
         for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
             i,Ri = curr
             process_rrow(i,Ri,_lr)
+        epoch_hook()
