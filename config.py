@@ -42,7 +42,7 @@ validation_set_fraction=0.05
 
 initialization = initializations.normal
 
-g_rij = "sigmoid"
+g_rij = "elu"#"sigmoid"
 g_in = "elu"
 
 chunk_len =64*1024
