@@ -109,7 +109,7 @@ class Model(object):
 
     @utils.cached_property
     def loss_sq(self):
-        ret = (self.Ri_mb_sym - self.predict_to_1_lea)
+        ret = (self.Ri_mb_sym - self.predict_to_1_lea) ** 2
         return ret
 
     @utils.cached_property
@@ -208,7 +208,7 @@ def main():
     total_loss = 0
     def epoch_hook(*args,**kwargs):
         nonlocal total_loss
-        print("\n\ntotal_loss:",total_loss)
+        print("\ntotal_loss:",total_loss,'\n')
         total_loss = 0
 
     def train_with_rrow(i,Ri,lr): # Ri is an entire sparse row of ratings from a user
