@@ -27,7 +27,7 @@ lr_begin=0.0001#0.5#0.005
 lr_annealing_T=n_epochs
 max_rating=5.
 
-regression_error_coef=0#100.#1.#2.
+regression_error_coef=1.#100.#1.#2.
 
 update_algorithm = 'adam_symbolic'
 #update_algorithm = 'sgd'
@@ -42,7 +42,7 @@ validation_set_fraction=0.05
 
 initialization = initializations.normal
 
-g_rij = "elu"#"sigmoid"
+g_rij = "sigmoid"
 g_in = "elu"
 
 chunk_len =64*1024
