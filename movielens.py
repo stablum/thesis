@@ -119,7 +119,7 @@ class DataSetRrows(DataSet):
         """
         reader = self.reopen()
         # making straightforward movieId -> column id access possible
-        lil = scipy.sparse.lil_matrix((self.N,self.M))
+        lil = scipy.sparse.lil_matrix((self.N,self.M),dtype='float32')
 
         for chunk in tqdm(reader,desc="getting the ratings chunk by chunk"):
             #for index, row in tqdm(list(chunk.iterrows()),desc="getting ratings in chunk"):

@@ -6,6 +6,7 @@ import time
 import random
 import theano
 import theano.tensor as T
+import scipy.sparse
 
 # local imports
 
@@ -107,7 +108,17 @@ def rating_error(Rij_mb,ui_mb,vj_mb,prediction_function):
     ret = Rij_mb - predictions_mb
     return ret
 
-def split_minibatch(subset,U,V,title):
+def split_minibatch_rrows(subset,title):
+    Ri_mb_l = []
+    for curr in tqdm(subset,desc=title,mininterval=tqdm_mininterval):
+        i,Ri = curr
+        Ri_mb_l.append(Ri)
+        if len(Ri_mb_l) >= config.minibatch_size:
+            Ri_mb = scipy.sparse.vstack(Ri_mb_l)
+            Ri_mb_l = []
+            yield Ri_mb
+
+def split_minibatch_UV(subset,U,V,title):
     ui_mb_l = []
     vj_mb_l = []
     Rij_mb_l = []
@@ -125,9 +136,29 @@ def split_minibatch(subset,U,V,title):
             Rij_mb_l = []
             yield Rij_mb,ui_mb,vj_mb
 
+def rmse_rrows(subset,prediction_function):
+    errors = []
+    for Ri_mb in split_minibatch_rrows(subset,"rmse"):
+        mask = (Ri_mb > 0.000001).todense()
+        predictions, = prediction_function(Ri_mb)
+        Ri_mb_masked = np.multiply(Ri_mb.todense(),mask)
+        predictions_masked = np.multiply(predictions,mask)
+        ei_mb = Ri_mb_masked - predictions_masked
+        errors.append(np.power(ei_mb,2))
+    errors_np = np.vstack(errors)
+    return np.sqrt(np.sum(errors_np)/np.sum(mask))
+
+def predictions_rrows(subset,prediction_function):
+    l = []
+    for Ri_mb in split_minibatch_rrows(subset,"predictions"):
+        prediction = prediction_function(Ri_mb)
+        l.append(prediction)
+    ret = np.vstack(l)
+    return ret
+
 def rmse(subset,U,V,prediction_function):
     errors = []
-    for Rij_mb, ui_mb, vj_mb in split_minibatch(subset,U,V,"rmse"):
+    for Rij_mb, ui_mb, vj_mb in split_minibatch_UV(subset,U,V,"rmse"):
         eij_mb = rating_error(Rij_mb,ui_mb,vj_mb,prediction_function)
         errors.append(eij_mb**2)
     errors_np = np.vstack(errors)
@@ -135,7 +166,7 @@ def rmse(subset,U,V,prediction_function):
 
 def predictions(subset,U,V,prediction_function):
     l = []
-    for Rij_mb, ui_mb, vj_mb in split_minibatch(subset,U,V,"predictions"):
+    for Rij_mb, ui_mb, vj_mb in split_minibatch_UV(subset,U,V,"predictions"):
         prediction = prediction_function(ui_mb,vj_mb)
         l.append(prediction)
     ret = np.vstack(l)
@@ -192,9 +223,14 @@ class Log(object):
         self._file.flush()
 
     def statistics(self, _lr, epoch_nr, splitter, U, V, prediction_function):
-        training_rmse = rmse(splitter.training_set,U,V,prediction_function)
-        testing_rmse = rmse(splitter.validation_set,U,V,prediction_function)
-        _predictions = predictions(splitter.training_set,U,V,prediction_function)
+        if None not in (U,V):
+            training_rmse = rmse(splitter.training_set,U,V,prediction_function)
+            testing_rmse = rmse(splitter.validation_set,U,V,prediction_function)
+            _predictions = predictions(splitter.training_set,U,V,prediction_function)
+        else:
+            training_rmse = rmse_rrows(splitter.training_set,prediction_function)
+            testing_rmse = rmse_rrows(splitter.validation_set,prediction_function)
+            _predictions = predictions_rrows(splitter.training_set,prediction_function)
         def meanstd(l,axis=0):
             m = np.mean(l,axis=axis)
             s = np.std(l,axis=axis)
@@ -203,8 +239,6 @@ class Log(object):
                 return str(a)
             else:
                 return "{} {}".format(m,s)
-        U_stats = meanstd(U)
-        V_stats = meanstd(V)
         p_stats = meanstd(_predictions,axis=None)
         self("epoch %d"%epoch_nr)
         self("learning rate: %f"%_lr)
@@ -223,8 +257,11 @@ class Log(object):
             self("V adam 't' mean and std: %s"%V_adam_t_stats)
         self("training RMSE: %s"%training_rmse)
         self("testing RMSE: %s"%testing_rmse)
-        self("U mean and std: %s"%U_stats)
-        self("V mean and std: %s"%V_stats)
+        if None not in (U,V):
+            U_stats = meanstd(U)
+            V_stats = meanstd(V)
+            self("U mean and std: %s"%U_stats)
+            self("V mean and std: %s"%V_stats)
         self("predictions mean and std: %s"%p_stats)
 
 class epochsloop(object):
@@ -272,15 +309,14 @@ class epochsloop(object):
         else:
             _U = self.U
             _V = self.V
-        if None not in [_U,_V]: #FIXME
-            self._log.statistics(
-                _lr,
-                epoch_nr,
-                self.splitter,
-                _U,
-                _V,
-                self.prediction_function
-            )
+        self._log.statistics(
+            _lr,
+            epoch_nr,
+            self.splitter,
+            _U,
+            _V,
+            self.prediction_function
+        )
         return self.splitter.training_set,_lr
 
 def mainloop(process_datapoint,dataset,U,V,prediction_function):
@@ -291,13 +327,12 @@ def mainloop(process_datapoint,dataset,U,V,prediction_function):
             process_datapoint(i,j,Rij,_lr)
 
 
-def mainloop_rrows(process_rrow,dataset,prediction_function):
+def mainloop_rrows(process_rrow,dataset,prediction_function,epoch_hook=lambda *args,**kwargs: None):
     U = None
     V = None
     for training_set,_lr in epochsloop(dataset,U,V,prediction_function):
+        epoch_hook()
         # WARNING: _lr is not updated in theano expressions
-        print("training_set",training_set,len(training_set))
         for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
-            print("curr",curr)
             i,Ri = curr
             process_rrow(i,Ri,_lr)
