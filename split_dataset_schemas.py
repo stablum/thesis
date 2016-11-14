@@ -2,6 +2,7 @@ import numpy as np
 import random
 import config
 import utils
+from tqdm import tqdm
 
 class PermList(object):
     """
@@ -42,8 +43,14 @@ class MemoryRandomCompleteEpochs(Splitter):
     """
     def __init__(self,dataset):
         super().__init__(dataset)
-        self._validation_set = self.entire[:self.splitpoint]
-        self._training_set = self.entire[self.splitpoint:]
+
+    @utils.cached_property
+    def _training_set(self):
+        return self.entire[self.splitpoint:]
+
+    @utils.cached_property
+    def _validation_set(self):
+        return self.entire[:self.splitpoint]
 
     @utils.cached_property
     def entire(self):
@@ -58,7 +65,15 @@ class MemoryRandomCompleteEpochs(Splitter):
 
     @property
     def validation_set(self):
-        return self._validation_set
+        if len(self._training_set) == len(self._validation_set):
+            # this can happen, for example, when the two sets
+            # are rows of the ratings matrix instead of individual ratings
+            # entries. The same permutation order of the training set is used
+            # to be able to pair training rows with their validation rows
+            perm = self.training_set.perm
+            return PermList(self._validation_set,perm)
+        else:
+            return self._validation_set
 
     def prepare_new_training_set(self):
         perm = np.random.permutation(len(self._training_set))
@@ -67,6 +82,35 @@ class MemoryRandomCompleteEpochs(Splitter):
     @property
     def training_set(self):
         return self._training_set_perm
+
+class MemoryRandomCompleteEpochsSparseRows(MemoryRandomCompleteEpochs):
+    """
+    like MemoryRandomCompleteEpochs, but collects the individual ratings
+    and their coordinates into sparse rows
+    """
+
+    def _to_sparse_rows(self,ratings):
+        # first, to sparse matrix
+        lil = self.dataset.new_empty_lil()
+        for (i,j),r in ratings:
+            lil[i,j] = r
+        csr = lil.tocsr()
+
+        # then, split into sparse rows list
+        ret = []
+        for i in tqdm(range(self.dataset.N),desc="converting sparse matrix R to list of sparse rows"):
+            ret.append((i,csr[i,:]))
+        return ret
+
+    @utils.cached_property
+    def _validation_set(self):
+        ratings = super()._validation_set
+        return self._to_sparse_rows(ratings)
+
+    @utils.cached_property
+    def _training_set(self):
+        ratings = super()._training_set
+        return self._to_sparse_rows(ratings)
 
 class Chunky(Splitter):
     def __init__(self,dataset):

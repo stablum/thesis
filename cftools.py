@@ -136,15 +136,17 @@ def split_minibatch_UV(subset,U,V,title):
             Rij_mb_l = []
             yield Rij_mb,ui_mb,vj_mb
 
-def rmse_rrows(subset,prediction_function):
+def rmse_rrows(subset_in, subset_out, prediction_function):
     errors = []
     sum_mask = 0
-    for Ri_mb in split_minibatch_rrows(subset,"rmse"):
-        mask = (Ri_mb > 0.000001).todense().astype('float32')
-        predictions, = prediction_function(Ri_mb)
-        Ri_mb_masked = np.multiply(Ri_mb.todense(),mask)
+    Ri_mb_ins = split_minibatch_rrows(subset_in,"rmse (in)")
+    Ri_mb_outs = split_minibatch_rrows(subset_out,"rmse (out)")
+    for Ri_mb_in, Ri_mb_out in zip(Ri_mb_ins,Ri_mb_outs):
+        mask = (Ri_mb_out > 0.0000000000000000001).todense().astype('float32')
+        predictions, = prediction_function(Ri_mb_in)
+        Ri_mb_out_masked = np.multiply(Ri_mb_out.todense(),mask)
         predictions_masked = np.multiply(predictions,mask)
-        ei_mb = Ri_mb_masked - predictions_masked
+        ei_mb = Ri_mb_out_masked - predictions_masked
         error = np.sum(np.power(ei_mb,2))
         sum_mask += np.sum(mask)
         errors.append(error)
@@ -230,8 +232,8 @@ class Log(object):
             testing_rmse = rmse(splitter.validation_set,U,V,prediction_function)
             _predictions = predictions(splitter.training_set,U,V,prediction_function)
         else:
-            training_rmse = rmse_rrows(splitter.training_set,prediction_function)
-            testing_rmse = rmse_rrows(splitter.validation_set,prediction_function)
+            training_rmse = rmse_rrows(splitter.training_set,splitter.training_set,prediction_function)
+            testing_rmse = rmse_rrows(splitter.training_set,splitter.validation_set,prediction_function)
             _predictions = predictions_rrows(splitter.training_set,prediction_function)
         def meanstd(l,axis=0):
             m = np.mean(l,axis=axis)
@@ -274,10 +276,13 @@ class epochsloop(object):
         self.make_and_cd_experiment_dir()
         self._log = Log(dirname='.')
         self.splitter = config.split_dataset_schema(self.dataset)
-        self.validation_set = self.splitter.validation_set
         self.U = U
         self.V = V
         self.prediction_function = prediction_function
+
+    @property
+    def validation_set(self):
+        return self.splitter.validation_set
 
     def make_and_cd_experiment_dir(self):
         scriptname_component= os.path.splitext(os.path.basename(sys.argv[0]))[0]

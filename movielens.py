@@ -29,6 +29,10 @@ def new_index(l):
     return ret
 
 class DataSet(object):
+
+    def new_empty_lil(self):
+        return scipy.sparse.lil_matrix((self.N,self.M),dtype='float32')
+
     def __init__(self, path, chunk_len=128*1024):
 
         # absolute path, to prevent problems for subsequent chdirs
@@ -119,7 +123,7 @@ class DataSetRrows(DataSet):
         """
         reader = self.reopen()
         # making straightforward movieId -> column id access possible
-        lil = scipy.sparse.lil_matrix((self.N,self.M),dtype='float32')
+        lil = self.new_empty_lil()
 
         for chunk in tqdm(reader,desc="getting the ratings chunk by chunk"):
             #for index, row in tqdm(list(chunk.iterrows()),desc="getting ratings in chunk"):
@@ -127,7 +131,10 @@ class DataSetRrows(DataSet):
             #for index, row in chunk.iterrows():
                 i = self.user_new_index[row.userId]
                 j = self.movie_new_index[row.movieId]
-                lil[i,j] = row.rating
+                if row.rating == 1:
+                    lil[i,j] = 1.00001 #because zeroed entries are unobserved, and 1 will be converted to 0
+                else:
+                    lil[i,j] = row.rating
         csr = lil.tocsr()
         return csr
 

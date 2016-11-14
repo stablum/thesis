@@ -108,6 +108,32 @@ class Model(object):
         return ret
 
     @utils.cached_property
+    def mask_mb_sum(self):
+        """
+        total mask resulting from summing (collapsing) over the minibatch
+        axis. Useful, for example, for filtering the gradient of the weights
+        matrix of a first layer if the input is sparse and only the weights
+        connected to visible units need to be updated
+        """
+        _sum = T.sum(
+            self.mask,
+            axis=0,
+            keepdims=True
+        )
+        ret = _sum > 0
+        return ret
+
+    @utils.cached_property
+    def mask_enc_W(self):
+        ret = T.tile(self.mask_mb_sum.T, (1,hid_dim)) # notice the transpose
+        return ret
+
+    @utils.cached_property
+    def mask_dec_W(self):
+        ret = T.tile(self.mask_mb_sum, (hid_dim,1)) # notice absence of transpose
+        return ret
+
+    @utils.cached_property
     def loss_sq(self):
         ret = (self.Ri_mb_sym - self.predict_to_1_lea) ** 2
         return ret
@@ -159,11 +185,17 @@ class Model(object):
 
     @utils.cached_property
     def grads_params(self):
-        ret =  [
-            T.grad(self.obj,curr)
-            for curr
-            in self.params
-        ]
+        ret = []
+        for curr in self.params:
+            grad = T.grad(self.obj,curr)
+
+            # filtering first and last layer's gradients according
+            # to which ratings were observed
+            if curr.name == "hidden_enc_layer.W":
+                grad = grad * self.mask_enc_W
+            if curr.name == "out_layer.W":
+                grad = grad * self.mask_dec_W
+            ret.append(grad)
         return ret
 
 def main():
@@ -208,8 +240,17 @@ def main():
 
     total_loss = 0
     def epoch_hook(*args,**kwargs):
+        def meanstd(quantity):
+            v = quantity.get_value()
+            m = np.mean(v,axis=None)
+            s = np.std(v,axis=None)
+            print(quantity.name,"mean:",m,"std:",s)
         nonlocal total_loss
-        print("\ntotal_loss:",total_loss,'\n')
+        print("\ntotal_loss:",total_loss)
+        for curr in model.params:
+            meanstd(curr)
+        print("\n\n")
+
         total_loss = 0
 
     def train_with_rrow(i,Ri,lr): # Ri is an entire sparse row of ratings from a user
@@ -223,7 +264,6 @@ def main():
             Ri_mb = scipy.sparse.vstack(Ri_mb_l)
 
             Ri_mb.data = (Ri_mb.data - 1.) / (config.max_rating - 1.)
-            Ri_mb.data = np.clip(Ri_mb.data,0.00001,None) #because zeroed entries are unobserved
             _loss, = params_update_fn(Ri_mb)
             total_loss += _loss
             Ri_mb_l = []
