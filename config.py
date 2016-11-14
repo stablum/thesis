@@ -16,8 +16,8 @@ theano.mode = theano_mode
 
 n_epochs=1000
 
-K=1000
-hid_dim=2000
+K=100
+hid_dim=200
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
@@ -48,7 +48,7 @@ g_in = "elu"
 chunk_len =64*1024
 minibatch_size = 2 # 16
 
-debug=True
+debug=False
 if debug:
     movielens_which='small'
     optimizer = "debug"
