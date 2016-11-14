@@ -16,8 +16,8 @@ theano.mode = theano_mode
 
 n_epochs=1000
 
-K=1000
-hid_dim=2000
+K=10
+hid_dim=200
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
@@ -46,7 +46,7 @@ g_rij = "sigmoid"
 g_in = "elu"
 
 chunk_len =64*1024
-minibatch_size = 2 # 16
+minibatch_size = 64 #2 # 16
 
 debug=False
 if debug:
