@@ -42,9 +42,9 @@ validation_set_fraction=0.05
 
 initialization = initializations.normal
 
-g_rij = "sigmoid"
+g_rij = "elu"
 g_in = "elu"
-g_hid = "sigmoid"
+g_hid = "elu"
 
 chunk_len =64*1024
 minibatch_size = 64 #2 # 16
