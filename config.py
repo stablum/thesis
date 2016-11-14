@@ -14,9 +14,9 @@ theano.config.optimizer = 'fast_run'
 
 theano.mode = theano_mode
 
-n_epochs=1000
+n_epochs=5000
 
-K=100
+K=200
 hid_dim=2000
 n_hid_layers=1
 chan_out_dim=K
