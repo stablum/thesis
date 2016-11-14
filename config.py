@@ -44,6 +44,7 @@ initialization = initializations.normal
 
 g_rij = "sigmoid"
 g_in = "elu"
+g_hid = "sigmoid"
 
 chunk_len =64*1024
 minibatch_size = 64 #2 # 16

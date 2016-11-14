@@ -214,6 +214,7 @@ class Log(object):
         self("validation_set_fraction: {}".format(config.validation_set_fraction))
         self("g_in:",config.g_in)
         self("g_rij:",config.g_rij)
+        self("g_hid:",config.g_hid)
         self("regularization_lambda:",config.regularization_lambda)
         self("dropout_p:",config.dropout_p)
         self("regression_error_coef:",config.regression_error_coef)

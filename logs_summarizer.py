@@ -31,6 +31,7 @@ not_shortened_dict = dict([
     ("n_epochs",int),
     ("g_in",str),
     ("g_rij",str),
+    ("g_hid",str),
     ("dropout_p",float),
     ("regularization_lambda",float),
     ("minibatch_size",int),

@@ -34,7 +34,7 @@ adam_shared = lasagne.updates.adam # FIXME: generalize like the 'update' placeho
 g_in = activation_functions.get(config.g_in)
 g_rij = activation_functions.get(config.g_rij)
 g_latent = activation_functions.get('elu')
-g_hid = activation_functions.get('elu')
+g_hid = activation_functions.get(config.g_hid)
 sigma = 1.
 sigma_u = 100.
 sigma_v = 1000.
@@ -140,7 +140,7 @@ class Model(object):
 
     @utils.cached_property
     def regression_error_obj(self):
-        masked_loss_sq = self.loss_sq #FIXME* self.mask
+        masked_loss_sq = self.loss_sq * self.mask
         ret = masked_loss_sq.sum() # on both axes
         ret = ret
         ret = ret.reshape((),ndim=0) # to scalar
