@@ -4,7 +4,7 @@ import sys
 import re
 import pandas as pd
 import argparse
-
+from tqdm import tqdm
 pd.set_option('display.max_colwidth', -1)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
@@ -219,7 +219,7 @@ def create_table(paramss,sortby=None,filterby=None):
 
 def process_multiple(args):
     paramss = []
-    for arg in args:
+    for arg in tqdm(args):
         curr = process_single_arg(arg)
         if curr is not None:
             paramss.append(curr)
