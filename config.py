@@ -47,7 +47,7 @@ g_in = "elu"
 g_hid = "sigmoid"
 
 chunk_len =64*1024
-minibatch_size = 128 #2 # 16
+minibatch_size = 16 #2 # 16
 
 debug=False
 if debug:
