@@ -14,16 +14,16 @@ theano.config.optimizer = 'fast_run'
 
 theano.mode = theano_mode
 
-n_epochs=5000
+n_epochs=20000
 
-K=250
-hid_dim=500
+K=25
+hid_dim=50
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=0.01
 dropout_p=0.5
-lr_begin=0.00001#0.00001#0.000001#0.5#0.005
+lr_begin=0.000005#0.00001#0.000001#0.5#0.005
 lr_annealing_T=n_epochs
 max_rating=5.
 
@@ -47,7 +47,7 @@ g_in = "elu"
 g_hid = "sigmoid"
 
 chunk_len =64*1024
-minibatch_size = 64 #2 # 16
+minibatch_size = 32 #2 # 16
 
 debug=False
 if debug:
