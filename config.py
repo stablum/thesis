@@ -16,8 +16,8 @@ theano.mode = theano_mode
 
 n_epochs=5000
 
-K=25
-hid_dim=50
+K=250
+hid_dim=500
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
