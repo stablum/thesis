@@ -49,7 +49,7 @@ g_hid = "sigmoid"
 chunk_len =64*1024
 minibatch_size = 64 #2 # 16
 
-debug=True
+debug=False
 if debug:
     movielens_which='small'
     optimizer = "debug"
