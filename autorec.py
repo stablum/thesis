@@ -153,7 +153,6 @@ class Model(object):
     def regression_error_obj(self):
         masked_loss_sq = self.loss_sq * self.mask
         ret = masked_loss_sq.sum() # on both axes
-        ret = ret
         ret = ret.reshape((),ndim=0) # to scalar
         return ret
 
@@ -166,7 +165,7 @@ class Model(object):
     def obj(self):
         ret = self.regression_error_obj * config.regression_error_coef
         if config.regularization_lambda > 0.:
-            ret += 0
+            ret += self.regularizer * config.regularization_lambda
         return ret
 
     @utils.cached_property
@@ -214,6 +213,14 @@ class Model(object):
             "hidden_enc_layer.W": self.mask_enc_W,
             "out_layer.W": self.mask_dec_W
         }
+        return ret
+
+    @utils.cached_property
+    def regularizer(self):
+        ret = lasagne.regularization.regularize_network_params(
+            self.l_out,
+            lasagne.regularization.l2
+        )
         return ret
 
 def main():
