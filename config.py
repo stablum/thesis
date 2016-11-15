@@ -16,14 +16,14 @@ theano.mode = theano_mode
 
 n_epochs=5000
 
-K=200
-hid_dim=2000
+K=10
+hid_dim=20
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=0#0.01
 dropout_p=0#0.5
-lr_begin=0.00001#0.000001#0.5#0.005
+lr_begin=0.001#0.00001#0.000001#0.5#0.005
 lr_annealing_T=n_epochs
 max_rating=5.
 
@@ -42,14 +42,14 @@ validation_set_fraction=0.05
 
 initialization = initializations.normal
 
-g_rij = "elu"
+g_rij = "sigmoid"
 g_in = "elu"
-g_hid = "elu"
+g_hid = "sigmoid"
 
 chunk_len =64*1024
 minibatch_size = 64 #2 # 16
 
-debug=False
+debug=True
 if debug:
     movielens_which='small'
     optimizer = "debug"

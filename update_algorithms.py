@@ -156,3 +156,41 @@ def get_func():
         'sgd':sgd
     }
     return d[config.update_algorithm]
+
+def adam_masked(all_grads, params, masks, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
+    t_prev = theano.shared(lasagne.utils.floatX(0.))
+    updates = collections.OrderedDict()
+
+    # Using theano constant to prevent upcasting of float32
+    one = T.constant(1)
+
+    t = t_prev + 1
+    a_t = learning_rate*T.sqrt(one-beta2**t)/(one-beta1**t)
+
+    for param, g_t in zip(params, all_grads):
+
+        value = param.get_value(borrow=True)
+        if param.name in masks.keys():
+            mask = masks[param.name]
+        else:
+            mask = np.ones(value.shape).astype('float32')
+        m_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+        v_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+
+        m_t_all = beta1*m_prev + (one-beta1)*g_t
+        v_t_all = beta2*v_prev + (one-beta2)*g_t**2
+
+        # changing only the parameters that are indicated by the mask
+        m_t = m_t_all * mask + m_prev * (1-mask)
+        v_t = v_t_all * mask + v_prev * (1-mask)
+
+        step = a_t*m_t/(T.sqrt(v_t) + epsilon)
+
+        updates[m_prev] = m_t
+        updates[v_prev] = v_t
+        updates[param] = param - step
+
+    updates[t_prev] = t
+    return updates

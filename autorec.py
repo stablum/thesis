@@ -29,7 +29,7 @@ import kl
 import utils
 
 update =update_algorithms.get_func()
-adam_shared = lasagne.updates.adam # FIXME: generalize like the 'update' placeholder
+adam_masked = update_algorithms.adam_masked # FIXME: generalize like the 'update' placeholder
 #g = lambda x:x
 g_in = activation_functions.get(config.g_in)
 g_rij = activation_functions.get(config.g_rij)
@@ -191,11 +191,18 @@ class Model(object):
 
             # filtering first and last layer's gradients according
             # to which ratings were observed
-            if curr.name == "hidden_enc_layer.W":
-                grad = grad * self.mask_enc_W
-            if curr.name == "out_layer.W":
-                grad = grad * self.mask_dec_W
+            if curr.name in self.all_masks.keys():
+                grad = grad * self.all_masks[curr.name]
+
             ret.append(grad)
+        return ret
+
+    @utils.cached_property
+    def all_masks(self):
+        ret = {
+            "hidden_enc_layer.W": self.mask_enc_W,
+            "out_layer.W": self.mask_dec_W
+        }
         return ret
 
 def main():
@@ -210,7 +217,12 @@ def main():
     model = Model(dataset)
     print("parameters shapes:",[p.get_value().shape for p in model.params])
     print("creating parameter updates...")
-    params_updates = adam_shared(model.grads_params,model.params,learning_rate=config.lr_begin)
+    params_updates = adam_masked(
+        model.grads_params,
+        model.params,
+        model.all_masks,
+        learning_rate=config.lr_begin
+    )
 
     print("creating parameter update function..")
     params_update_fn = theano.function(
