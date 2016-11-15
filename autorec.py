@@ -56,6 +56,16 @@ class Model(object):
         self.Ri_mb_sym = theano.sparse.csr_matrix(name='Ri_mb',dtype='float32')
         self.make_net()
 
+    def dropout(self,layer):
+        if config.dropout_p > 0:
+            layer = lasagne.layers.DropoutLayer(
+                layer,
+                p=config.dropout_p,
+                rescale=True,
+                name="drop_"+layer.name
+            )
+        return layer
+
     def make_net(self):
         self.l_in = lasagne.layers.InputLayer(
             (config.minibatch_size, self.dataset.M,),
@@ -63,29 +73,29 @@ class Model(object):
             name="input_layer"
         )
 
-        self.l_hid_enc = lasagne_sparse.SparseInputDenseLayer(
+        self.l_hid_enc = self.dropout(lasagne_sparse.SparseInputDenseLayer(
             self.l_in,
             num_units=hid_dim,
             num_leading_axes=num_leading_axes,
             nonlinearity=g_hid,
             name="hidden_enc_layer"
-        )
+        ))
 
-        self.l_latent = lasagne.layers.DenseLayer(
+        self.l_latent = self.dropout(lasagne.layers.DenseLayer(
             self.l_hid_enc,
             num_units=latent_dim,
             num_leading_axes=num_leading_axes,
             nonlinearity=g_latent,
             name="latent_layer"
-        )
+        ))
 
-        self.l_hid_dec = lasagne.layers.DenseLayer(
+        self.l_hid_dec = self.dropout(lasagne.layers.DenseLayer(
             self.l_latent,
             num_units=hid_dim,
             num_leading_axes=num_leading_axes,
             nonlinearity=g_hid,
             name="hidden_dec_layer"
-        )
+        ))
 
         self.l_out = lasagne.layers.DenseLayer(
             self.l_hid_dec,
@@ -94,6 +104,7 @@ class Model(object):
             nonlinearity=g_rij,
             name="out_layer"
         )
+        print("all layers: ",lasagne.layers.get_all_layers(self.l_out))
 
     @utils.cached_property
     def Rij_mb_dense(self):
