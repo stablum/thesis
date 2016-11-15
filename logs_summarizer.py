@@ -207,11 +207,14 @@ def cast_table(df):
         df = cast_column(df,name,t)
     return df
 
-def create_table(paramss,sortby=None):
+def create_table(paramss,sortby=None,filterby=None):
     df = pd.DataFrame(paramss)
     df = cast_table(df)
     if sortby is not None:
         df = df.sort(columns=[sortby])
+    if filterby is not None:
+        selector = df.harvest_dir.str.contains(filterby)
+        df = df[selector]
     return df
 
 def process_multiple(args):
@@ -244,6 +247,10 @@ def main():
         '-s',
         help='sort by'
     )
+    parser.add_argument(
+        '-f',
+        help='filter filename'
+    )
 
     args = parser.parse_args()
     if len(args.logs_or_dirs) == 0:
@@ -252,7 +259,7 @@ def main():
         tmp = args.logs_or_dirs[1:]
 
     paramss = process_multiple(tmp)
-    df = create_table(paramss,sortby=args.s)
+    df = create_table(paramss,sortby=args.s,filterby=args.f)
     print(df)
 
 if __name__ == "__main__":
