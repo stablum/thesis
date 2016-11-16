@@ -11,7 +11,8 @@ possible_activations = {
     'gelu': lambda x : x*T.erf(x),
     'elu': T.nnet.elu,
     'relu': T.nnet.relu,
-    'linear': lasagne.nonlinearities.linear
+    'linear': lasagne.nonlinearities.linear,
+    'tanh': lasagne.nonlinearities.tanh
 }
 
 def get(name):
