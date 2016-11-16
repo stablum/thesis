@@ -49,7 +49,7 @@ g_hid = "sigmoid"
 g_latent = "tanh"
 
 chunk_len =64*1024
-minibatch_size = 1 #2 # 16 # 64
+minibatch_size = 16 #2 # 16 # 64
 
 if socket.gethostname() in ['playertrackingmobile']:
     # locally
