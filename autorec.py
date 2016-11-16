@@ -31,9 +31,8 @@ import utils
 update =update_algorithms.get_func()
 adam_masked = update_algorithms.adam_masked # FIXME: generalize like the 'update' placeholder
 #g = lambda x:x
-g_in = activation_functions.get(config.g_in)
 g_rij = activation_functions.get(config.g_rij)
-g_latent = activation_functions.get('elu')
+g_latent = activation_functions.get(config.g_latent)
 g_hid = activation_functions.get(config.g_hid)
 sigma = 1.
 sigma_u = 100.

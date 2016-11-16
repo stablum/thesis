@@ -213,6 +213,7 @@ class Log(object):
         self("minibatch_size: %d"%config.minibatch_size)
         self("validation_set_fraction: {}".format(config.validation_set_fraction))
         self("g_in:",config.g_in)
+        self("g_latent:",config.g_latent)
         self("g_rij:",config.g_rij)
         self("g_hid:",config.g_hid)
         self("regularization_lambda:",config.regularization_lambda)
