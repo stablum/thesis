@@ -18,7 +18,7 @@ theano.mode = theano_mode
 n_epochs=20000
 
 K=25
-hid_dim=50
+hid_dim=500
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
@@ -49,7 +49,7 @@ g_hid = "sigmoid"
 g_latent = "linear"
 
 chunk_len =64*1024
-minibatch_size = 64 #2 # 16 # 64
+minibatch_size = 1 #2 # 16 # 64
 
 if socket.gethostname() in ['playertrackingmobile']:
     # locally
