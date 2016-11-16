@@ -45,11 +45,11 @@ initialization = initializations.normal
 
 g_rij = "sigmoid"
 g_in = "elu"
-g_hid = "sigmoid"
+g_hid = "tanh"
 g_latent = "tanh"
 
 chunk_len =64*1024
-minibatch_size = 64 #2 # 16 # 64
+minibatch_size = 1 #2 # 16 # 64
 
 if socket.gethostname() in ['playertrackingmobile']:
     # locally
