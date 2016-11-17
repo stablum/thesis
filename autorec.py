@@ -55,22 +55,32 @@ class Model(object):
         self.Ri_mb_sym = theano.sparse.csr_matrix(name='Ri_mb',dtype='float32')
         self.make_net()
 
+    def input_dropout(self, layer):
+        if config.input_dropout_p > 0:
+            layer = lasagne_sparse.SparseInputDropoutLayer(
+                layer,
+                p=config.input_dropout_p,
+                rescale=True,
+                name="inputdrop_"+layer.name
+            )
+        return layer
+
     def dropout(self,layer):
         if config.dropout_p > 0:
             layer = lasagne.layers.DropoutLayer(
                 layer,
                 p=config.dropout_p,
-                rescale=True,
+                rescale=False,
                 name="drop_"+layer.name
             )
         return layer
 
     def make_net(self):
-        self.l_in = lasagne.layers.InputLayer(
+        self.l_in = self.input_dropout(lasagne.layers.InputLayer(
             (config.minibatch_size, self.dataset.M,),
             input_var=self.Ri_mb_sym,
             name="input_layer"
-        )
+        ))
 
         self.l_hid_enc = self.dropout(lasagne_sparse.SparseInputDenseLayer(
             self.l_in,

@@ -218,6 +218,7 @@ class Log(object):
         self("g_hid:",config.g_hid)
         self("regularization_lambda:",config.regularization_lambda)
         self("dropout_p:",config.dropout_p)
+        self("input_dropout_p:",config.input_dropout_p)
         self("regression_error_coef:",config.regression_error_coef)
 
     def __call__(self,*args):
