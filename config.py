@@ -18,13 +18,13 @@ theano.mode = theano_mode
 n_epochs=20000
 
 K=25
-hid_dim=50
+hid_dim=500
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=1e-3
-input_dropout_p=0.1
-dropout_p=0.5
+input_dropout_p=0.5
+dropout_p=0.1
 lr_begin=5e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
 max_rating=5.
