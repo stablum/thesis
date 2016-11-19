@@ -47,7 +47,7 @@ initialization = initializations.normal
 g_rij = "sigmoid"
 g_in = "elu"
 g_hid = "tanh"
-g_latent = "linear"
+g_latent = "elu"
 
 chunk_len =64*1024
 minibatch_size = 1 #2 # 16 # 64
