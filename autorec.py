@@ -44,7 +44,6 @@ hid_dim = config.hid_dim
 latent_dim = config.K
 #log = print
 log = lambda *args: print(*args)#None
-
 class Model(object):
 
     def __init__(self,dataset):
@@ -77,7 +76,7 @@ class Model(object):
 
     def make_net(self):
         self.l_in = self.input_dropout(lasagne.layers.InputLayer(
-            (config.minibatch_size, self.dataset.M,),
+            (config.minibatch_size, self.input_dim,),
             input_var=self.Ri_mb_sym,
             name="input_layer"
         ))
@@ -108,12 +107,21 @@ class Model(object):
 
         self.l_out = lasagne.layers.DenseLayer(
             self.l_hid_dec,
-            num_units=self.dataset.M,
+            num_units=self.input_dim,
             num_leading_axes=num_leading_axes,
             nonlinearity=g_rij,
             name="out_layer"
         )
         print("all layers: ",lasagne.layers.get_all_layers(self.l_out))
+
+    @utils.cached_property
+    def input_dim(self):
+        if config.regression_type == "user":
+            return self.dataset.M
+        elif config.regression_type == "item":
+            return self.dataset.N
+        else:
+            raise Exception("config.regression_type not valid")
 
     @utils.cached_property
     def Rij_mb_dense(self):

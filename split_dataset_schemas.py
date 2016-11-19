@@ -96,9 +96,17 @@ class MemoryRandomCompleteEpochsSparseRows(MemoryRandomCompleteEpochs):
             lil[i,j] = r
         csr = lil.tocsr()
 
+        if config.regression_type == "item":
+            csr = csr.T
+            amount_datapoints = self.dataset.M
+        elif config.regression_type == "user":
+            amount_datapoints = self.dataset.N
+        else:
+            raise Exception("regression_type not valid")
+
         # then, split into sparse rows list
         ret = []
-        for i in tqdm(range(self.dataset.N),desc="converting sparse matrix R to list of sparse rows"):
+        for i in tqdm(range(amount_datapoints),desc="converting sparse matrix R to list of sparse rows"):
             ret.append((i,csr[i,:]))
         return ret
 
