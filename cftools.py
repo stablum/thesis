@@ -220,6 +220,7 @@ class Log(object):
         self("dropout_p:",config.dropout_p)
         self("input_dropout_p:",config.input_dropout_p)
         self("regression_error_coef:",config.regression_error_coef)
+        self("regression_type:",config.regression_type)
 
     def __call__(self,*args):
         msg = " ".join(map(str,args))

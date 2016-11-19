@@ -40,6 +40,7 @@ not_shortened_dict = dict([
     ("n_hid_layers",int),
     ("stochastic_prediction",str),
     ("regression_error_coef",str),
+    ("regression_type",str),
 ])
 
 additional_column_types = {
