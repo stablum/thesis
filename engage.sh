@@ -5,9 +5,9 @@ SSH="ssh -i $KEY fstablum@$HOST"
 SLEEPTIME=30
 ssh-add $KEY
 TIMESTAMP=$(date +%Y%m%d_%H%M%S_%N)
-git diff
 git add -u
 git add $1
+git diff --cached
 echo -n "commit message:"
 read COMMIT_MESSAGE
 git commit -m "$COMMIT_MESSAGE"

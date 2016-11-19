@@ -6,7 +6,7 @@ import split_dataset_schemas
 import movielens
 
 theano_mode = 'FAST_RUN'
-theano.config.optimizer = 'fast_compile'
+theano.config.optimizer = 'fast_run'
 
 #theano_mode = 'DebugMode'
 #theano.config.optimizer = 'None'
@@ -73,12 +73,12 @@ if optimizer == "debug":
     theano.config.floatX='float32'
 
 elif optimizer == "cpu":
-    theano.config.optimizer='fast_compile'
+    theano.config.optimizer='fast_run'
     theano.config.floatX='float32'
     theano.config.allow_gc=False
 
 elif optimizer == "gpu":
-    theano.config.optimizer='fast_compile'
+    theano.config.optimizer='fast_run'
     theano.config.openmp=False
     theano.config.openmp_elemwise_minsize=8
     #theano.config.device='gpu'
@@ -88,7 +88,7 @@ elif optimizer == "gpu":
     theano.config.nvcc.fastmath=True
 
 elif optimizer == "gpu_omp":
-    theano.config.optimizer='fast_compile'
+    theano.config.optimizer='fast_run'
     theano.config.openmp=True
     theano.config.openmp_elemwise_minsize=4
     #theano.config.device='gpu'
