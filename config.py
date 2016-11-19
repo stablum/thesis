@@ -6,7 +6,7 @@ import split_dataset_schemas
 import movielens
 
 theano_mode = 'FAST_RUN'
-theano.config.optimizer = 'fast_run'
+theano.config.optimizer = 'fast_compile'
 
 #theano_mode = 'DebugMode'
 #theano.config.optimizer = 'None'
@@ -18,13 +18,13 @@ theano.mode = theano_mode
 n_epochs=20000
 
 K=25
-hid_dim=500
+hid_dim=50
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=1e-3
 input_dropout_p=0.5
-dropout_p=0.1
+dropout_p=0.2
 lr_begin=5e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
 max_rating=5.
@@ -50,7 +50,7 @@ g_hid = "tanh"
 g_latent = "tanh"
 
 chunk_len =64*1024
-minibatch_size = 16 #2 # 16 # 64
+minibatch_size = 1 #2 # 16 # 64
 
 if socket.gethostname() in ['playertrackingmobile']:
     # locally
@@ -73,21 +73,26 @@ if optimizer == "debug":
     theano.config.floatX='float32'
 
 elif optimizer == "cpu":
-    theano.config.optimizer='fast_run'
+    theano.config.optimizer='fast_compile'
     theano.config.floatX='float32'
+    theano.config.allow_gc=False
 
 elif optimizer == "gpu":
-    theano.config.optimizer='fast_run'
+    theano.config.optimizer='fast_compile'
     theano.config.openmp=False
     theano.config.openmp_elemwise_minsize=8
     #theano.config.device='gpu'
     theano.config.floatX='float32'
     theano.config.assert_no_cpu_op='raise'
+    theano.config.allow_gc=False
+    theano.config.nvcc.fastmath=True
 
 elif optimizer == "gpu_omp":
-    theano.config.optimizer='fast_run'
+    theano.config.optimizer='fast_compile'
     theano.config.openmp=True
     theano.config.openmp_elemwise_minsize=4
     #theano.config.device='gpu'
     theano.config.floatX='float32'
     theano.config.assert_no_cpu_op='raise'
+    theano.config.allow_gc=False
+    theano.config.nvcc.fastmath=True
