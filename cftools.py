@@ -221,6 +221,7 @@ class Log(object):
         self("input_dropout_p:",config.input_dropout_p)
         self("regression_error_coef:",config.regression_error_coef)
         self("regression_type:",config.regression_type)
+        self("regularization_latent_kl",config.regularization_latent_kl)
 
     def __call__(self,*args):
         msg = " ".join(map(str,args))

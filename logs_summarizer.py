@@ -36,6 +36,7 @@ not_shortened_dict = dict([
     ("dropout_p",float),
     ("input_dropout_p",float),
     ("regularization_lambda",float),
+    ("regularization_latent_kl",float),
     ("minibatch_size",int),
     ("n_hid_layers",int),
     ("stochastic_prediction",str),

@@ -17,7 +17,7 @@ def kl_normal_diagonal(mu1,sigma_diag1,mu2,sigma_diag2,dim):
     )
     return ret
 
-def kl_normal_diagonal_vs_unit(self,mu1,sigma_diag1,dim):
+def kl_normal_diagonal_vs_unit(mu1,sigma_diag1,dim):
     # KL divergence of a multivariate normal over a normal with 0 mean and I cov
     log_det1 = T.sum(T.log(sigma_diag1)) #sum log is better than log prod
     mu_diff = -mu1
