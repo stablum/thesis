@@ -51,7 +51,7 @@ g_hid = "tanh"
 g_latent = "linear"
 
 chunk_len =64*1024
-minibatch_size = 16 #2 # 16 # 64
+minibatch_size = 64 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
