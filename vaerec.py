@@ -217,7 +217,7 @@ class Model(object):
         # this is the expected reconstruction error
         # the 1/2 coefficient is external to this term,
         # being config.regression_error_coef
-        term1 = T.mul(self.mask_sum, 2*np.pi)
+        term1 = T.mul(self.mask_sum, np.array(2*np.pi).astype('float32'))
         masked_log_sigma = self.out_log_sigma_lea * self.mask
         term2 = T.sum(masked_log_sigma)
         sigma = T.exp(self.out_log_sigma_lea)
