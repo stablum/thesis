@@ -26,7 +26,7 @@ regularization_lambda=1e-3
 regularization_latent_kl=0.5
 input_dropout_p=0.5
 dropout_p=0.1
-lr_begin=5e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
+lr_begin=1e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
 max_rating=5.
 
@@ -51,7 +51,7 @@ g_hid = "tanh"
 g_latent = "linear"
 
 chunk_len =64*1024
-minibatch_size = 64 #2 # 16 # 64
+minibatch_size = 1 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
