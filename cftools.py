@@ -7,7 +7,7 @@ import random
 import theano
 import theano.tensor as T
 import scipy.sparse
-
+import socket
 # local imports
 
 import config
@@ -221,7 +221,8 @@ class Log(object):
         self("input_dropout_p:",config.input_dropout_p)
         self("regression_error_coef:",config.regression_error_coef)
         self("regression_type:",config.regression_type)
-        self("regularization_latent_kl",config.regularization_latent_kl)
+        self("regularization_latent_kl:",config.regularization_latent_kl)
+        self("node_hostname:",socket.gethostname())
 
     def __call__(self,*args):
         msg = " ".join(map(str,args))
