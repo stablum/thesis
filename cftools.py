@@ -198,7 +198,7 @@ class Log(object):
         full_path = os.path.join(dirname,log_filename)
         self._file = open(full_path, 'a')
         self("logging to %s"%full_path)
-        self("initial learning rate: %f"%config.lr_begin)
+        self("initial learning rate: %.10f"%config.lr_begin)
         self("lr annealing T: %f"%config.lr_annealing_T)
         self("update algorithm: %s"%config.update_algorithm)
         self("adam_beta1: %f adam_beta2: %f"%(config.adam_beta1,config.adam_beta2))
