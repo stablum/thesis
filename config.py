@@ -74,6 +74,7 @@ if optimizer == "debug":
     theano.config.optimizer='None'
     theano.config.on_unused_input='ignore'
     theano.config.floatX='float32'
+    theano.config.warn_float64='raise'
 
 elif optimizer == "cpu":
     theano.config.optimizer='fast_run'
