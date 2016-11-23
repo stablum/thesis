@@ -220,7 +220,7 @@ def create_table(paramss,sortby=None,filterby=None,top=None):
         selector = df.harvest_dir.str.contains(filterby)
         df = df[selector]
     if top is not None:
-        df = df.head(n=top)
+        df = df.head(n=int(top))
     return df
 
 def process_multiple(args):
@@ -268,7 +268,7 @@ def main():
         tmp = args.logs_or_dirs[1:]
 
     paramss = process_multiple(tmp)
-    df = create_table(paramss,sortby=args.s,filterby=args.f,top=args.t)
+    df = create_table(paramss,sortby=args.s,filterby=args.f,top=int(args.t))
     print(df)
 
 if __name__ == "__main__":
