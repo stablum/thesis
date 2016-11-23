@@ -268,7 +268,7 @@ def main():
         tmp = args.logs_or_dirs[1:]
 
     paramss = process_multiple(tmp)
-    df = create_table(paramss,sortby=args.s,filterby=args.f,top=int(args.t))
+    df = create_table(paramss,sortby=args.s,filterby=args.f,top=args.t)
     print(df)
 
 if __name__ == "__main__":
