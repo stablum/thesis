@@ -8,7 +8,7 @@ from tqdm import tqdm
 pd.set_option('display.max_colwidth', -1)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
-
+pd.set_option('precision',8)
 
 eventual_timestamp_regex = "[0-9 :]*"
 parser = re.compile(eventual_timestamp_regex+"(.*):[ ]*(.*)")
@@ -211,7 +211,7 @@ def cast_table(df):
         df = cast_column(df,name,t)
     return df
 
-def create_table(paramss,sortby=None,filterby=None):
+def create_table(paramss,sortby=None,filterby=None,top=None):
     df = pd.DataFrame(paramss)
     df = cast_table(df)
     if sortby is not None:
@@ -219,6 +219,8 @@ def create_table(paramss,sortby=None,filterby=None):
     if filterby is not None:
         selector = df.harvest_dir.str.contains(filterby)
         df = df[selector]
+    if top is not None:
+        df = df.head(n=top)
     return df
 
 def process_multiple(args):
@@ -255,7 +257,10 @@ def main():
         '-f',
         help='filter filename'
     )
-
+    parser.add_argument(
+        '-t',
+        help='top n entries'
+    )
     args = parser.parse_args()
     if len(args.logs_or_dirs) == 0:
         tmp = glob.glob("./harvest_*")
@@ -263,7 +268,7 @@ def main():
         tmp = args.logs_or_dirs[1:]
 
     paramss = process_multiple(tmp)
-    df = create_table(paramss,sortby=args.s,filterby=args.f)
+    df = create_table(paramss,sortby=args.s,filterby=args.f,top=args.t)
     print(df)
 
 if __name__ == "__main__":
