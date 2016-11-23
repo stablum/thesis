@@ -90,17 +90,19 @@ class Model(object):
                 nonlinearity=g_hid,
                 name="hidden_enc_layer"
             ))
+            latent_layer_type = lasagne.layers.DenseLayer
         else:
+            latent_layer_type = lasagne_sparse.SparseInputDenseLayer
             self.l_hid_enc = self.l_in
 
-        self.l_latent_mu = lasagne.layers.DenseLayer(
+        self.l_latent_mu = latent_layer_type(
             self.l_hid_enc,
             num_units=latent_dim,
             num_leading_axes=num_leading_axes,
             nonlinearity=g_latent,
             name="latent_mu"
         )
-        self.l_latent_log_sigma = lasagne.layers.DenseLayer(
+        self.l_latent_log_sigma = latent_layer_type(
             self.l_hid_enc,
             num_units=latent_dim,
             num_leading_axes=num_leading_axes,
