@@ -19,7 +19,7 @@ n_epochs=20000
 
 K=15
 hid_dim=50
-n_hid_layers=1
+n_hid_layers=0
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=1e-3

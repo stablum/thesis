@@ -82,13 +82,16 @@ class Model(object):
             name="input_layer"
         ))
 
-        self.l_hid_enc = self.dropout(lasagne_sparse.SparseInputDenseLayer(
-            self.l_in,
-            num_units=hid_dim,
-            num_leading_axes=num_leading_axes,
-            nonlinearity=g_hid,
-            name="hidden_enc_layer"
-        ))
+        if config.n_hid_layers == 1:
+            self.l_hid_enc = self.dropout(lasagne_sparse.SparseInputDenseLayer(
+                self.l_in,
+                num_units=hid_dim,
+                num_leading_axes=num_leading_axes,
+                nonlinearity=g_hid,
+                name="hidden_enc_layer"
+            ))
+        else:
+            self.l_hid_enc = self.l_in
 
         self.l_latent_mu = lasagne.layers.DenseLayer(
             self.l_hid_enc,
@@ -117,21 +120,24 @@ class Model(object):
             name="latent_sampling"
         )
 
-        self.l_hid_mu_dec = self.dropout(lasagne.layers.DenseLayer(
-            self.l_latent_sampling,
-            num_units=hid_dim,
-            num_leading_axes=num_leading_axes,
-            nonlinearity=g_hid,
-            name="hidden_dec_layer"
-        ))
+        if config.n_hid_layers == 1:
+            self.l_hid_mu_dec = self.dropout(lasagne.layers.DenseLayer(
+                self.l_latent_sampling,
+                num_units=hid_dim,
+                num_leading_axes=num_leading_axes,
+                nonlinearity=g_hid,
+                name="hidden_dec_layer"
+            ))
+            self.l_hid_log_sigma_dec = self.dropout(lasagne.layers.DenseLayer(
+                self.l_latent_sampling,
+                num_units=hid_dim,
+                num_leading_axes=num_leading_axes,
+                nonlinearity=g_hid,
+                name="hidden_dec_layer"
+            ))
+        else:
+            self.l_hid_mu_dec = self.l_hid_log_sigma_dec = self.l_latent_sampling
 
-        self.l_hid_log_sigma_dec = self.dropout(lasagne.layers.DenseLayer(
-            self.l_latent_sampling,
-            num_units=hid_dim,
-            num_leading_axes=num_leading_axes,
-            nonlinearity=g_hid,
-            name="hidden_dec_layer"
-        ))
 
         self.l_out_mu = lasagne.layers.DenseLayer(
             self.l_hid_mu_dec,
