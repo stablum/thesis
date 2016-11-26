@@ -47,8 +47,8 @@ not_shortened_dict = dict([
 additional_column_types = {
     'max_epoch':int,
     'best_testing_rmse':float,
-    'best_testing_rmse':float,
-    'last_training_rmse':float,
+    'best_training_rmse':float,
+    'last_testing_rmse':float,
     'last_training_rmse':float,
 }
 
