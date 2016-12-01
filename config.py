@@ -17,7 +17,7 @@ theano.mode = theano_mode
 
 n_epochs=20000
 
-K=11
+K=12
 hid_dim=50
 n_hid_layers=1
 chan_out_dim=K
