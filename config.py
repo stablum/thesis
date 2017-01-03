@@ -22,7 +22,7 @@ hid_dim=50
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
-regularization_lambda=1e-1
+regularization_lambda=1e-3
 regularization_latent_kl=0.5
 input_dropout_p=0.1
 dropout_p=0.1
@@ -49,6 +49,8 @@ g_rij = "sigmoid"
 g_in = "elu"
 g_hid = "tanh"
 g_latent = "linear"
+
+preprocessing_type = "zscore" # in 0to1/vanilla/zscore
 
 chunk_len =64*1024
 minibatch_size = 1 #2 # 16 # 64

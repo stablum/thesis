@@ -5,10 +5,13 @@ import sys
 import pandas as pd
 import scipy
 import scipy.sparse
+import numpy as np
+import tqdm as _tqdm
+
 import config
 import utils
 
-import tqdm as _tqdm
+
 _tqdm.tqdm.pandas()
 tqdm = lambda *args,**kwargs : _tqdm.tqdm(*args,**kwargs,mininterval=5)
 paths = {}
@@ -97,6 +100,37 @@ class DataSet(object):
 
     def read_entire(self):
         raise Exception("Please implement this method in subclass")
+
+    @property
+    def all_ratings(self):
+        rr = [
+            curr[1]
+            for curr
+            in self.read_entire()
+        ]
+        return rr
+
+    @utils.cached_property
+    def mean_and_std(self):
+        """
+        retrieving both statics at once because by caching them I have
+        to retrieve all the ratings only once
+        """
+
+        rr = self.all_ratings
+        mean = np.mean(rr).astype('float32')
+        std = np.std(rr).astype('float32')
+        return (mean,std)
+
+    @utils.cached_property
+    def mean(self):
+        mean,std = self.mean_and_std()
+        return mean
+
+    @utils.cached_property
+    def std(self):
+        mean,std = self.mean_and_std()
+        return std
 
 class DataSetIndividualRatings(DataSet):
     def read_entire(self):

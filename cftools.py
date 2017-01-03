@@ -223,6 +223,7 @@ class Log(object):
         self("regression_type:",config.regression_type)
         self("regularization_latent_kl:",config.regularization_latent_kl)
         self("node_hostname:",socket.gethostname())
+        self("preprocessing_type:",config.preprocessing_type)
 
     def __call__(self,*args):
         msg = " ".join(map(str,args))
@@ -349,3 +350,27 @@ def mainloop_rrows(process_rrow,dataset,prediction_function,epoch_hook=lambda *a
             i,Ri = curr
             process_rrow(i,Ri,_lr)
         epoch_hook()
+
+def preprocess(data,dataset):
+
+    if config.preprocessing_type == "0to1":
+        ret = (data - 1.) / (config.max_rating - 1.)
+    elif config.preprocessing_type == "zscore":
+        mean, std = dataset.mean_and_std
+        ret = (data - mean) / std
+    else: # vanilla
+        ret = data
+
+    return ret
+
+def unpreprocess(data,dataset):
+
+    if config.preprocessing_type == "0to1":
+        ret = (data * (config.max_rating - 1. )) + 1.
+    elif config.preprocessing_type == "zscore":
+        mean, std = dataset.mean_and_std
+        ret = (data * std) + mean
+    else: # vanilla
+        ret = data
+
+    return ret

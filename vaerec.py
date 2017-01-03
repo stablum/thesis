@@ -335,7 +335,7 @@ def main():
     dataset = movielens.load(config.movielens_which)
 
     def make_predict_to_5(predict_to_1_sym):
-        ret = (predict_to_1_sym * (config.max_rating - 1. )) + 1.
+        ret = cftools.unpreprocess(predict_to_1_sym,dataset)
         return ret
 
     print("creating model..")
@@ -361,7 +361,7 @@ def main():
 
     theano.printing.pprint(model.predict_to_1_det)
 
-    predict_to_1_fn = theano.function(
+    predict_to_1_fn = theano.function( # FIXME: change name
         [model.Ri_mb_sym],
         [model.predict_to_1_det]
     )
@@ -400,8 +400,7 @@ def main():
         Ri_mb_l.append(Ri)
         if len(Ri_mb_l) >= config.minibatch_size:
             Ri_mb = scipy.sparse.vstack(Ri_mb_l)
-
-            Ri_mb.data = (Ri_mb.data - 1.) / (config.max_rating - 1.)
+            Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
             _loss, = params_update_fn(Ri_mb)
             total_loss += _loss
             Ri_mb_l = []
