@@ -244,7 +244,7 @@ def main():
     dataset = movielens.load(config.movielens_which)
 
     def make_predict_to_5(predict_to_1_sym):
-        ret = cftools.unpreprocess(predict_to_1_sym) #(predict_to_1_sym * (config.max_rating - 1. )) + 1.
+        ret = cftools.unpreprocess(predict_to_1_sym,dataset) #(predict_to_1_sym * (config.max_rating - 1. )) + 1.
         return ret
 
     print("creating model..")
