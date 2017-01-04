@@ -45,7 +45,7 @@ validation_set_fraction=0.05
 
 initialization = initializations.normal
 
-g_rij = "sigmoid"
+g_rij = "linear"
 g_in = "elu"
 g_hid = "tanh"
 g_latent = "linear"

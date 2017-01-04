@@ -124,12 +124,12 @@ class DataSet(object):
 
     @utils.cached_property
     def mean(self):
-        mean,std = self.mean_and_std()
+        mean,std = self.mean_and_std
         return mean
 
     @utils.cached_property
     def std(self):
-        mean,std = self.mean_and_std()
+        mean,std = self.mean_and_std
         return std
 
 class DataSetIndividualRatings(DataSet):
