@@ -276,7 +276,7 @@ def main():
     paramss = process_multiple(tmp)
     df = create_table(paramss,sortby=args.s,filterby=args.f,top=args.t)
 
-    if parser.T:
+    if args.T:
         print(df.T)
     else:
         print(df)
