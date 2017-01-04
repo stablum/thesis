@@ -50,7 +50,7 @@ g_in = "elu"
 g_hid = "tanh"
 g_latent = "linear"
 
-preprocessing_type = "zscore" # in 0to1/vanilla/zscore
+preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 
 chunk_len =64*1024
 minibatch_size = 1 #2 # 16 # 64
