@@ -270,7 +270,11 @@ def main():
 
     paramss = process_multiple(tmp)
     df = create_table(paramss,sortby=args.s,filterby=args.f,top=args.t)
-    print(df)
+
+    if len(df) <= 7:
+        print(df.T)
+    else:
+        print(df)
 
 if __name__ == "__main__":
     main()
