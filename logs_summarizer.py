@@ -262,6 +262,11 @@ def main():
         '-t',
         help='top n entries'
     )
+    parser.add_argument(
+        '-T',
+        action="store_true",
+        help='top n entries'
+    )
     args = parser.parse_args()
     if len(args.logs_or_dirs) == 0:
         tmp = glob.glob("./harvest_*")
@@ -271,7 +276,7 @@ def main():
     paramss = process_multiple(tmp)
     df = create_table(paramss,sortby=args.s,filterby=args.f,top=args.t)
 
-    if len(df) <= 7:
+    if parser.T:
         print(df.T)
     else:
         print(df)
