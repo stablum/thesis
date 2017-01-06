@@ -281,7 +281,7 @@ class epochsloop(object):
 
     def __init__(self,dataset,U,V,prediction_function):
         self.dataset = dataset
-        np.set_printoptions(precision=3, suppress=True)
+        np.set_printoptions(precision=5, suppress=True)
         self.make_and_cd_experiment_dir()
         self._log = Log(dirname='.')
         self.splitter = config.split_dataset_schema(self.dataset)

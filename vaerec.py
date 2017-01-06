@@ -84,18 +84,20 @@ class Model(object):
             name="input_layer"
         ))
 
-        if config.n_hid_layers == 1:
-            self.l_hid_enc = self.dropout(lasagne_sparse.SparseInputDenseLayer(
-                self.l_in,
-                num_units=hid_dim,
-                num_leading_axes=num_leading_axes,
-                nonlinearity=g_hid,
-                name="hidden_enc_layer"
-            ))
-            latent_layer_type = lasagne.layers.DenseLayer
-        else:
-            latent_layer_type = lasagne_sparse.SparseInputDenseLayer
-            self.l_hid_enc = self.l_in
+        self.l_hid_enc = self.l_in
+        latent_layer_type = lasagne_sparse.SparseInputDenseLayer
+        if config.n_hid_layers == 0:
+            pass
+        else: # 1 or multiple hidden layers
+            for hid_count in range(config.n_hid_layers):
+                self.l_hid_enc = self.dropout(latent_layer_type(
+                    self.l_hid_enc, # replace field with last hidden layer
+                    num_units=hid_dim,
+                    num_leading_axes=num_leading_axes,
+                    nonlinearity=g_hid,
+                    name="hidden_enc_layer_{}".format(hid_count)
+                ))
+                latent_layer_type = lasagne.layers.DenseLayer
 
         self.l_latent_mu = latent_layer_type(
             self.l_hid_enc,
@@ -124,23 +126,33 @@ class Model(object):
             name="latent_sampling"
         )
 
-        if config.n_hid_layers == 1:
+        if config.n_hid_layers == 0:
+            self.l_hid_mu_dec = self.l_hid_log_sigma_dec = self.l_latent_sampling
+        else: # 1 or multiple hidden layers
+            curr_l_hid = self.l_latent_sampling
+            for hid_count in range( config.n_hid_layers - 1 ):
+                curr_l_hid = self.dropout(lasagne.layers.DenseLayer(
+                    curr_l_hid, # replace with last hidden layer
+                    num_units=hid_dim,
+                    num_leading_axes=num_leading_axes,
+                    nonlinearity=g_hid,
+                    name="hidden_dec_layer_{}".format(hid_count)
+                ))
+
             self.l_hid_mu_dec = self.dropout(lasagne.layers.DenseLayer(
-                self.l_latent_sampling,
+                curr_l_hid,
                 num_units=hid_dim,
                 num_leading_axes=num_leading_axes,
                 nonlinearity=g_hid,
-                name="hidden_dec_layer"
+                name="hidden_dec_layer_mu"
             ))
             self.l_hid_log_sigma_dec = self.dropout(lasagne.layers.DenseLayer(
-                self.l_latent_sampling,
+                curr_l_hid,
                 num_units=hid_dim,
                 num_leading_axes=num_leading_axes,
                 nonlinearity=g_hid,
-                name="hidden_dec_layer"
+                name="hidden_dec_layer_sigma"
             ))
-        else:
-            self.l_hid_mu_dec = self.l_hid_log_sigma_dec = self.l_latent_sampling
 
 
         self.l_out_mu = lasagne.layers.DenseLayer(

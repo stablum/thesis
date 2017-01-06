@@ -83,13 +83,20 @@ class Model(object):
             name="input_layer"
         ))
 
-        self.l_hid_enc = self.dropout(lasagne_sparse.SparseInputDenseLayer(
-            self.l_in,
-            num_units=hid_dim,
-            num_leading_axes=num_leading_axes,
-            nonlinearity=g_hid,
-            name="hidden_enc_layer"
-        ))
+        self.l_hid_enc = self.l_in
+        latent_layer_type = lasagne_sparse.SparseInputDenseLayer
+        if config.n_hid_layers == 0:
+            pass
+        else: # 1 or multiple hidden layers
+            for hid_count in range(config.n_hid_layers):
+                self.l_hid_enc = self.dropout(latent_layer_type(
+                    self.l_hid_enc, # replace field with last hidden layer
+                    num_units=hid_dim,
+                    num_leading_axes=num_leading_axes,
+                    nonlinearity=g_hid,
+                    name="hidden_enc_layer_{}".format(hid_count)
+                ))
+                latent_layer_type = lasagne.layers.DenseLayer
 
         self.l_latent = self.dropout(lasagne.layers.DenseLayer(
             self.l_hid_enc,
@@ -99,13 +106,18 @@ class Model(object):
             name="latent_layer"
         ))
 
-        self.l_hid_dec = self.dropout(lasagne.layers.DenseLayer(
-            self.l_latent,
-            num_units=hid_dim,
-            num_leading_axes=num_leading_axes,
-            nonlinearity=g_hid,
-            name="hidden_dec_layer"
-        ))
+        if config.n_hid_layers == 0:
+            self.l_hid_dec = self.l_latent
+        else: # 1 or multiple hidden layers
+            self.l_hid_dec = self.l_latent
+            for hid_count in range( config.n_hid_layers):
+                self.l_hid_dec = self.dropout(lasagne.layers.DenseLayer(
+                    self.l_hid_dec, # replace with last hidden layer
+                    num_units=hid_dim,
+                    num_leading_axes=num_leading_axes,
+                    nonlinearity=g_hid,
+                    name="hidden_dec_layer_{}".format(hid_count)
+                ))
 
         self.l_out = lasagne.layers.DenseLayer(
             self.l_hid_dec,
