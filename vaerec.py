@@ -27,6 +27,7 @@ import update_algorithms
 import model_build
 import kl
 import utils
+import regularization
 
 update =update_algorithms.get_func()
 adam_masked = update_algorithms.adam_masked # FIXME: generalize like the 'update' placeholder
@@ -35,6 +36,7 @@ g_rij = activation_functions.get(config.g_rij)
 g_latent = activation_functions.get(config.g_latent)
 g_hid = activation_functions.get(config.g_hid)
 g_log_sigma = lasagne.nonlinearities.linear
+weights_regularization = regularization.get(config.regularization_type)
 sigma = 1.
 sigma_u = 100.
 sigma_v = 1000.
@@ -327,7 +329,7 @@ class Model(object):
     def regularizer(self):
         ret = lasagne.regularization.regularize_network_params(
             self.l_out,
-            lasagne.regularization.l2
+            weights_regularization
         )
         return ret
 

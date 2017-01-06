@@ -15,6 +15,7 @@ import update_algorithms
 
 backup_files = [
     sys.argv[0],
+    "engage.sh",
     "cftools.py",
     "update_algorithms.py",
     "movielens.py",
@@ -25,7 +26,7 @@ backup_files = [
     "kl.py",
     "job.sh",
     "utils.py",
-    "engage.sh",
+    "regularization.py",
 ]
 
 tqdm_mininterval=5
@@ -224,6 +225,7 @@ class Log(object):
         self("regularization_latent_kl:",config.regularization_latent_kl)
         self("node_hostname:",socket.gethostname())
         self("preprocessing_type:",config.preprocessing_type)
+        self("regularization_type:",config.regularization_type)
 
     def __call__(self,*args):
         msg = " ".join(map(str,args))
