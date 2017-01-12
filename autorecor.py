@@ -49,7 +49,7 @@ latent_dim = config.K
 #log = print
 log = lambda *args: print(*args)#None
 
-output_ratings_regularizer_amount = 0.2
+output_ratings_regularizer_amount = 0.00002
 
 class Model(object):
 
@@ -343,8 +343,15 @@ def main():
             Ri_mb_l = []
             indices_mb_l = []
     print("training ...")
-    print("output_ratings_regularizer_amount: ",output_ratings_regularizer_amount)
-    cftools.mainloop_rrows(train_with_rrow,dataset,predict_to_5_fn,epoch_hook=epoch_hook)
+    cftools.mainloop_rrows(
+        train_with_rrow,
+        dataset,
+        predict_to_5_fn,
+        epoch_hook=epoch_hook,
+        log_params={
+            'output_ratings_regularizer_amount':output_ratings_regularizer_amount
+        }
+    )
 
 if __name__=="__main__":
     main()

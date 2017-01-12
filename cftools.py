@@ -185,7 +185,7 @@ def test_value(theano_var, _test_value):
 class Log(object):
     _file = None
 
-    def __init__(self,dirname="logs"):
+    def __init__(self,dirname="logs",log_params={}):
         prefix = os.path.splitext(os.path.basename(sys.argv[0]))[0]
         time_str = time.strftime('%Y%m%d_%H%M%S')
         log_filename = prefix + "_" + time_str + ".log"
@@ -226,6 +226,8 @@ class Log(object):
         self("node_hostname:",socket.gethostname())
         self("preprocessing_type:",config.preprocessing_type)
         self("regularization_type:",config.regularization_type)
+        for k,v in log_params.items():
+            self(k+":",v)
 
     def __call__(self,*args):
         msg = " ".join(map(str,args))
@@ -279,15 +281,16 @@ class Log(object):
 
 class epochsloop(object):
 
-    def __init__(self,dataset,U,V,prediction_function):
+    def __init__(self,dataset,U,V,prediction_function,log_params):
         self.dataset = dataset
         np.set_printoptions(precision=5, suppress=True)
         self.make_and_cd_experiment_dir()
-        self._log = Log(dirname='.')
+        self._log = Log(dirname='.',log_params=log_params)
         self.splitter = config.split_dataset_schema(self.dataset)
         self.U = U
         self.V = V
         self.prediction_function = prediction_function
+        self.log_params = log_params
 
     @property
     def validation_set(self):
@@ -335,18 +338,18 @@ class epochsloop(object):
         )
         return self.splitter.training_set,_lr
 
-def mainloop(process_datapoint,dataset,U,V,prediction_function):
-    for training_set,_lr in epochsloop(dataset,U,V,prediction_function):
+def mainloop(process_datapoint,dataset,U,V,prediction_function,log_params={}):
+    for training_set,_lr in epochsloop(dataset,U,V,prediction_function,log_params):
         # WARNING: _lr is not updated in theano expressions
         for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
             (i,j),Rij = curr
             process_datapoint(i,j,Rij,_lr)
 
 
-def mainloop_rrows(process_rrow,dataset,prediction_function,epoch_hook=lambda *args,**kwargs: None):
+def mainloop_rrows(process_rrow,dataset,prediction_function,epoch_hook=lambda *args,**kwargs: None,log_params={}):
     U = None
     V = None
-    for training_set,_lr in epochsloop(dataset,U,V,prediction_function):
+    for training_set,_lr in epochsloop(dataset,U,V,prediction_function,log_params):
         # WARNING: _lr is not updated in theano expressions
         for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
             i,Ri = curr
