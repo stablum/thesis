@@ -253,9 +253,14 @@ class Model(object):
         return ret
 
     @utils.cached_property
+    def sum_mask(self):
+        ret = T.sum(self.mask).astype('float32')
+        return ret
+
+    @utils.cached_property
     def out_lea_mean(self):
         sum_ratings = T.sum(self.mask * self.out_lea).astype('float32')
-        count_ratings = T.sum(self.mask).astype('float32')
+        count_ratings = self.sum_mask
         mean_ratings = sum_ratings/count_ratings
         return mean_ratings
 
@@ -264,7 +269,7 @@ class Model(object):
         mean_ratings = self.out_lea_mean
         shifted_ratings = self.out_lea - mean_ratings
         masked_shifted_ratings = self.mask * shifted_ratings
-        reg = lasagne.regularization.l2(masked_shifted_ratings)
+        reg = lasagne.regularization.l2(masked_shifted_ratings)/self.sum_mask
         return reg
 
 def main():
