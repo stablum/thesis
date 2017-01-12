@@ -44,6 +44,7 @@ not_shortened_dict = dict([
     ("regression_type",str),
     ("preprocessing_type",str),
     ("regularization_type",str),
+    ("output_ratings_regularizer_amount",str),
 ])
 
 additional_column_types = {
