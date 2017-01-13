@@ -204,9 +204,10 @@ def process_single_harvest(harvest_dir):
     return params
 
 def cast_column(df,name,t):
-    if t in (float,int):
-        df[name] = df[name].fillna(-1)
-    df[name] = df[name].astype(t)
+    if name in df.keys():
+        if t in (float,int):
+            df[name] = df[name].fillna(-1)
+        df[name] = df[name].astype(t)
     return df
 
 def cast_table(df):
