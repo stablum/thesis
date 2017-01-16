@@ -50,7 +50,7 @@ latent_dim = config.K
 #log = print
 log = lambda *args: print(*args)#None
 
-output_ratings_regularizer_amount = 2e-0
+output_ratings_regularizer_amount = 2e+1
 
 class Model(object):
 
