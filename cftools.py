@@ -353,7 +353,13 @@ def mainloop_rrows(process_rrow,dataset,prediction_function,epoch_hook=lambda *a
         # WARNING: _lr is not updated in theano expressions
         for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
             i,Ri = curr
+
+            if Ri.getnnz() == 0:
+                # nope
+                continue
+
             process_rrow(i,Ri,_lr)
+
         epoch_hook()
 
 def preprocess(data,dataset):

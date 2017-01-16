@@ -10,6 +10,7 @@ from theano import tensor as T
 import lasagne
 import lasagne_sparse
 
+import math
 import numpy as np
 import random
 import sys
@@ -253,15 +254,18 @@ class Model(object):
         return ret
 
     @utils.cached_property
+    def sum_ratings(self):
+        ret = T.sum(self.mask * self.out_lea).astype('float32')
+        return ret
+
+    @utils.cached_property
     def sum_mask(self):
         ret = T.sum(self.mask).astype('float32')
         return ret
 
     @utils.cached_property
     def out_lea_mean(self):
-        sum_ratings = T.sum(self.mask * self.out_lea).astype('float32')
-        count_ratings = self.sum_mask
-        mean_ratings = sum_ratings/count_ratings
+        mean_ratings = self.sum_ratings/self.sum_mask
         return mean_ratings
 
     @utils.cached_property
@@ -293,8 +297,12 @@ def main():
 
     print("creating parameter update function..")
     params_update_fn = theano.function(
-        [model.Ri_mb_sym],
-        [model.regression_error_obj],
+        [
+            model.Ri_mb_sym,
+        ],
+        [
+            model.regression_error_obj,
+        ],
         updates=params_updates
     )
     params_update_fn.name = "params_update_fn"
@@ -343,7 +351,7 @@ def main():
             Ri_mb = scipy.sparse.vstack(Ri_mb_l)
 
             Ri_mb.data = cftools.preprocess(Ri_mb.data, dataset) #(Ri_mb.data - 1.) / (config.max_rating - 1.)
-            _loss, = params_update_fn(Ri_mb)
+            _loss,= params_update_fn(Ri_mb)
             total_loss += _loss
             Ri_mb_l = []
             indices_mb_l = []
