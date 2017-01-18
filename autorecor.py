@@ -275,7 +275,7 @@ class Model(object):
         masked_shifted_ratings = self.mask * shifted_ratings
         _l2 = lasagne.regularization.l2(masked_shifted_ratings)
         ret = _l2/self.sum_mask
-        return reg
+        return ret
 
 def main():
     dataset = movielens.load(config.movielens_which)
