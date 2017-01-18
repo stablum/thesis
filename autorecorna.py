@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Autorec with output ratings regularizer
+Autorec with output ratings regularizer.
+Here the output ratings regularizer (OR) is not being averaged (NA).
 """
 import scipy
 import ipdb
@@ -50,7 +51,7 @@ latent_dim = config.K
 #log = print
 log = lambda *args: print(*args)#None
 
-output_ratings_regularizer_amount = 2e-1
+output_ratings_regularizer_amount = 2e+0
 
 class Model(object):
 
