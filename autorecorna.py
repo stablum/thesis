@@ -51,7 +51,7 @@ latent_dim = config.K
 #log = print
 log = lambda *args: print(*args)#None
 
-output_ratings_regularizer_amount = 2e-0
+output_ratings_regularizer_amount = 2e-1
 
 class Model(object):
 
@@ -360,6 +360,7 @@ def main():
             Ri_mb.data = cftools.preprocess(Ri_mb.data, dataset) #(Ri_mb.data - 1.) / (config.max_rating - 1.)
             _loss,_out_mean,_orra,_sm = params_update_fn(Ri_mb)
             #_outr = [ r for (r,m) in zip(_out[0],_mask[0]) if m > 0 ]
+            """
             print(
                 "_out_mean",
                 _out_mean,
@@ -372,6 +373,8 @@ def main():
                 "_sm",
                 _sm
             )
+            """
+
             total_loss += _loss
             Ri_mb_l = []
             indices_mb_l = []
