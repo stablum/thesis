@@ -50,7 +50,7 @@ latent_dim = config.K
 #log = print
 log = lambda *args: print(*args)#None
 
-output_ratings_regularizer_amount = 2e+4
+output_ratings_regularizer_amount = 2e-1
 
 class Model(object):
 
@@ -274,7 +274,7 @@ class Model(object):
         shifted_ratings = self.out_lea - mean_ratings
         masked_shifted_ratings = self.mask * shifted_ratings
         _l2 = lasagne.regularization.l2(masked_shifted_ratings)
-        ret = _l2/self.sum_mask
+        ret = _l2 # NOT AVERAGED /self.sum_mask
         return reg
 
 def main():
