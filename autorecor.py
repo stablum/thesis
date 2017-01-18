@@ -50,7 +50,7 @@ latent_dim = config.K
 #log = print
 log = lambda *args: print(*args)#None
 
-output_ratings_regularizer_amount = 2e+1
+output_ratings_regularizer_amount = 2e+2
 
 class Model(object):
 
@@ -302,6 +302,9 @@ def main():
         ],
         [
             model.regression_error_obj,
+            model.out_lea_mean,
+            model.output_ratings_regularizer,
+            model.sum_mask,
         ],
         updates=params_updates
     )
@@ -348,10 +351,27 @@ def main():
         indices_mb_l.append((i,))
         Ri_mb_l.append(Ri)
         if len(Ri_mb_l) >= config.minibatch_size:
+            iinz = Ri_mb_l[0].nonzero()[1]
+            rs = [ Ri_mb_l[0][0,ii] for ii in iinz ]
             Ri_mb = scipy.sparse.vstack(Ri_mb_l)
 
             Ri_mb.data = cftools.preprocess(Ri_mb.data, dataset) #(Ri_mb.data - 1.) / (config.max_rating - 1.)
-            _loss,= params_update_fn(Ri_mb)
+            _loss,_out_mean,_orra,_sm = params_update_fn(Ri_mb)
+            #_outr = [ r for (r,m) in zip(_out[0],_mask[0]) if m > 0 ]
+            """
+            print(
+                "_out_mean",
+                _out_mean,
+                "mean(rs)",
+                np.mean(rs),
+                "_loss",
+                _loss,
+                "_orra",
+                _orra,
+                "_sm",
+                _sm
+            )
+            """
             total_loss += _loss
             Ri_mb_l = []
             indices_mb_l = []
