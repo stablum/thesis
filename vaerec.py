@@ -300,11 +300,6 @@ class Model(object):
         ret = lasagne.layers.get_output(self.l_latent_log_sigma,deterministic=False)
         return ret
 
-            net_output_det = outputting_layers# lasagne.layers.get_output(outputting_layers, deterministic=True)
-            net_output_lea = None# lasagne.layers.get_output(outputting_layers, deterministic=False)
-            #net_output_det = (sample_det, net_output_mu_det, net_output_log_sigma_det, net_output_distr_det)
-            #net_output_lea = (sample_lea, net_output_mu_lea, net_output_log_sigma_lea, net_output_distr_lea)
-
     @utils.cached_property
     def predict_to_1_lea(self):
         ret = self.out_mu_lea
