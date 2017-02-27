@@ -30,6 +30,7 @@ import activation_functions
 import update_algorithms
 import model_build
 import kl
+import regularization
 
 update =update_algorithms.get_func()
 adam_shared = lasagne.updates.adam # FIXME: generalize like the 'update' placeholder
@@ -113,49 +114,69 @@ class VaeChan(object):
             "vae_p_"+name,
             g_in
         )
-        r_out_layer = lasagne.layers.DenseLayer(
+        r_out_mu_layer = lasagne.layers.DenseLayer(
             p_theta_hid_layers[-1],
             1,
             nonlinearity=g_rij,
-            name=name+"_out"
+            name=name+"_r_out"
         )
-        feat_out_layer = lasagne.layers.DenseLayer(
+        feat_out_mu_layer = lasagne.layers.DenseLayer(
             p_theta_hid_layers[-1],
             config.K,
             nonlinearity=g_feat,
-            name=name+"_out"
+            name=name+"_feat_out"
         )
 
-        p_theta_layers = p_theta_hid_layers + [r_out_layer,feat_out_layer]
+        log_r_out_sigma_layer = lasagne.layers.DenseLayer(
+            p_theta_hid_layers[-1],
+            1,
+            nonlinearity=lasagne.nonlinearities.linear,
+            name=name+"_log_r_out_sigma"
+        )
+        log_feat_out_sigma_layer = lasagne.layers.DenseLayer(
+            p_theta_hid_layers[-1],
+            config.K,
+            nonlinearity=lasagne.nonlinearities.linear,
+            name=name+"_log_feat_out_sigma"
+        )
+
+        p_theta_layers = p_theta_hid_layers \
+            + [r_out_mu_layer,feat_out_mu_layer,log_r_out_sigma_layer,log_feat_out_sigma_layer]
         p_theta_params = lasagne.layers.get_all_params(p_theta_layers)
 
-        outputting_layers = recognition_layers + [r_out_layer, feat_out_layer]
+        outputting_layers = recognition_layers \
+            + [r_out_mu_layer,feat_out_mu_layer,log_r_out_sigma_layer,log_feat_out_sigma_layer]
         (
             self.sample_lea,
-            self.mu_lea,
-            self.log_sigma_lea,
+            self.z_mu_lea,
+            self.log_z_sigma_lea,
             self.latent_distr_lea,
-            self.r_out_lea,
-            self.feat_out_lea
+            self.r_out_mu_lea,
+            self.feat_out_mu_lea,
+            self.log_r_out_sigma_lea,
+            self.log_feat_out_sigma_lea
         ) = lasagne.layers.get_output(outputting_layers,deterministic=False)
 
         (
             self.sample_det,
-            self.mu_det,
-            self.log_sigma_det,
+            self.z_mu_det,
+            self.log_z_sigma_det,
             self.latent_distr_det,
-            self.r_out_det,
-            self.feat_out_det
+            self.r_out_mu_det,
+            self.feat_out_mu_det,
+            self.log_r_out_sigma_det,
+            self.log_feat_out_sigma_det
         ) = lasagne.layers.get_output(outputting_layers,deterministic=True)
 
+        regularization_function = regularization.get(config.regularization_type)
         p_regularizer = lasagne.regularization.regularize_layer_params(
             p_theta_layers,
-            lasagne.regularization.l2
+            regularization_function
         )
 
         self.q_regularizer = q_regularizer
         self.p_regularizer = p_regularizer
-        self.sigma_lea = T.exp(self.log_sigma_lea)
+        self.z_sigma_lea = T.exp(self.log_z_sigma_lea)
         self.r_sym = r_sym
         self.feat_distr_sym = feat_distr_sym
         self.q_phi_params = q_phi_params
@@ -167,32 +188,25 @@ class VaeChan(object):
 
     @cached_property
     def latent_distr_lea(self):
-        ret = T.concatenate([self.mu_lea,self.sigma_lea],axis=1)
+        ret = T.concatenate([self.z_mu_lea,self.z_sigma_lea],axis=1)
         return ret
 
     @cached_property
     def obj(self):
-        z_sample = self.sample_lea
-        z_mu = self.mu_lea
-        z_sigma = self.sigma_lea
-        x_sigma = 1
+
         z_dim = config.K
         x_orig = T.concatenate([self.r_sym,self.feat_sample_sym],axis=1)
-        x_out = T.concatenate([self.r_out_lea,self.feat_out_lea],axis=1)
+        x_mu = T.concatenate([self.r_out_mu_lea,self.feat_out_mu_lea],axis=1)
+        x_logsigma = T.concatenate([self.log_r_out_sigma_lea,self.log_feat_out_sigma_lea],axis=1)
+        term_sum_log_sigma = T.sum(self.log_z_sigma_lea)
+        inv_x_sigma = 1./T.exp(x_logsigma)
+        err = T.sqr(x_mu - x_orig)
+        term_err = T.sum(err * inv_x_sigma)
 
-        z_sigma_fixed = z_sigma
-        z_sigma_inv = 1/(z_sigma_fixed)
-        det_z_sigma = T.prod(z_sigma)
-        C = 1./(T.sqrt(((2*np.pi)**z_dim) * det_z_sigma))
-        log_q_z_given_x = - 0.5*T.dot(z_sigma_inv, ((z_sample-z_mu)**2).T) + T.log(C) # log(C) can be omitted
-        q_z_given_x = C * T.exp(log_q_z_given_x)
-        log_p_x_given_z = -(1/(x_sigma))*(((x_orig-x_out)**2).sum()) # because p(x|z) is gaussian
-        log_p_z = - (z_sample**2).sum() # gaussian prior with mean 0 and cov I
-        #reconstruction_error_const = (0.5*(x_dim*np.log(np.pi)+1)).astype('float32')
-        reconstruction_error_proper = 0.5*T.sum((x_orig-x_out)**2)
-        reconstruction_error = reconstruction_error_proper #+ reconstruction_error_const
-        regularizer = kl.kl_normal_diagonal(z_mu,z_sigma,self.z_prior_mu_sym,self.z_prior_sigma_sym,z_dim)
-        obj = reconstruction_error + regularizer
+        regularizer_kl = kl.kl_normal_diagonal_vs_unit(self.z_mu_lea,self.z_sigma_lea,z_dim)
+
+        obj = ( term_sum_log_sigma + term_err ) * config.regression_error_coef \
+            + regularizer_kl * config.regularization_latent_kl
         obj_scalar = obj.reshape((),ndim=0)
         return obj_scalar
 
@@ -209,7 +223,7 @@ class VaeChan(object):
         return ret
 
     def kl_for_r(self,r_train):
-        ret = 0.5 * (self.r_out_lea - r_train)**2
+        ret = 0.5 * (self.r_out_mu_lea - r_train)**2
         return ret
 
 class Model(object):
@@ -243,13 +257,13 @@ class Model(object):
 
     @cached_property
     def predict_to_1_lea(self):
-        ret = 0.5 * (self.vae_chan_latent_u.r_out_lea + self.vae_chan_latent_v.r_out_lea)
+        ret = 0.5 * (self.vae_chan_latent_u.r_out_mu_lea + self.vae_chan_latent_v.r_out_mu_lea)
         return ret
 
     @cached_property
     def predict_to_1_det(self):
-        ret = 0.5 * (self.vae_chan_latent_u.r_out_det + self.vae_chan_latent_v.r_out_det)
-        #ret = self.vae_chan_latent_v.r_out_det
+        ret = 0.5 * (self.vae_chan_latent_u.r_out_mu_det + self.vae_chan_latent_v.r_out_mu_det)
+        #ret = self.vae_chan_latent_v.r_out_mu_det
         return ret
 
     @cached_property

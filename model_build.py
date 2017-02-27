@@ -3,6 +3,7 @@ import config
 import theano
 from theano import tensor as T
 import copy
+import regularization
 
 def make_hid_part(
         l_in,
@@ -88,10 +89,13 @@ def make_net(
 
     net_params = lasagne.layers.get_all_params(layers)
 
+    regularization_function = regularization.get(config.regularization_type)
+
     regularizer_term = lasagne.regularization.regularize_network_params(
         l_out_mu,
-        lasagne.regularization.l2
+        regularization_function
     )
+
     return net_output_det, net_output_lea, net_params, regularizer_term, l_sampling
 
 class SamplingLayer(lasagne.layers.Layer):
