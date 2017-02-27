@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import colored_traceback.always
-
 import scipy
 import ipdb
 import theano
