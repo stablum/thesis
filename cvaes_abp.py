@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import colored_traceback.always
+
 import scipy
 import ipdb
 import theano
@@ -16,7 +18,12 @@ import ipdb
 
 import movielens
 import cftools
+
+import split_dataset_schemas
 import config
+# overrides of config.py:
+config.split_dataset_schema = split_dataset_schemas.MemoryRandomCompleteEpochs
+
 import numutils as nu
 import augmented_types as at
 import activation_functions

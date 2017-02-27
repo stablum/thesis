@@ -142,6 +142,6 @@ def reparameterization_trick(in_var,name,dim=None):
         log_sigma.name = name+"_splitlogsigma"
     sigma = T.exp(log_sigma)
     sigma.name = name+"_sigma"
-    sample = mu + (epsilon * (sigma**0.5))
+    sample = mu + (epsilon * sigma)
     sample.name = name+'_sample'
     return sample

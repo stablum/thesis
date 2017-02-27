@@ -1,5 +1,5 @@
 #!/bin/bash --login
-#$ -l h_rt=96:00:00
+#$ -l h_rt=120:00:00
 
 #### ignored option -l gpu=GTX480
 #### other possibility: -l gpu=GTX680
