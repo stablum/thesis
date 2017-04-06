@@ -241,7 +241,7 @@ class Model(object):
         # being config.regression_error_coef
         term1 = self.mask_sum * np.array(2*np.pi).astype('float32')
         masked_log_sigma = self.out_log_sigma_lea * self.mask
-        term2 = T.sum(masked_log_sigma)
+        term2 = -T.sum(masked_log_sigma)
         sigma = T.exp(self.out_log_sigma_lea)
         masked_loss_sq = self.loss_sq * self.mask
         inv_sigma = 1./sigma
