@@ -1,0 +1,55 @@
+\section{Model with separated neural networks that produce vectors joined by dot product}
+
+As a first experiment with models more complex than simple PMF, a single-layer neural model with two separated 
+neural networks fed respectively by user and item vectors has been employed.
+The two neural networks produce deterministically two vectors of the same size of the latent vectors. Those output vectors are joined by a dot product and a final logistic function in order to provide a rating prediction, exactly like the original PMF models.
+
+The likelihood of a rating, given the model can be formalized as follows:
+
+\begin{equation}
+p(R_{ij}|u_i,v_j) = \mathcal{N}(R_{ij}|g(\net{u}{u_i}\cdot\net{v}{v_j}),\sigma)
+\end{equation}
+
+Each network has this simple structure:
+\begin{equation}
+\net{}{\mathbf{z}} = g(\mathbf{z} \cdot W + \mathbf{b})
+\end{equation}
+
+$g$ is defined as the logistic function $g(\mathbf{t}) = \frac{1}{1 + e^{-\mathbf{t}}}$
+
+\subsection{Experiments}
+
+Experiment settings have been kept identical to the evaluation of the baseline PMF model.
+
+This model exhibits a very fast learning in the early epochs, which is measured by a quick drop in validation error much faster than PMF, unfortunately followed by a plateau at FIXMEINSERTVALUEHERE as can be seen from this plot:
+
+    FIXME INSERT PLOT
+
+\subsection{Discussion}
+
+Alternating learning of parameters of the neural network and latent vectors
+with gradient descent has been proposed by FIXMECITEALTERNATINGPAPER,
+technique that they called Alternating Back-Propagation (ABP).
+
+This raises some concerns, as the neural network, at the beginning,
+is going to be trained to reduce the error
+on the basis of randomly
+initialized vectors.
+Likewise, the latent vectors are going to be optimized on the basis of a randomly-initialized neural network.
+
+This problem is already posed in other unsupervised learning techniques, such as the EM algorithm. One of the main differences from EM is that for each updating step, E or M, the optimum
+solution is found, while ABP uses gradient descent to progressively find an optimimum.
+This allows freedom to choose how much influential each of the two steps (updating parameters
+or latent variables) can be. The choice can be expressed by leaving more iterations to update
+the parameters or to the latent variables, as well as choosing different learning rates for the two steps.
+
+An better idea for an alternation could be make ABP behave more like EM.
+Considering a single step of updating latent variables or parameters,
+this step might be left only once there is quite some confidence
+that the quantity to be optimized
+has reached an optimum.
+This optimum is possibly reached once the magnitude of the gradients has become much
+lower than at the beginning of the step. Once this condition has been assessed,
+it's possible to end the updating step and switching to the other quantity, as in EM.
+
+

@@ -1,0 +1,69 @@
+\section{Rearranging the variational lower bound}
+
+(FIXME: explain why the lower bound can be expressed as an individual datapoint)
+
+The $\mathbb{KL}$ term of the VAE has an analytical solution, hence it's not subject
+to Monte-Carlo sampling.
+
+Unfortunately, by using Normalizing Flows, the $\mathbb{KL}$ cannot be determined
+analytically, so it has to be subject to Monte-Carlo sampling.
+The negative lower bound $\mathcal{L}(x)$ can be interpreted as
+a negative Free-energy (FIXME: look what is "free energy) $-\mathcal{F}(x)$
+that has to be minimized.
+
+It's useful to reduce the free energy into it's "atomic" probability components:
+
+\begin{align}
+\freeenergyxi &= -\elboxi\\
+    &= -\expectqphi{\logpjointi - \logqzcondi} \\
+    &= \expectqphi{-\logpxicond - \logpz + \logqzcondi}
+\end{align}
+
+The random multivariate variable $\boldz$ can be interpreted as being the result
+of a transformation $\boldz = \tr(\boldzzero)$ of an initial random multivariate variable 
+which happens to have a simple distribution, such as multivariate gaussian 
+with diagonal covariance matrix.
+
+For the \emph{law of the unconscious statistician} (LOTUS) \cite{lotus} (FIXME: expand)
+the energy can have a form with expectations over the simpler distribution of
+$\boldzzero$:
+
+\begin{align}
+\freeenergyxi &= \expectqzero{- \logpxicondtr - \logptr}
++ \expectqphi{\logqzcondi}
+\end{align}
+
+The last term is clearly the negative entropy of $\qzcondi$:
+\begin{align}
+ \entropyqzcondi &= - \expectqphi{\logqzcondi}
+\end{align}
+    
+At this point the previous result on the transformed density can be used in order to express this term as a function of $\qzero$:
+
+\begin{align}
+    \logqzcondi &= \log q_0(\trinv{\boldz}) + \log \left( |\detDtr{\boldz}|^{-1} \right)\\
+     &= \log q_0(\trinv{\boldz}) - \log \left( |\detDtr{\boldz}| \right)
+\end{align}
+
+By applying the \emph{law of the unconscious statistician} to $-\entropyqzcondi$,
+a relationship between the entropy of the two distributions emerges:
+
+\begin{align}
+     -\entropyqzcondi &= \expectqphi{\logqzcondi}\\
+    &= \expectqphi{\log q_0(\trinv{\boldz}) - \log \left( |\detDtr{\boldz}| \right)}\\
+    &= \expectqzero{\log q_0(\trinv{\tr(\boldzzero)})}
+       - \expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)}\\
+    &= \expectqzero{\log q_0(\boldzzero)}
+       - \expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)}\\
+    &= - \entropyqzero - \expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)}
+\end{align}
+
+Finally, it's possible to write $\freeenergyxi$ in the following form:
+\begin{align}
+\freeenergyxi = &- \expectqzero{\logpxicondtr} \\
+    &- \expectqzero{\logptr} \\
+    &- \entropyqzero \\
+    &- \expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)}
+\end{align}
+
+

@@ -1,0 +1,71 @@
+\newcommand{\transpose}[1]{{#1}^{\top}}
+\newcommand{\net}[2]{\mathrm{net}_{#1}\left(#2\right)}
+\newcommand{\dataset}{\mathcal{D}}
+\newcommand{\nchunks}{\mathtt{\#chunks}}
+\newcommand{\chunklen}{\mathtt{chunk\_length}}
+\newcommand{\randperm}[1]{\mathtt{random\_permutation}\left(\left\{#1\right\}\right)}
+\newcommand{\chunk}{\mathtt{chunk}}
+\newcommand{\datapoint}{\mathtt{datapoint}}
+\newcommand{\Z}{\mathbf{Z}}\
+
+\newcommand{\z}[1]{\mathbf{z}_{#1}}
+\newcommand{\pz}[2]{p_{\z{#1}}\left(#2\right)}
+\newcommand{\Fz}[2]{F_{\z{#1}}\left(#2\right)}
+\newcommand{\Pleq}[2]{P\left(#1 \leq #2\right)}
+\newcommand{\tr}{\mathcal{T}}
+\newcommand{\trinv}[1]{\tr^{-1}\left(#1\right)}
+\newcommand{\multipartial}[1]{\frac{\partial}{\partial{\z{#1}}_1 \cdots \partial{\z{#1}}_n}}
+%\newcommand{\det}{\mathrm{det}}
+\newcommand{\detDtr}[1]{\det D\tr\left(#1\right)}
+\newcommand{\detDtrinv}[1]{\det D\trinv{#1}}
+
+\newcommand{\bolda}{\mathbf{a}}
+\newcommand{\boldat}{\transpose{\bolda}}
+\newcommand{\boldb}{\mathbf{b}}
+\newcommand{\boldbt}{\transpose{\boldb}}
+\newcommand{\boldA}{\mathbf{A}}
+\newcommand{\boldAinv}{\boldA^{-1}}
+\newcommand{\boldw}{\mathbf{w}}
+\newcommand{\boldx}{\mathbf{x}}
+\newcommand{\boldu}{\mathbf{u}}
+\newcommand{\boldz}{\mathbf{z}}
+\newcommand{\boldxi}{\boldx^{(i)}}
+\newcommand{\freeenergyxi}{\mathcal{F}\left(\boldxi\right)}
+\newcommand{\elboxi}{\mathcal{L}\left(\boldxi\right)}
+\newcommand{\expect}[2]{\mathbb{E}_{#1}\left[ #2 \right]}
+\newcommand{\qphizxi}{q_\phi\left(\boldz|\boldxi\right)}
+\newcommand{\expectqphi}[1]{\expect{\qphizxi}{#1}}
+\newcommand{\ptheta}[1]{p_\theta\left(#1\right)}
+\newcommand{\pjointi}{\ptheta{\boldxi,\boldz}}
+\newcommand{\logpjointi}{\log \pjointi}
+\newcommand{\qphi}[1]{q_\phi\left(#1\right)}
+\newcommand{\zcondi}{\boldz|\boldxi}
+\newcommand{\qzcondi}{\qphi{\zcondi}}
+\newcommand{\logqzcondi}{\log \qzcondi}
+\newcommand{\pxicond}{\ptheta{\boldxi|\boldz}}
+\newcommand{\logpxicond}{\log \pxicond}
+\newcommand{\logpz}{\log \ptheta{\boldz}}
+\newcommand{\boldzzero}{\boldz_0}
+
+\newcommand{\qzero}{q_0\left(\boldzzero\right)}
+\newcommand{\qzeroinvtr}{q_0\left(\trinv{\boldz}\right)}
+\newcommand{\expectqzero}[1]{\expect{\qzero}{#1}}
+
+\newcommand{\trzzero}{\tr\left(\boldzzero\right)}
+\newcommand{\pxicondtr}{\ptheta{\boldxi|\trzzero}}
+\newcommand{\logpxicondtr}{\log \pxicondtr}
+\newcommand{\ptrzzero}{\ptheta{\tr(\boldzzero)}}
+\newcommand{\logptr}{\log \ptrzzero}
+
+\newcommand{\entropysymbol}{\mathbb{H}}
+\newcommand{\entropy}[1]{\entropysymbol\left[#1\right]}
+\newcommand{\entropyp}[2]{\entropysymbol_{#1}\left[#2\right]}
+\newcommand{\entropyqzcondi}{\entropyp{q_\phi}{\boldz|\boldxi}}
+
+\newcommand{\entropyqzero}{\entropyp{q_0}{\boldzzero}}
+\newcommand{\wt}{\transpose{\boldw}}
+
+\newcommand{\RD}{\mathbb{R}^D}
+
+\newcommand{\partialboldz}[1]{\frac{\partial #1}{\partial \boldz}}
+\newcommand{\identity}{\mathbf{I}}

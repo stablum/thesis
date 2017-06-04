@@ -1,0 +1,65 @@
+\section{Baseline model}
+
+The baseline model that has been employed was the \emph{PMF1} model as described in the original Probabilistic Matrix Factorization paper.
+
+The parameters for the two Gaussian priors have been set to $100$ for $\sigma_U$ and $1000$ for $\sigma_V$. The $\sigma_R$ scale parameter for the ratings has been set at $1$.
+This is in compliance with the corresponding regularization parameters $\lambda_U=0.01$ and $\lambda_V=0.001$ of the \emph{PMF1} model.
+
+Instead of using SGD with momentum as the original paper proposed, Adam gradient descent was herein been employed, with parameters $\beta_1=0.9$, $\beta_2=0.999$ and $\epsilon=10^{-8}$. The gradients have been jointly calculated for every rating in the training set and also jointly applied to the latent vectors $U_i$ and $V_j$ at every step.
+
+The epochs have been implemented with a schema that made possible to achieve a level of randomization and at the same time efficiency in retrieving data from disk.
+
+The learning rate has been also set to $0.005$ as in \emph{PMF1}.
+% NOT TRUE:, but with a slowly decaying rate over the 2000 epochs. At the end of each training experiment the learning rate would be halved to $0.0025$, as the annealing parameter $T$ has been set equal to the number of epochs, 2000.
+
+These differences in experimental settings made it possible for the 
+\emph{PMF1} model to achieve an even lower testing RMSE than the one that was reported, down to FIXME, instead of the previously reported 0.9430.
+
+The validation set has been chosen as the first chunk of the randomized dataset, hence consisting in $2^17 = 131072$ ratings.
+
+\subsection{Dataset random permutation schema}
+As a preliminary measure to avoid correlations between ratings in the same chunks, the 
+dataset had its rows shuffled before the experiments were run.
+The dataset has been divided in chunks, each of size $2^{16}=65336$ ratings.
+Each epoch processed every chunk. This means that every datapoint in the dataset was processed 
+exactly one time. This is important to ensure that each rating has the same influence
+in the learning process.
+Within one epoch, the order of the chunks was randomly permuted. 
+Each chunk was then read into memory following this random permutation order and processed. 
+After a chunk is processed, the memory allocated by it is freed and the following 
+chunk in the random permutation order is loaded. 
+Moreover, the order of datapoints processing has been randomized within each individual chunk.
+This has been implemented without actually shuffling the datapoints in memory, but just
+by accessing them using a permutation of their indexes.
+
+\begin{algorithm}
+\caption{Memory and disk-read efficient dataset randomization schema for SGD-like updates}
+\label{code:1}
+\begin{algorithmic}[1]
+
+\REQUIRE ~~\\
+(1) Dataset $\mathcal{D}$\\
+(2) $\mathrm{\#epochs}$\\
+(3) $\chunklen$\\
+(4) Model parameters $\theta$\\
+(5) Latent variables $\Z$
+\ENSURE~~\\
+(1) Inference and learning using each datapoint in the dataset once for every epoch\\
+(2) High degree of randomization the order of the datapoints\\
+(3) Few disk and memory operations
+
+\item[]
+\STATE Let $\dataset \leftarrow \mathtt{shuffle}(\dataset)$
+\STATE Let $\nchunks \leftarrow \mathtt{ceiling}(|\dataset|/\chunklen)$
+\FOR{ $e$ in $(1\ldots \mathtt{\#epochs})$}
+\FOR{ $i$ in $\randperm{1\ldots \nchunks}$} 
+\STATE Let $\chunk \leftarrow \mathtt{read\_chunk}\left(i\right)$
+\FOR{ $j$ in $\randperm{1\ldots |\chunk|}$}
+\STATE Let $\datapoint \leftarrow \chunk[j]$
+\STATE Let $\theta,\Z \leftarrow \mathtt{update}(\datapoint,\theta,\Z)$
+\ENDFOR
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+

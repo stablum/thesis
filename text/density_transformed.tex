@@ -1,0 +1,66 @@
+\section{Density of a transformed multivariate random variable}
+
+a random variable $\mathbf{z}_0$ is transformed via an invertible transformation $\tr: \mathcal{R}^n \rightarrow \mathcal{R}^n$:
+    
+\begin{align}
+\z{1} = \tr(\z{0})
+\end{align}
+
+Then, it's possible to express 
+the pdf of $\z{1}$
+by using the distribution of the original variable $\pz{0}{\z{0}}$ and
+the invertible transformation $\tr$.
+
+This can be demonstrated by making use of the cdf of $\z{1}$,
+denominated $\Fz{1}{\z{1}}$, showing its relationship with the cdf of $\z{0}$
+and the inverse of $\tr$\cite{transformed-density}:
+
+\begin{align}
+\Fz{1}{\gamma} &= \Pleq{\z{1}}{\gamma}\\
+&= \Pleq{\tr(\z{0})}{\gamma} \\
+&= \Pleq{\z{0}}{\trinv{\gamma}} \\
+&= \Fz{0}{\trinv{\gamma}}
+\end{align}
+
+The integral is expanded and integration by substitution
+is used to highlight the role of the pdf of $\z{0}$ and the determinant of
+the Jacobian matrix of the inverse of $\tr$:
+\begin{align}
+\Fz{1}{\z{1}} 
+&= \Fz{0}{\trinv{\z{1}}} \\
+&=\int^{\trinv{\z{1}}} \pz{0}{\z{0}} \mathrm{d}{\z{0}}\\
+&= \int^{\z{1}} \pz{0}{\trinv{\z{1}}} 
+\cdot |\det D\trinv{\z{1}} | \mathrm{d}{\z{1}}
+\end{align}
+
+Next, the derivative on $\z{1}$ is applied to the form of the 
+cdf of $\z{1}$ just achieved, in order
+to obtain a convenient formula for $\pz{1}{\z{1}}$:
+\begin{align}
+\pz{1}{\z{1}} 
+&= \multipartial{1} \Fz{1}{\z{1}} \\
+&= \multipartial{1}\int^{\z{1}} \pz{0}{\trinv{\z{1}}} 
+\cdot |\det D\trinv{\z{1}} | \mathrm{d}{\z{1}} \\
+&= \pz{0}{\trinv{\z{1}}} \cdot |\detDtrinv{\z{1}} |
+\end{align}
+
+The matrix inverse of the Jacobian matrix of an invertible function, such as $\tr$,
+is the Jacobian matrix of $\tr^{-1}$: \cite{inverse-function-theorem}
+    
+\begin{align}
+\left[D\tr(\z{1})\right]^{-1} &= D\trinv{\z{1}}
+\end{align}
+
+The well known property of the determinant of inverse matrix $\det(A^{-1})= 1/\det(A)$
+can be used in order to just calculate the Jacobian of $\tr$ instead of the Jacobian of $\tr^{-1}$
+. This leads to:
+
+\begin{align}
+\pz{1}{\z{1}} &= \pz{0}{\trinv{\z{1}}}\cdot |\detDtr{\z{1}}|^{-1}
+\end{align}
+
+This form can be eventually be expressed as a function of $\z{0}$:
+
+\begin{align}
+\pz{1}{\z{1}} &= \pz{0}{\z{0}}\cdot |\detDtr{f(\z{0})}|^{-1}
+\end{align}
