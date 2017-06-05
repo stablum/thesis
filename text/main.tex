@@ -8,15 +8,19 @@
 \usepackage{mathtools}
 \usepackage{cite}
 \usepackage{hyperref}
+\usepackage[yyyymmdd,hhmmss]{datetime}
 
 \begin{document}
+Compiled on \today\ at \currenttime
 \tableofcontents
 \include{newcommands}
 %\include{baseline}
 %\include{separated_neural_model_dot}
 \include{density_transformed}
 \include{rearranged_variational_lower_bound}
+\include{closer_look_energy_terms}
 \include{invertible_linear_time_transformations}
+\include{energy_of_1step_illt}
 \bibliography{references.bib}
 \bibliographystyle{apalike}
 \end{document}

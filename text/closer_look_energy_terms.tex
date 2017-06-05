@@ -1,12 +1,61 @@
 \subsection{A closer look to the terms of the free energy}
 
-
-Finally, it's possible to write $\freeenergyxi$ in the following form:
-\begin{align}
+At this point, it's possible to write $\freeenergyxi$ in the following form:
+\begin{nalign}
 \freeenergyxi = &- \expectqzero{\logpxicondtr} \\
     &- \expectqzero{\logptr} \\
     &- \entropyqzero \\
     &- \expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)}
-\end{align}
+\end{nalign}
 
+Every term can be interpreted and given meaning: 
+
+\subsubsection{$\expectqzero{\logpxicondtr}$ : the likelihood term}
+
+This term is the probability of the datapoint $\boldxi$
+as evaluated by the probability distribution
+conditional to the sampled latent code $\trzzero$.
+In bayesian lingo, this is the likelihood of the datapoint
+given the model parameters.
+
+When the model is seen as an autoencoder this term
+can be interpreted as a \emph{reconstruction error}
+as calculated from the \emph{decoder}, also called
+\emph{recognition network}.
+
+\subsubsection{$\expectqzero{\logptr}$ : the prior term on the transformed latent code}
+This term is the probability of the latent code $\trzzero$
+without considering the current datapoint $\boldxi$.
+In this model this quantity is evaluated from the
+\emph{prior distribution} of the latent codes,
+whose parameters are pre-defined and not subject to learning.
+As usual with fixed prior distribution, such a term
+in objective functions can be interpreted as a regularizer
+of the transformed latent code.
+
+\subsubsection{$\entropyqzero$ : the entropy term on the initial code}
+This term is the entropy of the distribution of the 
+sample $\boldzzero$ (FIXME: find adequate name for this sample).
+The parameters of this distribution are generated
+by the \emph{inference network}.
+
+The sample $\boldzzero$ is going to be transformed into
+the actual latent code via the transformation $\tr$.
+
+As that distribution might be simple,
+such as a multivariate Gaussian with diagonal covariance
+matrix, this term is expected to be analytically known.
+
+Minimization of the free energy $\freeenergyxi$ implies
+maximization of this entropy term. 
+Hence the generated variational distribution of $\boldzzero$
+will tend not to concentrate probability mass
+in small areas of the probability space.
+For this reason this term can be interpreted as
+a form of regularization on $\boldzzero$.
+
+\subsubsection{$\expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)}$ : the transformation term}
+
+This term does not contain probability quantities and
+only makes use of the transformation $\tr$.
 

@@ -13,11 +13,11 @@ that has to be minimized.
 
 It's useful to reduce the free energy into it's "atomic" probability components:
 
-\begin{align}
+\begin{nalign}
 \freeenergyxi &= -\elboxi\\
     &= -\expectqphi{\logpjointi - \logqzcondi} \\
     &= \expectqphi{-\logpxicond - \logpz + \logqzcondi}
-\end{align}
+\end{nalign}
 
 The random multivariate variable $\boldz$ can be interpreted as being the result
 of a transformation $\boldz = \tr(\boldzzero)$ of an initial random multivariate variable 
@@ -28,27 +28,27 @@ For the \emph{law of the unconscious statistician} (LOTUS) \cite{lotus} (FIXME: 
 the energy can have a form with expectations over the simpler distribution of
 $\boldzzero$:
 
-\begin{align}
+\begin{nalign}
 \freeenergyxi &= \expectqzero{- \logpxicondtr - \logptr}
 + \expectqphi{\logqzcondi}
-\end{align}
+\end{nalign}
 
 The last term is clearly the negative entropy of $\qzcondi$:
-\begin{align}
+\begin{nalign}
  \entropyqzcondi &= - \expectqphi{\logqzcondi}
-\end{align}
+\end{nalign}
     
 At this point the previous result on the transformed density can be used in order to express this term as a function of $\qzero$:
 
-\begin{align}
+\begin{nalign}
     \logqzcondi &= \log q_0(\trinv{\boldz}) + \log \left( |\detDtr{\boldz}|^{-1} \right)\\
      &= \log q_0(\trinv{\boldz}) - \log \left( |\detDtr{\boldz}| \right)
-\end{align}
+\end{nalign}
 
 By applying the \emph{law of the unconscious statistician} to $-\entropyqzcondi$,
 a relationship between the entropy of the two distributions emerges:
 
-\begin{align}
+\begin{nalign}
      -\entropyqzcondi &= \expectqphi{\logqzcondi}\\
     &= \expectqphi{\log q_0(\trinv{\boldz}) - \log \left( |\detDtr{\boldz}| \right)}\\
     &= \expectqzero{\log q_0(\trinv{\tr(\boldzzero)})}
@@ -56,14 +56,5 @@ a relationship between the entropy of the two distributions emerges:
     &= \expectqzero{\log q_0(\boldzzero)}
        - \expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)}\\
     &= - \entropyqzero - \expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)}
-\end{align}
-
-Finally, it's possible to write $\freeenergyxi$ in the following form:
-\begin{align}
-\freeenergyxi = &- \expectqzero{\logpxicondtr} \\
-    &- \expectqzero{\logptr} \\
-    &- \entropyqzero \\
-    &- \expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)}
-\end{align}
-
+\end{nalign}
 

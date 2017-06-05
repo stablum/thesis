@@ -69,3 +69,16 @@
 
 \newcommand{\partialboldz}[1]{\frac{\partial #1}{\partial \boldz}}
 \newcommand{\identity}{\mathbf{I}}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\diffximutheta}{\left(\boldxi - \boldsymbol\mu_\theta\right)}
+\newcommand{\diffTxizerotheta}{\left(\tr(\boldzzero) - \mathbf{0}\right)}
+\newcommand{\ltwonorm}[1]{||#1||_2^2}
+
+\newenvironment{nalign}{
+    \begin{equation}
+    \begin{aligned}
+}{
+    \end{aligned}
+    \end{equation}
+    \ignorespacesafterend
+}

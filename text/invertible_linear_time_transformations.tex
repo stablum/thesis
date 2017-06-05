@@ -2,13 +2,15 @@
 
 It has been proposed\cite{1505.05770} to use a type of transformations with the following form:
 
-\begin{align}
+\begin{nalign}
 t(\boldz) = \boldz + \boldu h(\wt \boldz + b)
-\end{align}
+\end{nalign}
 
-$h$ is an element-wise nonlinearity. 
 The parameters are: $b$ which is a scalar, 
-$\wt \in \RD$ and $\boldu \in \RD$.
+$\wt \in \RD$ and $\boldu \in \RD$;
+$h$ is an element-wise nonlinearity,
+such as a sigmoid $h(a) = \frac{1}{1+e^{-a}}$.
+
 
 The expression $\wt \boldz + b$ is a scalar value,
 and $h(\wt \boldz + b)$ can be seen as one perceptron layer
@@ -24,29 +26,29 @@ as a function of the probability of the original variable $\boldzzero$.
 
 The Jacobian $\partialboldz{t(\boldz)}$ of the transformation can be found as follows:
 
-\begin{align*}
+\begin{nalign}
 \partialboldz{\boldz} &= \identity \\
 \partialboldz{\wt \boldz + b} &= \wt && \text{The Jacobian of a scalar is a row vector} \\
 \partialboldz{h(\wt \boldz + b)} &= h^\prime (\wt \boldz + b)\wt && \text{Chain rule}
-\end{align*}
+\end{nalign}
 
 Hence:
-\begin{align}
+\begin{nalign}
 \partialboldz{t(\boldz)} &= \identity + \boldu h^\prime(\wt \boldz + b)\wt
-\end{align}
+\end{nalign}
 
 In order to derive the determinant of the Jacobian, it's possible to make use of the
 \emph{matrix determinant lemma} which states:
-\begin{align}
+\begin{nalign}
     \det ( \boldA + \bolda \boldbt ) = (1 + \boldbt \boldAinv \bolda)(\det \boldA)
-\end{align}
+\end{nalign}
 
 Considering $\boldA = \identity$, $\bolda = \boldu$ and $\boldbt = h^\prime(\wt \boldz + b)\wt$,
 this leads to:
 
-\begin{align}
+\begin{nalign} \label{detjacobian_iltt}
 \det \partialboldz{t(\boldz)} &= \det(\identity + \boldu h^\prime(\wt \boldz + b) \wt)\\ 
 &= (1 + h^\prime(\wt \boldz + b)\wt \identity^{-1} \boldu)(\det \identity)\\
  &=1 + h^\prime(\wt \boldz + b)\wt \boldu
-\end{align}
+\end{nalign}
 
