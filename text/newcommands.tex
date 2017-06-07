@@ -27,14 +27,24 @@
 \newcommand{\boldAinv}{\boldA^{-1}}
 \newcommand{\boldw}{\mathbf{w}}
 \newcommand{\boldx}{\mathbf{x}}
+\newcommand{\boldX}{\mathbf{X}}
 \newcommand{\boldu}{\mathbf{u}}
 \newcommand{\boldz}{\mathbf{z}}
+\newcommand{\boldZ}{\mathbf{Z}}
 \newcommand{\boldxi}{\boldx^{(i)}}
+\newcommand{\boldxone}{\boldx^{(1)}}
+\newcommand{\boldxN}{\boldx^{(N)}}
+\newcommand{\boldzi}{\boldz^{(i)}}
+\newcommand{\boldzone}{\boldz^{(1)}}
+\newcommand{\boldzN}{\boldz^{(N)}}
 \newcommand{\freeenergyxi}{\mathcal{F}\left(\boldxi\right)}
 \newcommand{\elboxi}{\mathcal{L}\left(\boldxi\right)}
+\newcommand{\elboX}{\mathcal{L}\left(\boldX\right)}
 \newcommand{\expect}[2]{\mathbb{E}_{#1}\left[ #2 \right]}
 \newcommand{\qphizxi}{q_\phi\left(\boldz|\boldxi\right)}
+\newcommand{\qphiZ}{q_\phi\left(\boldZ\right)}
 \newcommand{\expectqphi}[1]{\expect{\qphizxi}{#1}}
+\newcommand{\expectqphiZ}[1]{\expect{\qphiZ}{#1}}
 \newcommand{\ptheta}[1]{p_\theta\left(#1\right)}
 \newcommand{\pjointi}{\ptheta{\boldxi,\boldz}}
 \newcommand{\logpjointi}{\log \pjointi}
@@ -43,6 +53,14 @@
 \newcommand{\qzcondi}{\qphi{\zcondi}}
 \newcommand{\logqzcondi}{\log \qzcondi}
 \newcommand{\pxicond}{\ptheta{\boldxi|\boldz}}
+\newcommand{\pxicondi}{\ptheta{\boldxi|\boldzi}}
+\newcommand{\pxizi}{\ptheta{\boldxi,\boldzi}}
+\newcommand{\pXcond}{\ptheta{\boldX|\boldZ}}
+\newcommand{\pXZ}{\ptheta{\boldX,\boldZ}}
+\newcommand{\pX}{\ptheta{\boldX}}
+\newcommand{\pZ}{\ptheta{\boldZ}}
+\newcommand{\pzi}{\ptheta{\boldzi}}
+\newcommand{\pZcond}{\ptheta{\boldZ|\boldX}}
 \newcommand{\logpxicond}{\log \pxicond}
 \newcommand{\logpz}{\log \ptheta{\boldz}}
 \newcommand{\boldzzero}{\boldz_0}
@@ -73,6 +91,7 @@
 \newcommand{\diffximutheta}{\left(\boldxi - \boldsymbol\mu_\theta\right)}
 \newcommand{\diffTxizerotheta}{\left(\tr(\boldzzero) - \mathbf{0}\right)}
 \newcommand{\ltwonorm}[1]{||#1||_2^2}
+\newcommand{\kl}[2]{\mathbb{KL}\left[ #1 || #2 \right]}
 
 \newenvironment{nalign}{
     \begin{equation}

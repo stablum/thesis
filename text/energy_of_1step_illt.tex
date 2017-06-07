@@ -1,0 +1,71 @@
+\section{Energy of single invertible linear-time transformation step}
+
+\subsection{Model form}
+As a simple case let's derive the free-energy objective function by using the
+following model: 
+\paragraph{The transformation $\tr$} is made of a single invertible linear-time transformation step.
+\paragraph{The distribution $\qzero$ of the initial sample $\boldzzero$} is assumed
+to be a simple
+Multivariate Normal with diagonal covariance matrix.
+\paragraph{The likelihood distribution $\pxicondtr$} is also assumed to be  
+a Multivariate Normal with diagonal covariance matrix.
+\paragraph{Prior distribution on the transformed latent code} 
+is a spherical Multivariate Normal with Identity covariance matrix centered on 0.
+
+\subsection{Derivation of the free-energy $\freeenergyxi$}
+
+\paragraph{The likelihood term}
+\begin{nalign}
+\expectqzero{\logpxicondtr} 
+&= - \log\left(\sqrt{2\pi|\Sigma_\theta|}\right)
+-\half \transpose{\diffximutheta} \Sigma^{-1}_\theta \diffximutheta \\
+&= -\half \log\left( 2\pi \right)
+-\half \sum_j \log \sigma_{\theta j}
+-\half \sum_j \left[
+        \diffximutheta_{[j]}
+    \right]^2 \cdot \frac{1}{\sigma_{\theta j}}
+\end{nalign}
+
+\paragraph{The prior term on the transformed latent code.}
+The derivation for this term is made easy by the 
+parameters of the prior 
+($\boldsymbol\mu = \mathbf{0}$,$\boldsymbol\Sigma = \identity$).
+\begin{nalign}
+\expectqzero{\logptr} 
+&= - \log\left(\sqrt{2\pi|\identity|}\right)
+-\half \transpose{\diffTxizerotheta} \identity^{-1} \diffTxizerotheta \\
+&= -\half \log\left( 2\pi \right)
+-\half \ltwonorm{\tr(\boldzzero)}
+\end{nalign}
+
+\paragraph{The entropy term on the initial code.}
+The entropy of a Multivariate Normal distribution is: $\half \log\left((2\pi)^k|\boldsymbol\Sigma|\right)$, hence the entropy of the initial sample $\boldzzero$ can be derived as:
+
+\begin{nalign}
+\entropyqzero &= \half \log\left(2\pi\right) + \half k + \half \sum_j\log \sigma_{\phi j}
+\end{nalign}
+
+\paragraph{The transformation term}
+Follows the derivation 
+\ref {detjacobian_iltt}:
+\begin{nalign}
+\expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)} 
+&= \log | 1 + h^\prime(\wt \tr(\boldzzero) + b)\wt \boldu |
+\end{nalign}
+
+\subsubsection{Final form of the free-energy $\freeenergyxi$}
+
+By summing all the terms and removing the constant terms,
+this is the form of the free-energy $\freeenergyxi$:
+
+\begin{nalign}
+\freeenergyxi
+=&
+\half \sum_j \log \sigma_{\theta j}\\
+&+\half \sum_j \left[
+        \diffximutheta_{[j]}
+    \right]^2 \cdot \frac{1}{\sigma_{\theta j}}\\
+&+ \half \ltwonorm{\tr(\boldzzero)}\\
+&-\half \sum_j\log \sigma_{\phi j}\\
+&- \log | 1 + h^\prime(\wt \tr(\boldzzero) + b)\wt \boldu |\\
+\end{nalign}

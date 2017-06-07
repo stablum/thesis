@@ -1,0 +1,53 @@
+\section{Variational Lower Bound}
+
+Given a 
+dataset $\boldX = \{\boldxone \ldots \boldxN \}$
+and the respective unobserved latent variable realizations
+$\boldZ = \{\boldzone \ldots \boldzN\}$
+\cite{Fox2012}
+suggest to derive a quantity to be maximized by considering the minimization
+of the Kullback-Leibler divergence $\kl{\qphiZ}{\pZcond}$ by decomposing it as follows:
+
+\begin{nalign}
+\kl{\qphiZ}{\pZcond} &=
+\expectqphiZ{\log \frac{\qphiZ}{\pZcond}}\\
+&= \expectqphiZ{\log \qphiZ - \log \pXcond - \log \pZ + \log \pX}
+\end{nalign}
+
+As the integrand inside the expectation $\expectqphiZ{\log \pX}$ 
+is a constant w.r.t. $\boldZ$, then $\expectqphiZ{\log \pX}=\log \pX$. Hence, the
+previous expression can be rewritten as:
+
+\begin{nalign}
+\log \pX &= \kl{\qphiZ}{\pXcond}
++ \elboX
+\end{nalign}
+
+Where we made use of this shorthand:
+\begin{nalign}
+    \elboX = \expectqphiZ{-\log \qphiZ + \log \pXcond + \log \pZ}
+\end{nalign}
+
+As $\log \pX$ is a constant w.r.t. the variational parameters $\phi$,
+and $\kl{\qphiZ}{\pXcond}$ is always non-negative,
+then the quantity $\elboX$ can be interpreted as a lower-bound to $\log \pX$
+whose maximization implies the minimization of $\kl{\qphiZ}{\pXcond}$.
+
+The lower-bound $\elboX$ can also be expressed, as in \cite{1312.6114},
+by grouping some terms
+into a negative Kullback-Leibler divergence:
+\begin{nalign}
+\elboX 
+&= -\kl{\qphiZ}{\pZ} + \expectqphiZ{\log \pXcond}
+\end{nalign}
+
+More commonly, the lower-bound is re-arranged by making use of
+the entropy of the variational approximation
+and expectation over the joint probability:
+
+\begin{nalign}
+\elboX = \entropy{\qphiZ} + \expectqphiZ{\log \pXZ}
+\end{nalign}
+
+
+
