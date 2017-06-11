@@ -1,9 +1,8 @@
 \section{Rearranging the variational lower bound}
 
-(FIXME: explain why the lower bound can be expressed as an individual datapoint)
-
-The $\mathbb{KL}$ term of the VAE has an analytical solution, hence it's not subject
-to Monte-Carlo sampling.
+The term $\kl{\qphizcondi}{\pthetaz}$ has an analytical solution within the original
+VAE framework with Gaussian approximation of the posterior, 
+whence it's not subject to Monte-Carlo sampling.
 
 Unfortunately, by using Normalizing Flows, the $\mathbb{KL}$ cannot be determined
 analytically, so it has to be subject to Monte-Carlo sampling.

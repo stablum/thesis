@@ -18,6 +18,22 @@ Hence this is the form for the joint probability:
 \pXZ = \pXcond \pZ &= \prod_{i=1}^N \pxicondi \pzi = \prod_{i=1}^N \pxizi
 \end{nalign}
 
+For convenience, the chosen form for $\elboX$
+will be the $\ref{elbo_crossentropy}$.
+
+It's possible to make use of information-theoretical properties
+\cite{Bergstrom2008}:
+
+\begin{nalign}
+\entropy{\qphiZ} &= \entropy{\qphizone} + \entropy{\qphiZminusone | \qphizone} 
+&& \text{chain rule for joint entropy}\\
+ &= \entropy{\qphizone} + \entropy{\qphiZminusone}
+&& \text{independence of datapoints}\\
+&= \sum_i \qphizi && \text{recursion}
+\end{nalign}
+
+
+
 By plugging these forms into the variational lower bound:
 \begin{nalign}
 \elboX = blablablaentropywithindividualdatapoints FIXME

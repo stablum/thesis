@@ -41,6 +41,14 @@ into a negative Kullback-Leibler divergence:
 &= -\kl{\qphiZ}{\pZ} + \expectqphiZ{\log \pXcond}
 \end{nalign}
 
+The Kullback-Leibler divergence $\kl{\qphiZ}{\pZ}$ can be also expressed by 
+an entropy and a cross-entropy term, hence:
+
+\begin{nalign}\label{elbo_crossentropy}
+\elboX 
+&= -\entropy{\qphiZ,\pZ} + \entropy{\qphiZ} + \expectqphiZ{\log \pXcond}
+\end{nalign}
+
 More commonly, the lower-bound is re-arranged by making use of
 the entropy of the variational approximation
 and expectation over the joint probability:

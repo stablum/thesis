@@ -10,19 +10,24 @@
 \usepackage{hyperref}
 \usepackage[yyyymmdd,hhmmss]{datetime}
 
+% \newcommand{\sectionbreak}{\clearpage} %page break on new section
+
 \begin{document}
 Compiled on \today\ at \currenttime
 \tableofcontents
-\include{newcommands}
-%\include{baseline}
-%\include{separated_neural_model_dot}
-\include{density_transformed}
-\include{elbo}
-\include{elbo_individual_datapoints}
-\include{rearranged_variational_lower_bound}
-\include{closer_look_energy_terms}
-\include{invertible_linear_time_transformations}
-\include{energy_of_1step_illt}
+% using \input instead of \include prevents page breaks after the include
+\input{newcommands}
+%\input{baseline}
+%\input{separated_neural_model_dot}
+\input{density_transformed}
+\input{elbo}
+\input{elbo_individual_datapoints}
+\input{the_vae}
+\input{rearranged_variational_lower_bound}
+\input{closer_look_energy_terms}
+\input{invertible_linear_time_transformations}
+\input{energy_of_1step_illt}
+\input{multiple_illt_steps}
 \bibliography{references.bib}
 \bibliographystyle{apalike}
 \end{document}
