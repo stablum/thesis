@@ -19,7 +19,7 @@ Hence this is the form for the joint probability:
 \end{nalign}
 
 For convenience, the chosen form for $\elboX$
-will be the $\ref{elbo_crossentropy}$.
+will be the \ref{elbo_crossentropy}.
 
 It's possible to make use of information-theoretical properties
 \cite{Bergstrom2008}:
@@ -29,10 +29,19 @@ It's possible to make use of information-theoretical properties
 && \text{chain rule for joint entropy}\\
  &= \entropy{\qphizone} + \entropy{\qphiZminusone}
 && \text{independence of datapoints}\\
-&= \sum_i \qphizi && \text{recursion}
+&= \sum_i \entropy{\qphizi }&& \text{recursion}
 \end{nalign}
 
+Similarly, for $\entropy{\qphiZ,\pZ}$:
 
+\begin{nalign}
+\entropy{\qphiZ,\pZ} &= \entropy{\qphizone,\pzone} 
++ \entropy{\qphiZminusone, \pZminusone | \qphizone, \pzone} 
+\\
+ &= \entropy{\qphizone,\pzone} + \entropy{\qphiZminusone,\pZminusone}
+\\
+&= \sum_i \entropy{\qphizi,\pzi} 
+\end{nalign}
 
 By plugging these forms into the variational lower bound:
 \begin{nalign}
