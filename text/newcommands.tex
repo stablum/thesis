@@ -15,9 +15,16 @@
 \newcommand{\tr}{\mathcal{T}}
 \newcommand{\trinv}[1]{\tr^{-1}\left(#1\right)}
 \newcommand{\multipartial}[1]{\frac{\partial}{\partial{\z{#1}}_1 \cdots \partial{\z{#1}}_n}}
+\newcommand{\deriv}[2]{\frac{\partial #1}{\partial #2}}
 %\newcommand{\det}{\mathrm{det}}
-\newcommand{\detDtr}[1]{\det D\tr\left(#1\right)}
-\newcommand{\detDtrinv}[1]{\det D\trinv{#1}}
+
+% previous style for derivative of transformations:
+%\newcommand{\detDtr}[1]{\det D\tr\left(#1\right)}
+%\newcommand{\detDtrinv}[1]{\det D\trinv{#1}}
+
+% new style for derivative of transformations:
+\newcommand{\detDtr}[1]{\det \deriv{\tr\left(#1\right)}{#1}}
+\newcommand{\detDtrinv}[1]{\det \deriv{\trinv{#1}}{#1}}
 
 \newcommand{\bolda}{\mathbf{a}}
 \newcommand{\boldat}{\transpose{\bolda}}
@@ -32,13 +39,13 @@
 \newcommand{\boldz}{\mathbf{z}}
 \newcommand{\boldZ}{\mathbf{Z}}
 \newcommand{\xij}{x^{(i)}_j}
-\newcommand{\boldxi}{\boldx^{(i)}}
-\newcommand{\boldxone}{\boldx^{(1)}}
-\newcommand{\boldxN}{\boldx^{(N)}}
-\newcommand{\boldzi}{\boldz^{(i)}}
-\newcommand{\boldzone}{\boldz^{(1)}}
-\newcommand{\boldZminusone}{\boldZ_{-(1)}}
-\newcommand{\boldzN}{\boldz^{(N)}}
+\newcommand{\boldxi}{{\boldx^{(i)}}}
+\newcommand{\boldxone}{{\boldx^{(1)}}}
+\newcommand{\boldxN}{{\boldx^{(N)}}}
+\newcommand{\boldzi}{{\boldz^{(i)}}}
+\newcommand{\boldzone}{{\boldz^{(1)}}}
+\newcommand{\boldZminusone}{{\boldZ_{-(1)}}}
+\newcommand{\boldzN}{{\boldz^{(N)}}}
 \newcommand{\freeenergyxi}{\mathcal{F}\left(\boldxi\right)}
 \newcommand{\elboxi}{\mathcal{L}\left(\boldxi\right)}
 \newcommand{\elboX}{\mathcal{L}\left(\boldX\right)}
@@ -47,6 +54,7 @@
 \newcommand{\qphiZ}{q_\phi\left(\boldZ\right)}
 \newcommand{\expectqphi}[1]{\expect{\qphizcondi}{#1}}
 \newcommand{\expectqphiZ}[1]{\expect{\qphiZ}{#1}}
+\newcommand{\expectqphizi}[1]{\expect{\qphizi}{#1}}
 \newcommand{\ptheta}[1]{p_\theta\left(#1\right)}
 \newcommand{\pjointi}{\ptheta{\boldxi,\boldz}}
 \newcommand{\logpjointi}{\log \pjointi}
@@ -112,3 +120,7 @@
     \end{equation}
     \ignorespacesafterend
 }
+
+\newcommand{\sumiN}{\sum_{i=1}^N}
+
+\newcommand{\integral}[2]{\int_{#1} #2 \mathrm{d}#1}

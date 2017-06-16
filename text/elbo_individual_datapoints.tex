@@ -43,7 +43,24 @@ Similarly, for $\entropy{\qphiZ,\pZ}$:
 &= \sum_i \entropy{\qphizi,\pzi} 
 \end{nalign}
 
-By plugging these forms into the variational lower bound:
+For the third term $\expectqphiZ{\log \pXcond}$:
 \begin{nalign}
-\elboX = blablablaentropywithindividualdatapoints FIXME
+\expectqphiZ{\log \pXcond} &= \integral{\boldzone}{\cdots \integral{\boldzN}{
+    \prod \qphizi \sumiN \log \pxicondi
+}\cdots} \\
+&= \integral{\boldzone}{\qphizone \cdots \integral{\boldzN}{
+     \qphizN \sumiN \log \pxicondi
+}\cdots} \\
+&= \sumiN \integral{\boldzi}{\qphizi \log \pxicondi}\\
+&= \sumiN \expectqphizi{\log \pxicondi}
 \end{nalign}
+
+By plugging these forms into the variational lower bound \ref{elbo_crossentropy},
+it can be shown as a sum of individual objective terms, each of those
+is dependent on only a single datapoint:
+\begin{nalign}
+\elboX = \sumiN -\entropy{\qphizi,\pzi} + \entropy{\qphizi } + \expectqphizi{\log \pxicondi}
+\end{nalign}
+
+This form allows for SGD-like updates; for this reason \cite{1312.6114}
+gave \emph{Stochastic Gradient Variational Bayes} as a name for this technique.
