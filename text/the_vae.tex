@@ -1,1 +1,20 @@
 \section{The Variational Auto-Encoder}
+
+\cite{1312.6114} introduced a model aimed at posterior inference 
+on datasets with high-dimensional datapoints.
+
+The model is based on a \emph{generator network} which outputs a conditional
+distribution $\pxcond$ 
+in datapoint-space given a realization of the latent variables $\boldz$.
+
+The posterior distribution $\pzcond=\integral{\boldz}{\pxcond \pthetaz}$ is intractable,
+hence an approximating \emph{recognition network}
+$\qzcond$ is introduced whose parameters $\phi$ are
+optimized via variational inference.
+
+It was also shown experimentally how a Monte Carlo approximation of
+the single-datapoint ELBO (section \ref{elbo_datapoint})
+using a single sample of the latent variable is sufficient to
+achieve good learning performances. (FIXME: "doubly stochastic (eventually cite paper)??")
+
+

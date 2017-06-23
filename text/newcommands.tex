@@ -1,3 +1,6 @@
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\prodk}[1]{\prod_{k=1}^K #1}
+\newcommand{\sumk}[1]{\sum_{k=1}^K #1}
 \newcommand{\transpose}[1]{{#1}^{\top}}
 \newcommand{\net}[2]{\mathrm{net}_{#1}\left(#2\right)}
 \newcommand{\dataset}{\mathcal{D}}
@@ -23,9 +26,14 @@
 %\newcommand{\detDtrinv}[1]{\det D\trinv{#1}}
 
 % new style for derivative of transformations:
-\newcommand{\detDtr}[1]{\det \deriv{\tr\left(#1\right)}{#1}}
-\newcommand{\detDtrinv}[1]{\det \deriv{\trinv{#1}}{#1}}
 
+\newcommand{\derivtk}[1]{\deriv{t_k\left(#1\right)}{#1}}
+\newcommand{\Dtr}[1]{\deriv{\tr\left(#1\right)}{#1}}
+\newcommand{\Dtrinv}[1]{\deriv{\trinv{#1}}{#1}}
+\newcommand{\detDtr}[1]{\det \Dtr{#1}}
+\newcommand{\detDtrinv}[1]{\det \Dtrinv{#1}}
+
+\newcommand{\bk}{b_k}
 \newcommand{\bolda}{\mathbf{a}}
 \newcommand{\boldat}{\transpose{\bolda}}
 \newcommand{\boldb}{\mathbf{b}}
@@ -33,9 +41,11 @@
 \newcommand{\boldA}{\mathbf{A}}
 \newcommand{\boldAinv}{\boldA^{-1}}
 \newcommand{\boldw}{\mathbf{w}}
+\newcommand{\boldwk}{\mathbf{w}_k}
 \newcommand{\boldx}{\mathbf{x}}
 \newcommand{\boldX}{\mathbf{X}}
 \newcommand{\boldu}{\mathbf{u}}
+\newcommand{\bolduk}{\mathbf{u}_k}
 \newcommand{\boldz}{\mathbf{z}}
 \newcommand{\boldZ}{\mathbf{Z}}
 \newcommand{\xij}{x^{(i)}_j}
@@ -45,24 +55,31 @@
 \newcommand{\boldzi}{{\boldz^{(i)}}}
 \newcommand{\boldzone}{{\boldz^{(1)}}}
 \newcommand{\boldZminusone}{{\boldZ_{-(1)}}}
+\newcommand{\boldXminusone}{{\boldX_{-(1)}}}
+\newcommand{\boldzkminusone}{{\boldz_{k-1}}}
 \newcommand{\boldzN}{{\boldz^{(N)}}}
 \newcommand{\freeenergyxi}{\mathcal{F}\left(\boldxi\right)}
 \newcommand{\elboxi}{\mathcal{L}\left(\boldxi\right)}
 \newcommand{\elboX}{\mathcal{L}\left(\boldX\right)}
 \newcommand{\expect}[2]{\mathbb{E}_{#1}\left[ #2 \right]}
-\newcommand{\qphizcondi}{q_\phi\left(\boldz|\boldxi\right)}
-\newcommand{\qphiZ}{q_\phi\left(\boldZ\right)}
+\newcommand{\zcondi}{\boldz|\boldxi}
+\newcommand{\zcond}{\boldz|\boldx}
+\newcommand{\qphizcondi}{q_\phi\left(\zcondi\right)}
+\newcommand{\qphiZ}{q_\phi\left(\boldZ|\boldX\right)}
 \newcommand{\expectqphi}[1]{\expect{\qphizcondi}{#1}}
 \newcommand{\expectqphiZ}[1]{\expect{\qphiZ}{#1}}
+\newcommand{\qphizi}{\qphi{\boldzi|\boldxi}}
 \newcommand{\expectqphizi}[1]{\expect{\qphizi}{#1}}
 \newcommand{\ptheta}[1]{p_\theta\left(#1\right)}
 \newcommand{\pjointi}{\ptheta{\boldxi,\boldz}}
 \newcommand{\logpjointi}{\log \pjointi}
 \newcommand{\qphi}[1]{q_\phi\left(#1\right)}
-\newcommand{\zcondi}{\boldz|\boldxi}
 \newcommand{\qzcondi}{\qphi{\zcondi}}
+\newcommand{\qzcond}{\qphi{\zcond}}
 \newcommand{\logqzcondi}{\log \qzcondi}
 \newcommand{\pxicond}{\ptheta{\boldxi|\boldz}}
+\newcommand{\pxcond}{\ptheta{\boldx|\boldz}}
+\newcommand{\pzcond}{\ptheta{\zcond}}
 \newcommand{\pxicondi}{\ptheta{\boldxi|\boldzi}}
 \newcommand{\pxizi}{\ptheta{\boldxi,\boldzi}}
 \newcommand{\pXcond}{\ptheta{\boldX|\boldZ}}
@@ -70,19 +87,19 @@
 \newcommand{\pX}{\ptheta{\boldX}}
 \newcommand{\pZ}{\ptheta{\boldZ}}
 \newcommand{\pzi}{\ptheta{\boldzi}}
+\newcommand{\pthetaz}{\ptheta{\boldz}}
 \newcommand{\pzone}{\ptheta{\boldzone}}
-\newcommand{\qphizi}{\qphi{\boldzi}}
-\newcommand{\qphizone}{\qphi{\boldzone}}
-\newcommand{\qphiZminusone}{\qphi{\boldZminusone}}
+\newcommand{\qphizone}{\qphi{\boldzone|\boldxone}}
+\newcommand{\qphiZminusone}{\qphi{\boldZminusone|\boldXminusone}}
 \newcommand{\pZminusone}{\ptheta{\boldZminusone}}
-\newcommand{\qphizN}{\qphi{\boldzN}}
+\newcommand{\qphizN}{\qphi{\boldzN|\boldxN}}
 \newcommand{\pZcond}{\ptheta{\boldZ|\boldX}}
 \newcommand{\logpxicond}{\log \pxicond}
-\newcommand{\pthetaz}{\ptheta{\boldz}}
 \newcommand{\logpz}{\log \pthetaz}
 \newcommand{\boldzzero}{\boldz_0}
+\newcommand{\boldxzero}{\boldx_0}
 
-\newcommand{\qzero}{q_0\left(\boldzzero\right)}
+\newcommand{\qzero}{q_0\left(\boldzzero|\boldx\right)}
 \newcommand{\qzeroinvtr}{q_0\left(\trinv{\boldz}\right)}
 \newcommand{\expectqzero}[1]{\expect{\qzero}{#1}}
 
@@ -97,8 +114,9 @@
 \newcommand{\entropyp}[2]{\entropysymbol_{#1}\left[#2\right]}
 \newcommand{\entropyqzcondi}{\entropyp{q_\phi}{\boldz|\boldxi}}
 
-\newcommand{\entropyqzero}{\entropyp{q_0}{\boldzzero}}
+\newcommand{\entropyqzero}{\entropyp{q_0}{\boldzzero|\boldx}}
 \newcommand{\wt}{\transpose{\boldw}}
+\newcommand{\wtk}{\transpose{\boldw}_k}
 
 \newcommand{\RD}{\mathbb{R}^D}
 

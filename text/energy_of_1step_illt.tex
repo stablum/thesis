@@ -13,11 +13,11 @@ a Multivariate Normal with diagonal covariance matrix.
 is a spherical Multivariate Normal with Identity covariance matrix centered on 0.
 
 \subsection{Derivation of the free-energy $\freeenergyxi$}
-
+Follows the derivation of a Monte Carlo 1-sample approximation of $\freeenergyxi$:
 \paragraph{The likelihood term}
 \begin{nalign}
 \expectqzero{\logpxicondtr} 
-&= - \log\left(\sqrt{2\pi|\Sigma_\theta|}\right)
+&\approx - \log\left(\sqrt{2\pi\abs{\Sigma_\theta}}\right)
 -\half \transpose{\diffximutheta} \Sigma^{-1}_\theta \diffximutheta \\
 &= -\half \log\left( 2\pi \right)
 -\half \sum_j \log \sigma_{\theta j}
@@ -31,40 +31,40 @@ parameters of the prior
 ($\boldsymbol\mu = \mathbf{0}$,$\boldsymbol\Sigma = \identity$).
 \begin{nalign}
 \expectqzero{\logptr} 
-&= - \log\left(\sqrt{2\pi|\identity|}\right)
+&\approx - \log\left(\sqrt{2\pi\abs{\identity}}\right)
 -\half \transpose{\diffTxizerotheta} \identity^{-1} \diffTxizerotheta \\
 &= -\half \log\left( 2\pi \right)
 -\half \ltwonorm{\tr(\boldzzero)}
 \end{nalign}
 
 \paragraph{The entropy term on the initial code.}
-The entropy of a Multivariate Normal distribution is: $\half \log\left((2\pi)^k|\boldsymbol\Sigma|\right)$, hence the entropy of the initial sample $\boldzzero$ can be derived as:
+The entropy of a Multivariate Normal distribution is: $\half \log\left((2\pi)^k\abs{\boldsymbol\Sigma}\right)$, hence the entropy of the initial sample $\boldzzero$ can be derived as:
 
 \begin{nalign}
-\entropyqzero &= \half \log\left(2\pi\right) + \half k + \half \sum_j\log \sigma_{\phi j}
+\entropyqzero &\approx \half \log\left(2\pi\right) + \half k + \half \sum_j\log \sigma_{\phi j}
 \end{nalign}
 
 \paragraph{The transformation term}
 Follows the derivation 
-\ref {detjacobian_iltt}:
+\eqref{detjacobian_iltt}:
 \begin{nalign}
-\expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)} 
-&= \log | 1 + h^\prime(\wt \tr(\boldzzero) + b)\wt \boldu |
+\expectqzero{\log \left( \abs{\detDtr{\boldzzero}} \right)} 
+&\approx \log \abs{ 1 + h^\prime(\wt \boldzzero + b)\wt \boldu }
 \end{nalign}
 
-\subsubsection{Final form of the free-energy $\freeenergyxi$}
+\subsubsection{Free-energy $\freeenergyxi$ implementation with the Invertible Linear-time Transformation }
 
 By summing all the terms and removing the constant terms,
-this is the form of the free-energy $\freeenergyxi$:
+this is the form of approximation of the free-energy $\freeenergyxi$ objective:
 
 \begin{nalign}
 \freeenergyxi
-=&
+\approx &
 \half \sum_j \log \sigma_{\theta j}\\
 &+\half \sum_j \left[
         \diffximutheta_{[j]}
     \right]^2 \cdot \frac{1}{\sigma_{\theta j}}\\
 &+ \half \ltwonorm{\tr(\boldzzero)}\\
 &-\half \sum_j\log \sigma_{\phi j}\\
-&- \log | 1 + h^\prime(\wt \tr(\boldzzero) + b)\wt \boldu |\\
+&- \log \abs{ 1 + h^\prime(\wt \boldzzero + b)\wt \boldu }\\
 \end{nalign}

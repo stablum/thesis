@@ -1,1 +1,46 @@
-\section{Multiple invertible linear-time transformation steps}
+\section{Multiple nested transformation steps}
+
+A transformation $\tr(\boldz)$ might be composed
+of multiple nested but similar transformation steps
+each with it's own parameters:
+
+\begin{nalign}
+\tr(\boldz) &= t_k \circ t_{k-1} \circ \ldots \circ t_1(\boldzzero)
+\end{nalign}
+
+By using the chain rule, the gradient of the transformation becomes:
+\begin{nalign}
+\Dtr{\boldzzero}
+&= \prodk{\derivtk{\boldzkminusone}}
+\end{nalign}
+
+The determinant of the product of square matrices is the product of their determinants, hence:
+\begin{nalign}
+\det \Dtr{\boldzzero} &= \prodk{\det \derivtk{\boldzkminusone}}
+\end{nalign}
+
+The expectation term, as previously illustrated, can be approximated with
+a single Monte Carlo sample:
+
+\begin{nalign}
+\expectqzero{\log \left( \abs{\Dtr{\boldzkminusone}} \right)}
+&\approx \log \abs{\prodk{\det \derivtk{\boldzkminusone}}}
+\\
+&=\sumk{ \log \abs{\derivtk{\boldzkminusone}}}
+\end{nalign}
+\subsection{Implementation with Invertible Linear-time Transformations}
+
+With invertible Linear-time Transformations, the derivative becomes:
+
+\begin{nalign}
+\Dtr{\boldzzero}
+&=\prodk{ \identity + \bolduk h^\prime(\wtk \boldzkminusone + \bk)\wtk }
+\end{nalign}
+
+The expectation sample becomes:
+
+\begin{nalign}
+\expectqzero{\log \left( \abs{\Dtr{\boldzkminusone}} \right)}
+&\approx
+\sumk{ \log \abs{1 + h^\prime(\wtk \boldzkminusone + \bk)\wtk \bolduk }}
+\end{nalign}

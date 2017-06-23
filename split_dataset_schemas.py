@@ -2,7 +2,8 @@ import numpy as np
 import random
 import config
 import utils
-from tqdm import tqdm
+from tqdm import tqdm as _tqdm
+tqdm = lambda *args,**kwargs : _tqdm(*args,mininterval=5,**kwargs)
 
 class PermList(object):
     """

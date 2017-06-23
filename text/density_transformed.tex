@@ -30,7 +30,7 @@ the Jacobian matrix of the inverse of $\tr$:
 &= \Fz{0}{\trinv{\z{1}}} \\
 &=\int^{\trinv{\z{1}}} \pz{0}{\z{0}} \mathrm{d}{\z{0}}\\
 &= \int^{\z{1}} \pz{0}{\trinv{\z{1}}} 
-\cdot |\det D\trinv{\z{1}} | \mathrm{d}{\z{1}}
+\cdot \abs{\det \Dtrinv{\z{1}} } \mathrm{d}{\z{1}}
 \end{nalign}
 
 Next, the derivative on $\z{1}$ is applied to the form of the 
@@ -40,27 +40,27 @@ to obtain a convenient formula for $\pz{1}{\z{1}}$:
 \pz{1}{\z{1}} 
 &= \multipartial{1} \Fz{1}{\z{1}} \\
 &= \multipartial{1}\int^{\z{1}} \pz{0}{\trinv{\z{1}}} 
-\cdot |\det D\trinv{\z{1}} | \mathrm{d}{\z{1}} \\
-&= \pz{0}{\trinv{\z{1}}} \cdot |\detDtrinv{\z{1}} |
+\cdot \abs{\det \Dtrinv{\z{1}} } \mathrm{d}{\z{1}} \\
+&= \pz{0}{\trinv{\z{1}}} \cdot \abs{\detDtrinv{\z{1}} }
 \end{nalign}
 
 The matrix inverse of the Jacobian matrix of an invertible function, such as $\tr$,
 is the Jacobian matrix of $\tr^{-1}$: \cite{inverse-function-theorem}
     
 \begin{nalign}
-\left[D\tr(\z{1})\right]^{-1} &= D\trinv{\z{1}}
+\left[\Dtr{\z{0}}\right]^{-1} &= \Dtrinv{\z{1}}
 \end{nalign}
 
 The well known property of the determinant of inverse matrix $\det(A^{-1})= 1/\det(A)$
 can be used in order to just calculate the Jacobian of $\tr$ instead of the Jacobian of $\tr^{-1}$
 . This leads to:
 
-\begin{nalign}
-\pz{1}{\z{1}} &= \pz{0}{\trinv{\z{1}}}\cdot |\detDtr{\z{1}}|^{-1}
+\begin{nalign}\label{trprob_with_detd}
+\pz{1}{\z{1}} &= \pz{0}{\trinv{\z{1}}}\cdot \abs{\detDtr{\z{0}}}^{-1}
 \end{nalign}
 
 This form can be eventually be expressed as a function of $\z{0}$:
 
 \begin{nalign}
-\pz{1}{\z{1}} &= \pz{0}{\z{0}}\cdot |\detDtr{f(\z{0})}|^{-1}
+\pz{1}{\z{1}} &= \pz{0}{\z{0}}\cdot \abs{\detDtr{\z{0}}}^{-1}
 \end{nalign}

@@ -1,4 +1,4 @@
-\section{Rearranging the variational lower bound}
+\section{Rearranging the ELBO}
 
 The term $\kl{\qphizcondi}{\pthetaz}$ has an analytical solution within the original
 VAE framework with Gaussian approximation of the posterior, 
@@ -37,23 +37,30 @@ The last term is clearly the negative entropy of $\qzcondi$:
  \entropyqzcondi &= - \expectqphi{\logqzcondi}
 \end{nalign}
     
-At this point the previous result on the transformed density can be used in order to express this term as a function of $\qzero$:
+At this point the previous result on the transformed density 
+\eqref{trprob_with_detd}
+can be used in order to express this term as a function of $\qzero$:
 
 \begin{nalign}
-    \logqzcondi &= \log q_0(\trinv{\boldz}) + \log \left( |\detDtr{\boldz}|^{-1} \right)\\
-     &= \log q_0(\trinv{\boldz}) - \log \left( |\detDtr{\boldz}| \right)
+    \logqzcondi &= \log q_0(\trinv{\boldz}) + \log \left( \abs{\detDtr{\boldzzero}}^{-1} \right)\\
+     &= \log q_0(\boldzzero) - \log \left( \abs{\detDtr{\boldzzero}} \right)
 \end{nalign}
 
+Hence, this entropy term becomes:
+
+\begin{nalign}
+     -\entropyqzcondi 
+    &= \expectqphi{\log q_0(\trinv{\boldz}) - \log \left( \abs{\detDtr{\trinv{\boldz}}} \right)}
+\end{nalign}
 By applying the \emph{law of the unconscious statistician} to $-\entropyqzcondi$,
+and considering the expectation over $q_0$ instead of over $q_\phi$,
 a relationship between the entropy of the two distributions emerges:
 
 \begin{nalign}
-     -\entropyqzcondi &= \expectqphi{\logqzcondi}\\
-    &= \expectqphi{\log q_0(\trinv{\boldz}) - \log \left( |\detDtr{\boldz}| \right)}\\
-    &= \expectqzero{\log q_0(\trinv{\tr(\boldzzero)})}
-       - \expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)}\\
+   -\entropyqzcondi &= \expectqzero{\log q_0(\trinv{\tr(\boldzzero)})}
+       - \expectqzero{\log \left( \abs{\detDtr{\boldzzero}} \right)}\\
     &= \expectqzero{\log q_0(\boldzzero)}
-       - \expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)}\\
-    &= - \entropyqzero - \expectqzero{\log \left( |\detDtr{\tr(\boldzzero)}| \right)}
+       - \expectqzero{\log \left( \abs{\detDtr{\boldzzero}} \right)}\\
+    &= - \entropyqzero - \expectqzero{\log \left( \abs{\detDtr{\boldzzero}} \right)}
 \end{nalign}
 

@@ -123,6 +123,49 @@ class SamplingLayer(lasagne.layers.Layer):
             output_shape = input_shape
         return output_shape
 
+class ILTTLayer(lasagne.layers.Layer):
+    def __init__(self,*args,**kwargs):
+        self.dim = kwargs.pop('dim',None)
+        self.nonlinearity = kwargs.pop('nonlinearity',None)
+        super(ILTTLayer, self).__init__(*args, **kwargs)
+
+        self.w = self.add_param(
+            lasagne.init.GlorotUniform(),
+            (
+                self.input_shape[1],
+                1 # a scalar is fed into nonlinearity 'h'
+            ),
+            name="w"
+        )
+        self.b = self.add_param(
+            lasagne.init.Uniform(),
+            (
+                1,
+            ),
+            name="b",
+            regularizable=False
+        )
+        self.u = self.add_param(
+            lasagne.init.GlorotUniform(),
+            (
+                self.input_shape[1], # output has same dimension as input points
+                1, # input is the scalar provided by 'h'
+            ),
+            name="u"
+        )
+
+    def get_output_shape_for(self, input_shape):
+        return input_shape[:1] + (self.dim,)
+
+    def get_output_for(self, input, **kwargs):
+
+        activation = T.dot(input, self.w)
+        if self.b is not None:
+            activation = activation + self.b
+        h = self.nonlinearity(activation)
+        ret = input + T.dot(h,self.u.T)
+        return ret
+
 def split_distr(in_var,dim):
     mu = in_var[:,0:dim]
     log_sigma = in_var[:,dim:dim*2]

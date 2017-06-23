@@ -8,6 +8,7 @@ import movielens
 n_epochs=20000
 
 K=10
+TK=5 # transformation's K (number of nested transformation steps)
 hid_dim=100
 n_hid_layers=2
 chan_out_dim=K
@@ -40,11 +41,12 @@ g_rij = "linear"
 g_in = "elu"
 g_hid = "tanh"
 g_latent = "linear"
+g_transform = "sigmoid"
 
 preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 
 chunk_len =64*1024
-minibatch_size = 1 #2 # 16 # 64
+minibatch_size = 16 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
