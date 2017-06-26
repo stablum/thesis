@@ -265,8 +265,12 @@ class Model(object):
         masked_loss_sq = self.loss_sq * self.mask
         inv_sigma = 1./sigma
         term_scaled_error= - T.sum(masked_loss_sq * inv_sigma)
+
+        # the terms have all minuses inside
         ret = term_constant + term_logdetsigma + term_scaled_error
+
         ret = scalar(ret) # to scalar
+        ret.name = "regression_error_obj"
         return ret
 
     @utils.cached_property
@@ -274,6 +278,8 @@ class Model(object):
         term_constant= - 0.5 * self.mask_sum * np.array(2*np.pi).astype('float32')
         term_l2 = - 0.5 * T.sum(self.latentK_lea ** 2)
         ret = term_constant + term_l2
+        ret.name = "latentK_term_obj"
+        ret = scalar(ret)
         return ret
 
     @utils.cached_property
@@ -282,7 +288,9 @@ class Model(object):
         term_dim = 0.5 * latent_dim
         masked_log_sigma = self.latent0_log_sigma_lea
         term_logdetsigma = 0.5 * T.sum(masked_log_sigma)
-        ret = term_constant + term_dim + masked_log_sigma
+        ret = term_constant + term_dim + term_logdetsigma
+        ret.name = "latent0_entropy_term_obj"
+        ret = scalar(ret)
         return ret
 
     @utils.cached_property
@@ -303,7 +311,7 @@ class Model(object):
     @utils.cached_property
     def transformation_zs(self):
         ret = map(
-            lambda l: lasagne.layers.get_output(self.l_out_mu,deterministic=False),
+            lambda l: lasagne.layers.get_output(l,deterministic=False),
             self.l_transformations
         )
         return ret
@@ -320,31 +328,33 @@ class Model(object):
                 self.transformation_us,
                 self.transformation_zs
         ):
-            a = T.dot(zkminusone,w) + b
+            zkminusone.name = "z_{}".format(k-1)
+            zw = T.dot(zkminusone,w)
+            a = zw + b
             a_range = T.arange(a.shape[0])
             h_a = h(a)
             #h_prime_output = T.grad(h_a,a)
 
-            def do_grad_h (i,a):
-                ai = a[i,:]
+            def do_grad_h (i,ai):
+                #ai = a[i,:]
                 hai = h(ai)
                 shai = scalar(hai)
                 print("shai",shai)
-                gr = T.grad( hai, ai)
+                gr = T.grad( shai, ai)
                 return gr
 
             hprime,_updates = theano.scan(
                 fn=do_grad_h,
-                sequences=a_range,
-                non_sequences=[a],
+                sequences=[a_range,a],
             )
-            d = T.dot(w,u.T)
+            d = T.dot(w.T,u)
 
             m = hprime * d
             s = 1+m
             ret += T.log(T.abs_(s))
-            zkminusone = z.T
-
+            zkminusone = z
+        ret.name = "transformation_term_obj"
+        ret = scalar(T.sum(ret))
         return ret
 
     @utils.cached_property
@@ -361,7 +371,9 @@ class Model(object):
         ret += self.latentK_term_obj
         ret += self.latent0_entropy_term_obj
         ret += self.transformation_term_obj
-        ret = scalar(ret)
+        ret.name = "elbo_before_sum"
+        ret = scalar(T.sum(ret))
+        ret.name = "elbo_after_sum"
         return ret
 
     @utils.cached_property
