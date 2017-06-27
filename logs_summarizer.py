@@ -25,6 +25,7 @@ shorten_dict = {
 
 not_shortened_dict = dict([
     ("K",int),
+    ("TK",int),
     ("hid_dim",int),
     ("chan_out_dim",int),
     ("optimizer",str),
