@@ -8,17 +8,17 @@ import movielens
 n_epochs=20000
 
 K=10
-TK=6# transformation's K (number of nested transformation steps)
+TK=4# transformation's K (number of nested transformation steps)
 hid_dim=100
 n_hid_layers=2
 chan_out_dim=K
 stochastic_prediction=False#True
-regularization_lambda=1e-4
+regularization_lambda=5e-4
 regularization_type="L1" # in L1/L2
 regularization_latent_kl=0.5
 input_dropout_p=0.0
 dropout_p=0.0
-lr_begin=5e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
+lr_begin=1e-5#5e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
 max_rating=5.
 
