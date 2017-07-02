@@ -48,7 +48,8 @@ def main():
         return ret
 
     def make_objective_term(Rij,ui,vj):
-        eij = ( Rij - make_predict_to_1(ui,vj) ) ** 2
+        eij = ( Rij - make_predict_to_1(ui,vj) ) **
+        eij.name = "eij"
         ret = 0.5 * 1./(sigma**2) * eij # error term (gaussian centered in the prediction)
 
         # 0-mean gaussian prior on the latent vector.
@@ -83,7 +84,7 @@ def main():
     vj_update_fn = theano.function(common,new_for_vj+[eij_,grads_ui,grads_vj])
     predict_to_5_fn = theano.function([ui_sym,vj_sym], [make_predict_to_5(ui_sym,vj_sym)])
     predict_to_1_fn = theano.function([ui_sym,vj_sym], [make_predict_to_1(ui_sym,vj_sym)])
-
+    import ipdb; ipdb.set_trace()
     def train_with_datapoint(i,j,Rij,lr):
         Rij = (Rij - 1.) / (config.max_rating - 1.)
         Rij = np.array([[Rij]],dtype='float32')

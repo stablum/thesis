@@ -251,8 +251,14 @@ class Log(object):
         def meanstd(l,axis=0):
             m = np.mean(l,axis=axis)
             s = np.std(l,axis=axis)
+            if len(m.shape) == 0:
+                indexes = None
+            elif len(m.shape) == 2:
+                indexes = range(m.shape[1-axis])
+            else:
+                indexes = range(len(m))
             if axis==0:
-                a = np.vstack([range(len(m)),m,s])
+                a = np.vstack([indexes,m,s])
                 return str(a)
             else:
                 return "{} {}".format(m,s)

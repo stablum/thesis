@@ -135,7 +135,8 @@ class ILTTLayer(lasagne.layers.Layer):
                 self.input_shape[1],
                 1 # a scalar is fed into nonlinearity 'h'
             ),
-            name="w"
+            name="w",
+            regularizable=False
         )
         self.b = self.add_param(
             lasagne.init.Uniform(),
@@ -151,7 +152,8 @@ class ILTTLayer(lasagne.layers.Layer):
                 self.input_shape[1], # output has same dimension as input points
                 1, # input is the scalar provided by 'h'
             ),
-            name="u"
+            name="u",
+            regularizable=False
         )
 
     def get_output_shape_for(self, input_shape):
