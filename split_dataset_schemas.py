@@ -121,7 +121,6 @@ class MemoryRandomCompleteEpochsSparseRows(MemoryRandomCompleteEpochs):
                 # take only a first chunk of the shuffled ratings tuples
                 # and creates the concatenated user row + item column
                 (i,j),r = shuffled_ratings[k]
-                print("shuffled_ratings[",k,"]",shuffled_ratings[k])
                 row = scipy.sparse.hstack([csr[i,:], csr[:,j].T])
                 ret.append((k,row))
         else:
