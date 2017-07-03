@@ -55,12 +55,18 @@
 \newcommand{\boldx}{\mathbf{x}}
 \newcommand{\boldX}{\mathbf{X}}
 \newcommand{\boldu}{\mathbf{u}}
+\newcommand{\boldui}{\mathbf{u}_i}
+\newcommand{\boldv}{\mathbf{v}}
+\newcommand{\boldvj}{\mathbf{v}_j}
 \newcommand{\bolduk}{\mathbf{u}_k}
 \newcommand{\boldz}{\mathbf{z}}
+\newcommand{\boldzij}{\mathbf{z}_{ij}}
 \newcommand{\boldr}{\mathbf{r}}
 \newcommand{\boldrk}{\boldr_k}
 \newcommand{\boldm}{\mathbf{m}}
 \newcommand{\boldmk}{\boldm_k}
+\newcommand{\mask}{\mathbb{M}}
+\newcommand{\maskk}{\mask_k}
 \newcommand{\boldZ}{\mathbf{Z}}
 \newcommand{\xij}{x^{(i)}_j}
 \newcommand{\boldxi}{{\boldx^{(i)}}}
@@ -80,6 +86,11 @@
 \newcommand{\zcond}{\boldz|\boldx}
 \newcommand{\qphizcondi}{q_\phi\left(\zcondi\right)}
 \newcommand{\qphiZ}{q_\phi\left(\boldZ|\boldX\right)}
+\newcommand{\ric}{r_{i\cdot}}
+\newcommand{\qui}{q(\boldui|\ric}
+\newcommand{\rcj}{r_{\cdot j}}
+\newcommand{\qvj}{q(\boldvj|\rcj)}
+\newcommand{\rij}{r_{ij}}
 \newcommand{\expectqphi}[1]{\expect{\qphizcondi}{#1}}
 \newcommand{\expectqphiZ}[1]{\expect{\qphiZ}{#1}}
 \newcommand{\qphizi}{\qphi{\boldzi|\boldxi}}

@@ -2,6 +2,7 @@ import numpy as np
 import random
 import config
 import utils
+import scipy
 from tqdm import tqdm as _tqdm
 tqdm = lambda *args,**kwargs : _tqdm(*args,mininterval=5,**kwargs)
 
@@ -45,7 +46,7 @@ class MemoryRandomCompleteEpochs(Splitter):
     def __init__(self,dataset):
         super().__init__(dataset)
 
-    @utils.cached_property
+    @property
     def _training_set(self):
         return self.entire[self.splitpoint:]
 
@@ -102,13 +103,27 @@ class MemoryRandomCompleteEpochsSparseRows(MemoryRandomCompleteEpochs):
             amount_datapoints = self.dataset.M
         elif config.regression_type == "user":
             amount_datapoints = self.dataset.N
+        elif config.regression_type == "user+item":
+            amount_datapoints = config.ratings_training_set_subsample_size
         else:
             raise Exception("regression_type not valid")
 
         # then, split into sparse rows list
         ret = []
-        for i in tqdm(range(amount_datapoints),desc="converting sparse matrix R to list of sparse rows"):
-            ret.append((i,csr[i,:]))
+        if config.regression_type == "user+item":
+            # just randomly shuffle all the ratings tuples
+            perm = np.random.permutation(len(ratings))
+            shuffled_ratings = PermList(ratings,perm)
+            for k in range(config.ratings_training_set_subsample_size):
+                # take only a first chunk of the shuffled ratings tuples
+                # and creates the concatenated user row + item column
+                (i,j),r = shuffled_ratings[k]
+                row = scipy.sparse.hstack([csr[i,:], csr[:,j].T])
+                ret.append((k,row))
+        else:
+            for k in tqdm(range(amount_datapoints),desc="converting sparse matrix R to list of sparse rows"):
+                row = csr[k,:]
+                ret.append((k,row))
         return ret
 
     @utils.cached_property
@@ -116,7 +131,7 @@ class MemoryRandomCompleteEpochsSparseRows(MemoryRandomCompleteEpochs):
         ratings = super()._validation_set
         return self._to_sparse_rows(ratings)
 
-    @utils.cached_property
+    @property
     def _training_set(self):
         ratings = super()._training_set
         return self._to_sparse_rows(ratings)

@@ -14,7 +14,11 @@ class cached_property(object):
         attr = self._factory(instance)
 
         # Cache the value; hide ourselves.
-        setattr(instance, self._attr_name, attr)
+        try:
+            setattr(instance, self._attr_name, attr)
+        except Exception as e:
+            print(repr(e))
+            import ipdb; ipdb.set_trace()
 
         return attr
 

@@ -22,6 +22,8 @@ lr_begin=1e-5#5e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
 max_rating=5.
 
+ratings_training_set_subsample_size = 5000
+
 regression_error_coef=0.5#1.#100.#1.#2.
 
 update_algorithm = 'adam_symbolic'
@@ -48,7 +50,7 @@ preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 chunk_len =64*1024
 minibatch_size = 16 #2 # 16 # 64
 
-regression_type = "item" # in user/item/user+item
+regression_type = "user+item" # in user/item/user+item
 
 if socket.gethostname() in ['playertrackingmobile']:
     # locally
