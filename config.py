@@ -8,7 +8,7 @@ import movielens
 n_epochs=20000
 
 K=30
-TK=6# transformation's K (number of nested transformation steps)
+TK=12# transformation's K (number of nested transformation steps)
 hid_dim=1000
 n_hid_layers=2
 chan_out_dim=K
@@ -50,7 +50,7 @@ preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 chunk_len =64*1024
 minibatch_size = 16 #2 # 16 # 64
 
-regression_type = "user+item" # in user/item/user+item
+regression_type = "item" # in user/item/user+item
 
 if socket.gethostname() in ['playertrackingmobile']:
     # locally
