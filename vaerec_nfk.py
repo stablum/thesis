@@ -507,8 +507,6 @@ def main():
     params_update_fn.name = "params_update_fn"
     print("done.")
 
-    theano.printing.pprint(model.predict_to_1_det)
-
     predict_to_1_fn = theano.function( # FIXME: change name
         [model.Ri_mb_sym],
         [model.predict_to_1_det]
