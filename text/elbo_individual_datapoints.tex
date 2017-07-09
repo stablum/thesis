@@ -26,11 +26,13 @@ It's possible to make use of information-theoretical properties
 \cite{Bergstrom2008}:
 
 \begin{nalign}
-\entropy{\qphiZ} &= \entropy{\qphizone} + \entropy{\qphiZminusone | \qphizone} 
-&& \text{chain rule for joint entropy}\\
+\entropy{\qphiZ} &= \entropy{\qphizone} &&\\
+    &+ \entropy{\qphiZminusone | \qphizone} 
+ && \text{chain rule for joint entropy}\\
  &= \entropy{\qphizone} + \entropy{\qphiZminusone}
-&& \text{independence of datapoints}\\
-&= \sum_i \entropy{\qphizi }&& \text{recursion}
+ && \text{independence of datapoints}\\
+ &= \sum_i \entropy{\qphizi }
+ && \text{recursion}
 \end{nalign}
 
 Similarly, for $\entropy{\qphiZ,\pZ}$:
@@ -63,5 +65,3 @@ is dependent on only a single datapoint:
 \elboX = \sumiN -\entropy{\qphizi,\pzi} + \entropy{\qphizi } + \expectqphizi{\log \pxicondi}
 \end{nalign}
 
-This sum-based form allows for SGD-like updates; for this reason \cite{1312.6114}
-gave \emph{Stochastic Gradient Variational Bayes} as a name for this technique.

@@ -24,6 +24,7 @@ Follows the derivation of a Monte Carlo 1-sample approximation of $\freeenergyxi
 -\half \sum_j 
         \diffxijmuthetaj^2 \cdot \frac{1}{\sigma_{\theta j}}
 \end{nalign}
+It can be seen how this term expresses a regression error.
 
 \paragraph{The prior term on the transformed latent code.}
 The derivation for this term is made easy by the 
@@ -36,6 +37,7 @@ parameters of the prior
 &= -\half \log\left( 2\pi \right)
 -\half \ltwonorm{\tr(\boldzzero)}
 \end{nalign}
+The form of this term highlight its function as a regularizer.
 
 \paragraph{The entropy term on the initial code.}
 The entropy of a Multivariate Normal distribution is: $\half \log\left((2\pi)^k\abs{\boldsymbol\Sigma}\right)$, hence the entropy of the initial sample $\boldzzero$ can be derived as:

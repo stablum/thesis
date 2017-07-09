@@ -1,0 +1,17 @@
+\section{Representation Learning}
+Representation Learning (RL) is a developing branch of Machine Learning that has one of its
+focuses on extracting representations codes $$\mathbf{Z} = \{\mathbf{z}_i\}_{i=1}^N$$ from the datapoints in a dataset $$\mathbf{X} = \{\mathrm{x}_i\}_{i=1}^N$$.
+It is usually desirable for these representations to be characterized by properties such as low-dimensionality, clusterability, increased linear separability (especially when used for further classification tasks) and intuitive "semantic" explainability of the dimensions of the learned manifold.
+
+One common attempt to achieve such properties is the use of Principal Component Analysis (PCA) , which transforms the original features of the raw input into a set of uncorrelated variables.
+The main drawback of PCA is the assumption that the explaining dimensions are linearly related to the directions of maximum variance in the data.
+This assumption is not true for most complex datasets, in which the original features of a dataset might actually be the result of arbitrarly complicated nonlinear unknown functions.
+
+For this reason alternative approaches to RL are being employed, such as Autoencoders (AE) as specific forms of Artificial Neural Networks (ANN).
+AEs have typically a "diabolo" shape, as an arbitrarly highly dimensional input is progressively being reduced to lower dimensionalities over layers of progressively shrinking sizes.
+This part of the neural network is an encoder, as its purpose is to generate low-dimensional compressed codes from a high-dimensional input.
+The last layer of the encoder is the smallest layer of the network, hence called bottleneck.
+To the bottleneck is attached a decoder network with layers of progressively increasing size.
+The last layer of the decoder is matching the dimensionality of the input layer.
+The learning of the network's parameters is performed by minimizing an objective function containing the error between the reconstruction output of the network and its input.
+This objective function is then minimized via Gradient Descent and its variants.

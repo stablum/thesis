@@ -1,0 +1,28 @@
+\section{Dealing with overfitting}
+
+One of the major issues with AutoRec/VaeRec models
+is overfitting. The system performs very well on the training
+set but unsatisfactory on the test set.
+
+\paragraph{Dropout on the input layer}
+Dropout \cite{Srivastava2014}
+is a technique aimed at preventing overfitting
+which employs randomly dropping units
+and their connections
+during training.
+This would ensure to obtain a neural network
+which can function even when parts are deactivated.
+Moreover, it would prevent that a single unit becomes
+entirely representative of a certain aspect of the training data
+data.
+
+It has been observed that applying Dropout on just the input layer
+overfitting can be prevented to a certain degree,
+possibly by a similar way of action as denoising autoencoders.
+\cite{Vincent2010}.
+
+\paragraph{Narrowing the bottleneck}
+\paragraph{Regularization}
+Regularization has been tested with either L1 or L2 norms,
+without significant improvements.
+\paragraph{Batch Normalization}
