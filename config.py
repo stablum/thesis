@@ -16,7 +16,7 @@ stochastic_prediction=False#True
 regularization_lambda=0#5e-4
 regularization_type="L2" # in L1/L2
 regularization_latent_kl=0.5
-input_dropout_p=0.6
+input_dropout_p=0.4
 dropout_p=0.0
 lr_begin=2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
@@ -50,7 +50,7 @@ preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 chunk_len =64*1024
 minibatch_size = 16 #2 # 16 # 64
 
-regression_type = "item" # in user/item/user+item
+regression_type = "user+item" # in user/item/user+item
 
 if socket.gethostname() in ['playertrackingmobile']:
     # locally

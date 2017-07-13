@@ -1,5 +1,17 @@
 \section{Multiple nested transformation steps}\label{multiple_iltt_steps}
 
+\begin{figure}
+\caption{Average squared error of a VAE with Normalizing Flows trained
+         on the MNIST dataset. Parameters are: learning rate $5*10^{-7}$,
+         activation functon sigmoid, latent dimensionality 16,
+         size of the hidden layer 64. The three experiments are differentiated
+         by the NF's K being 4, 5 and 6. The plot demonstrates that,
+         as K gets larger, the reconstruction error deminishes over the 1300 epochs.
+         The optimizer used is Adam.}
+\centering
+\includegraphics[width=13cm]{mnist_nfk456.eps}
+\end{figure}
+
 A transformation $\tr(\boldz)$ might be composed
 of multiple nested but similar transformation steps
 each with it's own parameters:
@@ -44,3 +56,4 @@ The expectation sample becomes:
 &\approx
 \sumk{ \log \abs{1 + h^\prime(\wtk \boldzkminusone + \bk)\wtk \bolduk }}
 \end{nalign}
+
