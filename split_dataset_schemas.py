@@ -117,7 +117,7 @@ class MemoryRandomCompleteEpochsSparseRows(MemoryRandomCompleteEpochs):
             # just randomly shuffle all the ratings tuples
             perm = np.random.permutation(len(ratings))
             shuffled_ratings = PermList(ratings,perm)
-            for k in range(config.ratings_training_set_subsample_size):
+            for k in tqdm(range(config.ratings_training_set_subsample_size),desc="concatenate ui and vj"):
                 # take only a first chunk of the shuffled ratings tuples
                 # and creates the concatenated user row + item column
                 (i,j),r = shuffled_ratings[k]

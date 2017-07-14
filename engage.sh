@@ -18,6 +18,7 @@ NODETYPE="fat,gpu=K20"
 #NODETYPE="gpu=C2050"
 #NODETYPE="gpu=GTX480"
 echo "NODETYPE:$NODETYPE"
+echo "TIMESTAMP:$TIMESTAMP"
 echo "after submitting the job will sleep for $SLEEPTIME seconds before retrieving outputs"
 $SSH "quota -m; cd thesis; git stash; qstat | grep fstablum ; qsub -N '$@' -o $TIMESTAMP.out -e $TIMESTAMP.err -cwd -l $NODETYPE -l h_rt=120:00:00 job.sh -- $@ ; sleep $SLEEPTIME; tail -f $TIMESTAMP.out & tail -f $TIMESTAMP.err "
  
