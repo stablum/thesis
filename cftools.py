@@ -246,7 +246,7 @@ class Log(object):
             _predictions = predictions(splitter.training_set,U,V,prediction_function)
         else:
             training_rmse = rmse_rrows(splitter.training_set,splitter.training_set,prediction_function)
-            testing_rmse = rmse_rrows(splitter.training_set,splitter.validation_set,prediction_function)
+            testing_rmse = rmse_rrows(splitter.validation_set,splitter.validation_set,prediction_function)
             _predictions = predictions_rrows(splitter.training_set,prediction_function)
         def meanstd(l,axis=0):
             m = np.mean(l,axis=axis)
