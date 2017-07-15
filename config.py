@@ -7,7 +7,7 @@ import movielens
 
 n_epochs=20000
 
-K=30
+K=3
 TK=20# transformation's K (number of nested transformation steps)
 hid_dim=1000
 n_hid_layers=2
