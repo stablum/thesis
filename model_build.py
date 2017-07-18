@@ -1,8 +1,10 @@
 import lasagne
 import config
+from lasagne.layers.dense import DenseLayer
 import theano
 from theano import tensor as T
 import copy
+import random
 import regularization
 
 def make_hid_part(
@@ -97,6 +99,38 @@ def make_net(
     )
 
     return net_output_det, net_output_lea, net_params, regularizer_term, l_sampling
+
+def create_autoregressive_masks_W_V(shape):
+    D = shape[1]
+    K = shape[0]
+    m = []
+    MW = np.zeros((K,D))
+    MV = np.zeros((D,K))
+    for k in range(K):
+        m_k = random.randint(1,D-1)
+        m.append(m_k)
+        for d in range(D):
+            if m_k >= d:
+                MW[k,d] = 1
+            if d > m_k:
+                MV[d,k] = 1
+
+    return m,lasagne.utils.floatX(MW),lasagne.utils.floatX(MV)
+
+class MaskedDenseLayer(lasagne.layers.dense.DenseLayer):
+    def __init__(self,*args,**kwargs):
+        super(MaskedDenseLayer, self).__init__(*args, **kwargs)
+        M = kwargs.pop('M')
+        self.M = self.add_param(
+            M,
+            M.shape,
+            trainable=False
+        )
+    def get_output_for(self, input, **kwargs):
+        activation = T.dot(input, T.mul(self.W,self.M))
+        if self.b is not None:
+            activation = activation + self.b.dimshuffle('x', 0)
+        return self.nonlinearity(activation)
 
 class SamplingLayer(lasagne.layers.Layer):
 
