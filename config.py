@@ -9,7 +9,7 @@ n_epochs=20000
 
 K=30
 TK=20# transformation's K (number of nested transformation steps)
-hid_dim=250
+hid_dim=125
 n_hid_layers=2
 chan_out_dim=K
 stochastic_prediction=False#True
