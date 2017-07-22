@@ -1,5 +1,5 @@
 import lasagne
-import config
+import numpy as np
 from lasagne.layers.dense import DenseLayer
 import theano
 from theano import tensor as T
@@ -13,6 +13,7 @@ def make_hid_part(
         name,
         g_hid
     ):
+    import config
     layers = []
     l_curr = l_in
     for i in range(config.n_hid_layers):
@@ -44,6 +45,7 @@ def make_net(
         stochastic_output=False,
         return_only_sample=None
     ):
+    import config
 
     if return_only_sample is None:
         return_only_sample=stochastic_output
@@ -101,33 +103,38 @@ def make_net(
     return net_output_det, net_output_lea, net_params, regularizer_term, l_sampling
 
 def create_autoregressive_masks_W_V(shape):
-    D = shape[1]
     K = shape[0]
-    m = []
+    D = shape[1]
     MW = np.zeros((K,D))
     MV = np.zeros((D,K))
-    for k in range(K):
+
+    m = [1,D-1]
+    while len(m) < K:
         m_k = random.randint(1,D-1)
-        m.append(m_k)
+        if m_k not in m:
+            m.append(m_k)
+    random.shuffle(m)
+
+    for k in range(K):
         for d in range(D):
-            if m_k >= d:
+            if m[k] >= d:
                 MW[k,d] = 1
-            if d > m_k:
+            if d > m[k]:
                 MV[d,k] = 1
 
     return m,lasagne.utils.floatX(MW),lasagne.utils.floatX(MV)
 
 class MaskedDenseLayer(lasagne.layers.dense.DenseLayer):
     def __init__(self,*args,**kwargs):
+        mask = kwargs.pop('mask')
         super(MaskedDenseLayer, self).__init__(*args, **kwargs)
-        M = kwargs.pop('M')
-        self.M = self.add_param(
-            M,
-            M.shape,
+        self.mask = self.add_param(
+            mask,
+            mask.shape,
             trainable=False
         )
     def get_output_for(self, input, **kwargs):
-        activation = T.dot(input, T.mul(self.W,self.M))
+        activation = T.dot(input, T.mul(self.W,self.mask.T))
         if self.b is not None:
             activation = activation + self.b.dimshuffle('x', 0)
         return self.nonlinearity(activation)
@@ -208,6 +215,7 @@ def split_distr(in_var,dim):
     return mu, log_sigma
 
 def reparameterization_trick(in_var,name,dim=None):
+    import config
     epsilon = T.shared_randomstreams.RandomStreams().normal(
         ( config.minibatch_size, dim),
         avg=0.0,
