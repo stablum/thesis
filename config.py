@@ -9,14 +9,14 @@ n_epochs=20000
 
 K=30
 TK=20# transformation's K (number of nested transformation steps)
-hid_dim=250
-n_hid_layers=4
+hid_dim=125
+n_hid_layers=3
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=0#5e-4
 regularization_type="L2" # in L1/L2
 regularization_latent_kl=0.5
-input_dropout_p=0.4
+input_dropout_p=0.0
 dropout_p=0.0
 lr_begin=2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
