@@ -300,6 +300,9 @@ class epochsloop(object):
         self.prediction_function = prediction_function
         self.log_params = log_params
 
+    def log(self, *args, **kwargs):
+        return self._log(*args,**kwargs)
+
     @property
     def validation_set(self):
         return self.splitter.validation_set
@@ -354,10 +357,19 @@ def mainloop(process_datapoint,dataset,U,V,prediction_function,log_params={}):
             process_datapoint(i,j,Rij,_lr)
 
 
-def mainloop_rrows(process_rrow,dataset,prediction_function,epoch_hook=lambda *args,**kwargs: None,log_params={}):
+def mainloop_rrows(
+        process_rrow,
+        dataset,
+        prediction_function,
+        epoch_hook=lambda *args,**kwargs: None,
+        log_params={}
+):
     U = None
     V = None
-    for training_set,_lr in epochsloop(dataset,U,V,prediction_function,log_params):
+    _epochsloop = epochsloop(dataset,U,V,prediction_function,log_params)
+    _log = lambda *args, **kwargs: _epochsloop.log(*args,**kwargs)
+
+    for training_set,_lr in _epochsloop:
         # WARNING: _lr is not updated in theano expressions
         for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
             i,Ri = curr
@@ -368,7 +380,7 @@ def mainloop_rrows(process_rrow,dataset,prediction_function,epoch_hook=lambda *a
 
             process_rrow(i,Ri,_lr)
 
-        epoch_hook()
+        epoch_hook(log=_log)
 
 def preprocess(data,dataset):
 

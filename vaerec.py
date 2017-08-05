@@ -176,7 +176,7 @@ class Model(object):
             ],
             name="out_concat_layer"
         )
-        print("all layers: ",lasagne.layers.get_all_layers(self.l_out))
+        log("all layers: ",lasagne.layers.get_all_layers(self.l_out))
 
     @utils.cached_property
     def input_dim(self):
@@ -259,6 +259,21 @@ class Model(object):
         return ret
 
     @utils.cached_property
+    def marginal_latent_kl(self):
+        term1 = - self.latent_log_sigma_lea
+        term2 = 0.5*(T.pow(self.latent_sigma_lea,2) + T.pow(self.latent_mu_lea,2))
+        term3 = - 0.5
+        return term1 + term2 + term3
+
+    @utils.cached_property
+    def marginal_latent_kl_mean(self):
+        return T.mean(self.marginal_latent_kl)
+
+    @utils.cached_property
+    def marginal_latent_kl_std(self):
+        return T.std(self.marginal_latent_kl)
+
+    @utils.cached_property
     def excluded_loss(self):
         ret = (self.loss_sq * (1-self.mask)).mean()
         return ret
@@ -300,6 +315,11 @@ class Model(object):
     @utils.cached_property
     def latent_log_sigma_lea(self):
         ret = lasagne.layers.get_output(self.l_latent_log_sigma,deterministic=False)
+        return ret
+
+    @utils.cached_property
+    def latent_sigma_lea(self):
+        ret = T.exp(self.latent_log_sigma_lea)
         return ret
 
     @utils.cached_property
@@ -354,11 +374,11 @@ def main():
         ret = cftools.unpreprocess(predict_to_1_sym,dataset)
         return ret
 
-    print("creating model..")
+    log("creating model..")
 
     model = Model(dataset)
-    print("parameters shapes:",[p.get_value().shape for p in model.params])
-    print("creating parameter updates...")
+    log("parameters shapes:",[p.get_value().shape for p in model.params])
+    log("creating parameter updates...")
     params_updates = adam_masked(
         model.grads_params,
         model.params,
@@ -366,15 +386,23 @@ def main():
         learning_rate=config.lr_begin
     )
 
-    print("creating parameter update function..")
+    log("creating parameter update function..")
     params_update_fn = theano.function(
         [model.Ri_mb_sym],
         [model.regression_error_obj],
         updates=params_updates
     )
     params_update_fn.name = "params_update_fn"
-    print("done.")
 
+    log("creating marginal_latent_kl diagnostic functions..")
+    marginal_latent_kl_fn = theano.function(
+        [model.Ri_mb_sym],
+        [
+            model.marginal_latent_kl
+        ],
+    )
+    marginal_latent_kl_fn.name = "marginal_latent_kl"
+    log("done.")
     theano.printing.pprint(model.predict_to_1_det)
 
     predict_to_1_fn = theano.function( # FIXME: change name
@@ -393,24 +421,36 @@ def main():
     indices_mb_l = []
 
     total_loss = 0
+    total_kls = []
+
     def epoch_hook(*args,**kwargs):
+        _log = kwargs.pop('log',log)
         def meanstd(quantity):
             v = quantity.get_value()
             m = np.mean(v,axis=None)
             s = np.std(v,axis=None)
-            print(quantity.name,"mean:",m,"std:",s)
+            log(quantity.name,"mean:",m,"std:",s)
         nonlocal total_loss
-        print("\ntotal_loss:",total_loss)
+        nonlocal total_kls
+        _log("\ntotal_loss:",total_loss)
+        _log("total_kls mean:",np.mean(total_kls))
+        _log("total_kls std:",np.std(total_kls))
+        mean_total_kls_per_dim = np.mean(total_kls,axis=0) # squashes over the datapoints
+        for q in [1,5, 10,20, 50,80,90,95,99]:
+            percentile = np.percentile(mean_total_kls_per_dim,q)
+            _log("mean_total_kls_per_dim percentile {}: {}".format(q,percentile))
         for curr in model.params:
             meanstd(curr)
-        print("\n\n")
+        _log("\n\n")
 
         total_loss = 0
+        total_kls = []
 
     def train_with_rrow(i,Ri,lr): # Ri is an entire sparse row of ratings from a user
         nonlocal indices_mb_l
         nonlocal Ri_mb_l
         nonlocal total_loss
+        nonlocal total_kls
 
         indices_mb_l.append((i,))
         Ri_mb_l.append(Ri)
@@ -418,10 +458,12 @@ def main():
             Ri_mb = scipy.sparse.vstack(Ri_mb_l)
             Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
             _loss, = params_update_fn(Ri_mb)
+            _kls, = marginal_latent_kl_fn(Ri_mb)
+            total_kls.append(_kls)
             total_loss += _loss
             Ri_mb_l = []
             indices_mb_l = []
-    print("training ...")
+    log("training ...")
     cftools.mainloop_rrows(train_with_rrow,dataset,predict_to_5_fn,epoch_hook=epoch_hook)
 
 if __name__=="__main__":
