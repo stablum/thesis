@@ -6,6 +6,12 @@ from theano import tensor as T
 import copy
 import random
 import regularization
+from theano.compile.nanguardmode import NanGuardMode
+
+def make_function( *args, **kwargs ):
+    #kwargs['mode'] = NanGuardMode(nan_is_error=True, inf_is_error=True, big_is_error=True)
+    fn = theano.function(*args,**kwargs)
+    return fn
 
 def make_hid_part(
         l_in,

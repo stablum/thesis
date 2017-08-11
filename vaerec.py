@@ -387,15 +387,15 @@ def main():
     )
 
     log("creating parameter update function..")
-    params_update_fn = theano.function(
+    params_update_fn = model_build.make_function(
         [model.Ri_mb_sym],
         [model.regression_error_obj],
-        updates=params_updates
+        updates=params_updates,
     )
     params_update_fn.name = "params_update_fn"
 
     log("creating marginal_latent_kl diagnostic functions..")
-    marginal_latent_kl_fn = theano.function(
+    marginal_latent_kl_fn = model_build.make_function(
         [model.Ri_mb_sym],
         [
             model.marginal_latent_kl
@@ -405,13 +405,13 @@ def main():
     log("done.")
     theano.printing.pprint(model.predict_to_1_det)
 
-    predict_to_1_fn = theano.function( # FIXME: change name
+    predict_to_1_fn = model_build.make_function( # FIXME: change name
         [model.Ri_mb_sym],
         [model.predict_to_1_det]
     )
     predict_to_1_fn.name="predict_to_1_fn"
 
-    predict_to_5_fn = theano.function(
+    predict_to_5_fn = model_build.make_function(
         [model.Ri_mb_sym],
         [make_predict_to_5(model.predict_to_1_det)]
     )
@@ -436,7 +436,7 @@ def main():
         _log("total_kls mean:",np.mean(total_kls))
         _log("total_kls std:",np.std(total_kls))
         mean_total_kls_per_dim = np.mean(total_kls,axis=0) # squashes over the datapoints
-        for q in [1,5, 10,20, 50,80,90,95,99]:
+        for q in [1,2,5, 10,20, 50,80,90,95,98,99]:
             percentile = np.percentile(mean_total_kls_per_dim,q)
             _log("mean_total_kls_per_dim percentile {}: {}".format(q,percentile))
         for curr in model.params:
