@@ -380,7 +380,7 @@ def mainloop_rrows(
 
             process_rrow(i,Ri,_lr)
 
-        epoch_hook(log=_log)
+        epoch_hook(log=_log,epochsloop=_epochsloop)
 
 def preprocess(data,dataset):
 

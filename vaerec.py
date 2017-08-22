@@ -237,10 +237,11 @@ class Model(object):
         return ret
 
     @utils.cached_property
-    def regression_error_obj(self):
+    def likelihood(self):
         # this is the expected reconstruction error
         # the 1/2 coefficient is external to this term,
         # being config.regression_error_coef
+        # a.k.a. likelyhood!!!
         term1 = self.mask_sum * np.array(2*np.pi).astype('float32')
         masked_log_sigma = self.out_log_sigma_lea * self.mask
         term2 = -T.sum(masked_log_sigma)
@@ -280,7 +281,7 @@ class Model(object):
 
     @utils.cached_property
     def obj(self):
-        ret = self.regression_error_obj * config.regression_error_coef
+        ret = self.likelihood * config.regression_error_coef
         if config.regularization_lambda > 0.:
             ret += self.regularizer * config.regularization_lambda
         if config.regularization_latent_kl > 0.:
@@ -367,6 +368,11 @@ class Model(object):
         )
         return ret
 
+def log_percentiles(quantity,name,_log):
+    for q in [1,2,5, 10,20, 50,80,90,95,98,99]:
+        percentile = np.percentile(quantity,q)
+        _log("{} percentile {}: {}".format(name,q,percentile))
+
 def main():
     dataset = movielens.load(config.movielens_which)
 
@@ -389,7 +395,7 @@ def main():
     log("creating parameter update function..")
     params_update_fn = model_build.make_function(
         [model.Ri_mb_sym],
-        [model.regression_error_obj],
+        [model.obj],
         updates=params_updates,
     )
     params_update_fn.name = "params_update_fn"
@@ -417,14 +423,29 @@ def main():
     )
     predict_to_5_fn.name="predict_to_5_fn"
 
+    obj_fn = model_build.make_function(
+        [model.Ri_mb_sym],
+        [model.obj]
+    )
+    obj_fn.name = "obj_fn"
+
+    likelihood_fn = model_build.make_function(
+        [model.Ri_mb_sym],
+        [model.likelihood]
+    )
+    likelihood_fn.name = "likelihood_fn"
+
     Ri_mb_l = []
     indices_mb_l = []
 
     total_loss = 0
     total_kls = []
+    total_objs = []
+    total_likelihoods = []
 
     def epoch_hook(*args,**kwargs):
         _log = kwargs.pop('log',log)
+        _epochsloop = kwargs['epochsloop']
         def meanstd(quantity):
             v = quantity.get_value()
             m = np.mean(v,axis=None)
@@ -432,25 +453,49 @@ def main():
             log(quantity.name,"mean:",m,"std:",s)
         nonlocal total_loss
         nonlocal total_kls
+        nonlocal total_objs
+        nonlocal total_likelihoods
         _log("\ntotal_loss:",total_loss)
         _log("total_kls mean:",np.mean(total_kls))
         _log("total_kls std:",np.std(total_kls))
         mean_total_kls_per_dim = np.mean(total_kls,axis=0) # squashes over the datapoints
-        for q in [1,2,5, 10,20, 50,80,90,95,98,99]:
-            percentile = np.percentile(mean_total_kls_per_dim,q)
-            _log("mean_total_kls_per_dim percentile {}: {}".format(q,percentile))
+        log_percentiles(mean_total_kls_per_dim,"mean_total_kls_per_dim",_log)
+        log_percentiles(total_objs,"objs",_log)
+        log_percentiles(total_likelihoods,"likelihoods",_log)
         for curr in model.params:
             meanstd(curr)
+
+        def validation_splits():
+            ret = cftools.split_minibatch_rrows(
+                _epochsloop.validation_set,
+                'split validation set for objs'
+            )
+            return ret # generator, needs to be refreshed.
+
+        validation_objs = []
+        for curr in tqdm(validation_splits(),desc="objs validation set"):
+            _obj = obj_fn(curr)
+            validation_objs.append(_obj)
+        log_percentiles(validation_objs,"objs validation set",_log)
+        validation_likelihoods = []
+        for curr in tqdm(validation_splits(),desc="likelihoods validation set"):
+            _l = obj_fn(curr)
+            validation_likelihoods.append(_l)
+        log_percentiles(validation_likelihoods,"likelihoods validation set",_log)
+
         _log("\n\n")
 
         total_loss = 0
         total_kls = []
+        total_objs = []
+        total_likelihoods = []
 
     def train_with_rrow(i,Ri,lr): # Ri is an entire sparse row of ratings from a user
         nonlocal indices_mb_l
         nonlocal Ri_mb_l
         nonlocal total_loss
         nonlocal total_kls
+        nonlocal total_likelihoods
 
         indices_mb_l.append((i,))
         Ri_mb_l.append(Ri)
@@ -459,8 +504,12 @@ def main():
             Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
             _loss, = params_update_fn(Ri_mb)
             _kls, = marginal_latent_kl_fn(Ri_mb)
+            _obj, = obj_fn(Ri_mb)
+            _likelihood, = likelihood_fn(Ri_mb)
             total_kls.append(_kls)
             total_loss += _loss
+            total_objs.append(_obj)
+            total_likelihoods.append(_likelihood)
             Ri_mb_l = []
             indices_mb_l = []
     log("training ...")
