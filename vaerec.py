@@ -479,7 +479,7 @@ def main():
         log_percentiles(validation_objs,"objs validation set",_log)
         validation_likelihoods = []
         for curr in tqdm(validation_splits(),desc="likelihoods validation set"):
-            _l = obj_fn(curr)
+            _l = likelihood_fn(curr)
             validation_likelihoods.append(_l)
         log_percentiles(validation_likelihoods,"likelihoods validation set",_log)
 
