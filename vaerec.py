@@ -287,7 +287,7 @@ class Model(object):
         and KL between approximate posterior and prior on latent
         which is negative (has to be minimized)
         """
-        ret = +self.likelihood * config.regression_error_coef
+        ret = self.likelihood * config.regression_error_coef
         if config.regularization_lambda > 0.:
             ret += self.regularizer * config.regularization_lambda
         if config.regularization_latent_kl > 0.:
