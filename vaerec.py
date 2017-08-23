@@ -241,14 +241,14 @@ class Model(object):
         # this is the expected reconstruction error
         # the 1/2 coefficient is external to this term,
         # being config.regression_error_coef
-        # a.k.a. likelyhood!!!
-        term1 = self.mask_sum * np.array(2*np.pi).astype('float32')
+        # a.k.a. likelihood!!!
+        term1 = -self.mask_sum * np.array(2*np.pi).astype('float32')
         masked_log_sigma = self.out_log_sigma_lea * self.mask
         term2 = -T.sum(masked_log_sigma)
         sigma = T.exp(self.out_log_sigma_lea)
         masked_loss_sq = self.loss_sq * self.mask
         inv_sigma = 1./sigma
-        term3 = T.sum(masked_loss_sq * inv_sigma)
+        term3 = - T.sum(masked_loss_sq * inv_sigma)
         ret = term1 + term2 + term3
         ret = ret.reshape((),ndim=0) # to scalar
         return ret
@@ -280,12 +280,28 @@ class Model(object):
         return ret
 
     @utils.cached_property
-    def obj(self):
-        ret = self.likelihood * config.regression_error_coef
+    def elbo(self):
+        """
+        the ELBO is expressed as two terms: likelihood, which is positive
+        (has to be maximized)
+        and KL between approximate posterior and prior on latent
+        which is negative (has to be minimized)
+        """
+        ret = +self.likelihood * config.regression_error_coef
         if config.regularization_lambda > 0.:
             ret += self.regularizer * config.regularization_lambda
         if config.regularization_latent_kl > 0.:
-            ret += self.regularizer_latent_kl * config.regularization_latent_kl
+            ret -= self.regularizer_latent_kl * config.regularization_latent_kl
+        return ret
+
+    @utils.cached_property
+    def obj(self):
+        """
+        the objective function should be the negative ELBO
+        because the ELBO needs to be maximized,
+        and objective functions are minimized
+        """
+        ret = -self.elbo
         return ret
 
     @utils.cached_property
