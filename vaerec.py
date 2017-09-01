@@ -423,7 +423,17 @@ def main():
             model.marginal_latent_kl
         ],
     )
-    marginal_latent_kl_fn.name = "marginal_latent_kl"
+    marginal_latent_kl_fn.name = "marginal_latent_kl_fn"
+
+    log("creating out_log_sigmas diagnostic functions..")
+    out_log_sigmas_fn = model_build.make_function(
+        [model.Ri_mb_sym],
+        [
+            model.out_log_sigma_lea
+        ],
+    )
+    out_log_sigmas_fn.name = "marginal_latent_kl_fn"
+
     log("done.")
     theano.printing.pprint(model.predict_to_1_det)
 
@@ -458,6 +468,7 @@ def main():
     total_kls = []
     total_objs = []
     total_likelihoods = []
+    total_out_log_sigmas = []
 
     def epoch_hook(*args,**kwargs):
         _log = kwargs.pop('log',log)
@@ -471,6 +482,7 @@ def main():
         nonlocal total_kls
         nonlocal total_objs
         nonlocal total_likelihoods
+        nonlocal total_out_log_sigmas
         _log("\ntotal_loss:",total_loss)
         _log("total_kls mean:",np.mean(total_kls))
         _log("total_kls std:",np.std(total_kls))
@@ -478,6 +490,7 @@ def main():
         log_percentiles(mean_total_kls_per_dim,"mean_total_kls_per_dim",_log)
         log_percentiles(total_objs,"objs",_log)
         log_percentiles(total_likelihoods,"likelihoods",_log)
+        log_percentiles(total_out_log_sigmas,"out_log_sigmas",_log)
         for curr in model.params:
             meanstd(curr)
 
@@ -505,6 +518,7 @@ def main():
         total_kls = []
         total_objs = []
         total_likelihoods = []
+        total_out_log_sigmas = []
 
     def train_with_rrow(i,Ri,lr): # Ri is an entire sparse row of ratings from a user
         nonlocal indices_mb_l
@@ -512,6 +526,7 @@ def main():
         nonlocal total_loss
         nonlocal total_kls
         nonlocal total_likelihoods
+        nonlocal total_out_log_sigmas
 
         indices_mb_l.append((i,))
         Ri_mb_l.append(Ri)
@@ -520,12 +535,14 @@ def main():
             Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
             _loss, = params_update_fn(Ri_mb)
             _kls, = marginal_latent_kl_fn(Ri_mb)
+            _out_log_sigmas, = out_log_sigmas_fn(Ri_mb)
             _obj, = obj_fn(Ri_mb)
             _likelihood, = likelihood_fn(Ri_mb)
             total_kls.append(_kls)
             total_loss += _loss
             total_objs.append(_obj)
             total_likelihoods.append(_likelihood)
+            total_out_log_sigmas.append(_out_log_sigmas)
             Ri_mb_l = []
             indices_mb_l = []
     log("training ...")
