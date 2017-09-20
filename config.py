@@ -45,7 +45,7 @@ g_hid = "tanh"
 g_latent = "linear"
 g_transform = "sigmoid"
 
-preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
+preprocessing_type = "zscore"# "vanilla" # in 0to1/vanilla/zscore
 
 chunk_len =64*1024
 minibatch_size = 16 #2 # 16 # 64
