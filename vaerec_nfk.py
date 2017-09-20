@@ -396,11 +396,15 @@ class Model(object):
     @utils.cached_property
     def out_log_sigma_lea(self):
         ret = lasagne.layers.get_output(self.l_out_log_sigma,deterministic=False)
+        if config.spherical_likelihood:
+            ret = T.zeros_like(ret)
         return ret
 
     @utils.cached_property
     def out_log_sigma_det(self):
         ret = lasagne.layers.get_output(self.l_out_log_sigma,deterministic=True)
+        if config.spherical_likelihood:
+            ret = T.zeros_like(ret)
         return ret
 
     @utils.cached_property
