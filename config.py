@@ -45,7 +45,7 @@ g_hid = "tanh"
 g_latent = "linear"
 g_transform = "sigmoid"
 
-preprocessing_type = "zscore"# "vanilla" # in 0to1/vanilla/zscore
+preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 spherical_likelihood = True
 
 chunk_len =64*1024
