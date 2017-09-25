@@ -116,7 +116,6 @@ class DataSet(object):
         retrieving both statics at once because by caching them I have
         to retrieve all the ratings only once
         """
-
         rr = self.all_ratings
         mean = np.mean(rr).astype('float32')
         std = np.std(rr).astype('float32')

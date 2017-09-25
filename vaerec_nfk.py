@@ -451,6 +451,18 @@ class Model(object):
     @utils.cached_property
     def params(self):
         ret = lasagne.layers.get_all_params(self.l_out, trainable=True)
+
+        if config.spherical_likelihood:
+            removand = []
+            for param in ret:
+                layer_name = param.name.split('.')[0]
+                if layer_name in [
+                        'hidden_dec_layer_sigma',
+                        'out_log_sigma_layer'
+                ]:
+                    removand.append(param)
+            for curr in removand:
+                ret.remove(curr)
         return ret
 
     @utils.cached_property
