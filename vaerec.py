@@ -178,6 +178,7 @@ class Model(object):
         )
         log("all layers: ", self.all_layers)
 
+    @property
     def all_layers(self):
         return lasagne.layers.get_all_layers(self.l_out)
 
