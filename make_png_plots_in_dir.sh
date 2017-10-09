@@ -1,5 +1,8 @@
 #!/bin/bash
 
+
+while (( "$#" )); do
+
 cd $1
 python3 ../plot_epochs.py *.log "training RMSE" --save training_rmse.png
 python3 ../plot_epochs.py *.log "testing RMSE" --save testing_rmse.png
@@ -10,3 +13,9 @@ python3 ../plot_epochs.py *.log "objs validation set percentile 50" --save objs_
 python3 ../plot_epochs.py *.log "mean_total_kls_per_dim percentile 5" --save mean_total_kls_per_dim_percentile_5.png
 python3 ../plot_epochs.py *.log "mean_total_kls_per_dim percentile 50" --save mean_total_kls_per_dim_median.png
 python3 ../plot_epochs.py *.log "mean_total_kls_per_dim percentile 95" --save mean_total_kls_per_dim_percentile_95.png
+cd ..
+
+shift
+
+done
+

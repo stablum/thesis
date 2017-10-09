@@ -176,7 +176,10 @@ class Model(object):
             ],
             name="out_concat_layer"
         )
-        log("all layers: ",lasagne.layers.get_all_layers(self.l_out))
+        log("all layers: ", self.all_layers)
+
+    def all_layers(self):
+        return lasagne.layers.get_all_layers(self.l_out)
 
     @utils.cached_property
     def input_dim(self):
@@ -394,8 +397,8 @@ class Model(object):
 
     @utils.cached_property
     def regularizer(self):
-        ret = lasagne.regularization.regularize_network_params(
-            self.l_out,
+        ret = lasagne.regularization.regularize_layer_params(
+            self.all_layers,
             weights_regularization
         )
         return ret
