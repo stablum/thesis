@@ -292,8 +292,6 @@ class Model(object):
         which is negative (has to be minimized)
         """
         ret = self.likelihood * config.regression_error_coef
-        if config.regularization_lambda > 0.:
-            ret += self.regularizer * config.regularization_lambda
         if config.regularization_latent_kl > 0.:
             ret -= self.regularizer_latent_kl * config.regularization_latent_kl
         return ret
@@ -306,6 +304,8 @@ class Model(object):
         and objective functions are minimized
         """
         ret = -self.elbo
+        if config.regularization_lambda > 0.:
+            ret += self.regularizer * config.regularization_lambda
         return ret
 
     @utils.cached_property
