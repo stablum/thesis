@@ -246,10 +246,14 @@ class Model(object):
         }
         return ret
 
+    @property
+    def all_layers(self):
+        return lasagne.layers.get_all_layers(self.l_out)
+
     @utils.cached_property
     def regularizer(self):
         ret = lasagne.regularization.regularize_network_params(
-            self.l_out,
+            self.all_layers,
             weights_regularization
         )
         return ret
