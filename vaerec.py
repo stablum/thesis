@@ -570,7 +570,7 @@ def main():
         model.grads_params,
         model.params,
         model.all_masks,
-        learning_rate=config.lr_begin
+        learning_rate=config.lr_begin * config.minibatch_size
     )
 
     log("creating parameter update function..")
