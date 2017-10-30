@@ -287,7 +287,7 @@ class Log(object):
             self("V mean and std: %s"%V_stats)
         self("predictions mean and std: %s"%p_stats)
 
-class epochsloop(object):
+class Epochsloop(object):
 
     def __init__(self,dataset,U,V,prediction_function,log_params):
         self.dataset = dataset
@@ -323,8 +323,15 @@ class epochsloop(object):
             os.system("cp %s %s -vf"%(curr,dirname+"/"))
 
         os.chdir(dirname)
+
+    @property
+    def n_datapoints(self):
+        # facade to hide the splitter
+        return self.splitter.n_datapoints
+
     def __iter__(self):
-        self._iter = iter(tqdm(list(range(config.n_epochs)),desc="epochs")) # internal "hidden" iterator
+        # internal "hidden" iterator
+        self._iter = iter(tqdm(list(range(config.n_epochs)),desc="epochs"))
         return self
 
     def __next__(self):
@@ -349,38 +356,56 @@ class epochsloop(object):
         )
         return self.splitter.training_set,_lr
 
-def mainloop(process_datapoint,dataset,U,V,prediction_function,log_params={}):
-    for training_set,_lr in epochsloop(dataset,U,V,prediction_function,log_params):
-        # WARNING: _lr is not updated in theano expressions
-        for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
-            (i,j),Rij = curr
-            process_datapoint(i,j,Rij,_lr)
+class Looper(object):
+    @property
+    def n_datapoints(self):
+        # facade to hide the Epochsloop
+        return self._epochsloop.n_datapoints
 
+def LooperRij(Looper):
+    def __init__(self,process_datapoint,dataset,U,V,prediction_function,log_params={}):
+        self._process_datapoint = process_datapoint
+        self._epochsloop = Epochsloop(dataset,U,V,prediction_function,log_params)
 
-def mainloop_rrows(
-        process_rrow,
-        dataset,
-        prediction_function,
-        epoch_hook=lambda *args,**kwargs: None,
-        log_params={}
-):
-    U = None
-    V = None
-    _epochsloop = epochsloop(dataset,U,V,prediction_function,log_params)
-    _log = lambda *args, **kwargs: _epochsloop.log(*args,**kwargs)
+    def start(self):
+        for training_set,_lr in self._epochsloop:
+            # WARNING: _lr is not updated in theano expressions
+            for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
+                (i,j),Rij = curr
+                self._process_datapoint(i,j,Rij,_lr)
 
-    for training_set,_lr in _epochsloop:
-        # WARNING: _lr is not updated in theano expressions
-        for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
-            i,Ri = curr
+class LooperRrows(Looper):
+    def __init__(
+            self,
+            process_rrow,
+            dataset,
+            prediction_function,
+            epoch_hook=lambda *args,**kwargs: None,
+            log_params={}
+    ):
+        U = None
+        V = None
+        self._epochsloop = Epochsloop(dataset,U,V,prediction_function,log_params)
+        self._log = lambda *args, **kwargs: self._epochsloop.log(*args,**kwargs)
+        self._process_rrow = process_rrow
+        self._epoch_hook = epoch_hook
 
-            if Ri.getnnz() == 0:
-                # nope
-                continue
+    def start(self):
+        for training_set,_lr in self._epochsloop:
+            # WARNING: _lr is not updated in theano expressions
+            for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
+                i,Ri = curr
 
-            process_rrow(i,Ri,_lr)
+                if Ri.getnnz() == 0:
+                    # nope
+                    continue
 
-        epoch_hook(log=_log,epochsloop=_epochsloop)
+                self._process_rrow(i,Ri,_lr)
+
+            self._epoch_hook(
+                log=self._log,
+                epochsloop=self._epochsloop
+            )
 
 def preprocess(data,dataset):
 

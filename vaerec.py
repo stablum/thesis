@@ -56,6 +56,16 @@ class Model(object):
 
         self.Ri_mb_sym = theano.sparse.csr_matrix(name='Ri_mb',dtype='float32')
         self.make_net()
+        self._n_datapoints = None # to be set later
+
+    @property
+    def n_datapoints(self):
+        assert self._n_datapoints is not None
+        return self._n_datapoints
+
+    @n_datapoints.setter
+    def n_datapoints(self,val):
+        self._n_datapoints = val
 
     def input_dropout(self, layer):
         if config.input_dropout_p > 0:
@@ -304,8 +314,9 @@ class Model(object):
         and objective functions are minimized
         """
         ret = -self.elbo
+        ret /= config.minibatch_size # it's an average!
         if config.regularization_lambda > 0.:
-            ret += self.regularizer * config.regularization_lambda
+            ret += self.regularizer * config.regularization_lambda / self.n_datapoints
         return ret
 
     @utils.cached_property
@@ -420,21 +431,6 @@ def main():
 
     model = Model(dataset)
     log("parameters shapes:",[p.get_value().shape for p in model.params])
-    log("creating parameter updates...")
-    params_updates = adam_masked(
-        model.grads_params,
-        model.params,
-        model.all_masks,
-        learning_rate=config.lr_begin
-    )
-
-    log("creating parameter update function..")
-    params_update_fn = model_build.make_function(
-        [model.Ri_mb_sym],
-        [model.obj],
-        updates=params_updates,
-    )
-    params_update_fn.name = "params_update_fn"
 
     log("creating marginal_latent_kl diagnostic functions..")
     marginal_latent_kl_fn = model_build.make_function(
@@ -468,12 +464,6 @@ def main():
         [make_predict_to_5(model.predict_to_1_det)]
     )
     predict_to_5_fn.name="predict_to_5_fn"
-
-    obj_fn = model_build.make_function(
-        [model.Ri_mb_sym],
-        [model.obj]
-    )
-    obj_fn.name = "obj_fn"
 
     likelihood_fn = model_build.make_function(
         [model.Ri_mb_sym],
@@ -565,8 +555,40 @@ def main():
             total_out_log_sigmas.append(_out_log_sigmas)
             Ri_mb_l = []
             indices_mb_l = []
+
+    looper = cftools.LooperRrows(
+        train_with_rrow,
+        dataset,
+        predict_to_5_fn,
+        epoch_hook=epoch_hook
+    )
+    # model needs n_datapoints to divide regularizing lambda
+    model.n_datapoints = looper.n_datapoints
+
+    log("creating parameter updates...")
+    params_updates = adam_masked(
+        model.grads_params,
+        model.params,
+        model.all_masks,
+        learning_rate=config.lr_begin
+    )
+
+    log("creating parameter update function..")
+    params_update_fn = model_build.make_function(
+        [model.Ri_mb_sym],
+        [model.obj],
+        updates=params_updates,
+    )
+    params_update_fn.name = "params_update_fn"
+
+    obj_fn = model_build.make_function(
+        [model.Ri_mb_sym],
+        [model.obj]
+    )
+    obj_fn.name = "obj_fn"
+
     log("training ...")
-    cftools.mainloop_rrows(train_with_rrow,dataset,predict_to_5_fn,epoch_hook=epoch_hook)
+    looper.start()
 
 if __name__=="__main__":
     main()

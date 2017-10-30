@@ -40,6 +40,10 @@ class Splitter(object):
     def prepare_new_training_set(self):
         raise Exception("prepare_new_training_set needs to be implemented!")
 
+    @property
+    def n_datapoints(self):
+        raise Exception("n_datapoints needs to be implemented!")
+
 class MemoryRandomCompleteEpochs(Splitter):
     """
     the dataset is going to be entirely stored in memory.
@@ -80,8 +84,12 @@ class MemoryRandomCompleteEpochs(Splitter):
         else:
             return self._validation_set
 
+    @property
+    def n_datapoints(self):
+        return len(self._training_set)
+
     def prepare_new_training_set(self):
-        perm = np.random.permutation(len(self._training_set))
+        perm = np.random.permutation(self.n_datapoints)
         self._training_set_perm = PermList(self._training_set,perm)
 
     @property

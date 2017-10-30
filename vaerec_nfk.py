@@ -62,6 +62,16 @@ class Model(object):
 
         self.Ri_mb_sym = theano.sparse.csr_matrix(name='Ri_mb',dtype='float32')
         self.make_net()
+        self._n_datapoints = None # to be set later
+
+    @property
+    def n_datapoints(self):
+        assert self._n_datapoints is not None
+        return self._n_datapoints
+
+    @n_datapoints.setter
+    def n_datapoints(self,val):
+        self._n_datapoints = val
 
     def input_dropout(self, layer):
         if config.input_dropout_p > 0:
@@ -367,8 +377,6 @@ class Model(object):
     @utils.cached_property
     def elbo(self):
         ret = 0
-        if config.regularization_lambda > 0.:
-            ret += self.regularizer * config.regularization_lambda
         ret += self.regression_error_obj * config.regression_error_coef
         ret += self.latentK_term_obj
         ret += self.latent0_entropy_term_obj
@@ -381,6 +389,9 @@ class Model(object):
     @utils.cached_property
     def obj(self):
         ret = - self.elbo
+        ret /= config.minibatch_size # it's an average!
+        if config.regularization_lambda > 0.:
+            ret += self.regularizer * config.regularization_lambda / self.n_datapoints
         return ret
 
     @utils.cached_property
@@ -506,22 +517,6 @@ def main():
 
     model = Model(dataset)
     print("parameters shapes:",[p.get_value().shape for p in model.params])
-    print("creating parameter updates...")
-    params_updates = adam_masked(
-        model.grads_params,
-        model.params,
-        model.all_masks,
-        learning_rate=config.lr_begin
-    )
-
-    print("creating parameter update function..")
-    params_update_fn = theano.function(
-        [model.Ri_mb_sym],
-        [model.regression_error_obj],
-        updates=params_updates
-    )
-    params_update_fn.name = "params_update_fn"
-    print("done.")
 
     predict_to_1_fn = theano.function( # FIXME: change name
         [model.Ri_mb_sym],
@@ -567,9 +562,33 @@ def main():
             total_loss += _loss
             Ri_mb_l = []
             indices_mb_l = []
-    print("training ...")
-    cftools.mainloop_rrows(train_with_rrow,dataset,predict_to_5_fn,epoch_hook=epoch_hook)
+    looper = cftools.LooperRrows(
+        train_with_rrow,
+        dataset,
+        predict_to_5_fn,
+        epoch_hook=epoch_hook
+    )
+    # model needs n_datapoints to divide regularizing lambda
+    model.n_datapoints = looper.n_datapoints
 
+    print("creating parameter updates...")
+    params_updates = adam_masked(
+        model.grads_params,
+        model.params,
+        model.all_masks,
+        learning_rate=config.lr_begin
+    )
+
+    print("creating parameter update function..")
+    params_update_fn = theano.function(
+        [model.Ri_mb_sym],
+        [model.regression_error_obj],
+        updates=params_updates
+    )
+    params_update_fn.name = "params_update_fn"
+    print("done.")
+    print("training ...")
+    looper.start()
 if __name__=="__main__":
     main()
 
