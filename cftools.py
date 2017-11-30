@@ -27,6 +27,10 @@ backup_files = [
     "job.sh",
     "utils.py",
     "regularization.py",
+    "lasagne_sparse.py",
+    "initializations.py",
+    "split_dataset_schemas.py",
+    "numutils.py",
 ]
 
 tqdm_mininterval=5
