@@ -13,8 +13,8 @@ hid_dim=500
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
-regularization_lambda=2e+4
-regularization_type="L1" # in L1/L2
+regularization_lambda=2e-1
+regularization_type="L2" # in L1/L2
 regularization_latent_kl=0#0.5
 input_dropout_p=0.0
 dropout_p=0.0
@@ -49,7 +49,7 @@ preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 spherical_likelihood = True
 
 chunk_len =64*1024
-minibatch_size = 64 #2 # 16 # 64
+minibatch_size = 1 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 

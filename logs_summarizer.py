@@ -220,7 +220,7 @@ def create_table(paramss,sortby=None,filterby=None,top=None):
     df = pd.DataFrame(paramss)
     df = cast_table(df)
     if sortby is not None:
-        df = df.sort(columns=[sortby])
+        df = df.sort_values(by=[sortby])
     if filterby is not None:
         selector = df.harvest_dir.str.contains(filterby)
         df = df[selector]
@@ -245,6 +245,20 @@ def process_single_arg(arg):
         return
     params = complete_default(params)
     return params
+
+def print_twod(df,first_name,second_name,quantity_name):
+    first_list = getattr(df,first_name).tolist()
+    second_list = getattr(df,second_name).tolist()
+    twodf = pd.DataFrame(
+        index=map(str,sorted(list(set(second_list)))), # pandas does not like float names
+        columns=map(str,sorted(list(set(first_list)))) # index as string
+    )
+    for junk,row in df.iterrows():
+        quantity = row[quantity_name]
+        row_val = str(row[second_name])
+        col_val = str(row[first_name])
+        twodf.loc[row_val][col_val] = quantity
+    print(twodf)
 
 def main():
     parser = argparse.ArgumentParser(description='Logs summarizer.')
@@ -271,16 +285,22 @@ def main():
         action="store_true",
         help='top n entries'
     )
+    parser.add_argument(
+        '--twod',
+        help="2 factor table"
+    )
     args = parser.parse_args()
     if len(args.logs_or_dirs) == 0:
         tmp = glob.glob("./harvest_*")
     elif len(args.logs_or_dirs) >= 1:
         tmp = args.logs_or_dirs[1:]
-    tmp = filter(lambda curr: args.f in curr, tmp)
-    paramss = process_multiple(tmp)
+    tmp2 = filter(lambda curr: args.f in curr, tmp)
+    paramss = process_multiple(tmp2)
     df = create_table(paramss,sortby=args.s,filterby=args.f,top=args.t)
-
-    if args.T:
+    if args.twod:
+        factors = args.twod.split(',')
+        print_twod(df,factors[0],factors[1],args.s)
+    elif args.T:
         print(df.T)
     else:
         print(df)
