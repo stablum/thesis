@@ -5,7 +5,7 @@ import initializations
 import split_dataset_schemas
 import movielens
 
-n_epochs=20000
+n_epochs=2000
 
 K=30
 TK=20# transformation's K (number of nested transformation steps)
@@ -13,12 +13,12 @@ hid_dim=500
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
-regularization_lambda=2e+2
+regularization_lambda=2e-1
 regularization_type="L2" # in L1/L2
-regularization_latent_kl=0#0.5
+regularization_latent_kl=0.0#0.5#0#0.5
 input_dropout_p=0.0
 dropout_p=0.0
-lr_begin=2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
+lr_begin=2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
 max_rating=5.
 
