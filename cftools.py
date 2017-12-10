@@ -157,7 +157,6 @@ def rmse_rrows(subset_in, subset_out, prediction_function):
         sum_mask += np.sum(mask)
         errors.append(error)
 
-    import ipdb; ipdb.set_trace()
     # the average is calculated on the individual ratings, not on user/item rows
     errors_sum = np.sum(errors)
     errors_avg = errors_sum/sum_mask
