@@ -152,10 +152,17 @@ def rmse_rrows(subset_in, subset_out, prediction_function):
         Ri_mb_out_masked = np.multiply(Ri_mb_out.todense(),mask)
         predictions_masked = np.multiply(predictions,mask)
         ei_mb = Ri_mb_out_masked - predictions_masked
-        error = np.sum(np.power(ei_mb,2))
+        ei_sq = np.power(ei_mb,2)
+        error = np.sum(ei_sq)
         sum_mask += np.sum(mask)
         errors.append(error)
-    return np.sqrt(np.sum(errors)/sum_mask)
+
+    import ipdb; ipdb.set_trace()
+    # the average is calculated on the individual ratings, not on user/item rows
+    errors_sum = np.sum(errors)
+    errors_avg = errors_sum/sum_mask
+    ret = np.sqrt(errors_avg)
+    return ret
 
 def predictions_rrows(subset,prediction_function):
     l = []
@@ -249,8 +256,16 @@ class Log(object):
             testing_rmse = rmse(splitter.validation_set,U,V,prediction_function)
             _predictions = predictions(splitter.training_set,U,V,prediction_function)
         else:
-            training_rmse = rmse_rrows(splitter.training_set,splitter.training_set,prediction_function)
-            testing_rmse = rmse_rrows(splitter.validation_set,splitter.validation_set,prediction_function)
+            training_rmse = rmse_rrows(
+                splitter.training_set,
+                splitter.training_set,
+                prediction_function
+            )
+            testing_rmse = rmse_rrows(
+                splitter.validation_set,
+                splitter.validation_set,
+                prediction_function
+            )
             _predictions = predictions_rrows(splitter.training_set,prediction_function)
         def meanstd(l,axis=0):
             m = np.mean(l,axis=axis)
