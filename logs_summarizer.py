@@ -21,6 +21,11 @@ shorten_dict = {
     "learning_rate":("lr",float),
     "lr annealing T":("T",int),
     "update algorithm":("upd",str),
+    #"best_testing_rmse":("test_rmse",float),
+    #"best_training_rmse":("train_rmse",float),
+    #"minibatch_size":("mb_sz",int),
+    #"n_hid_layers":("n_hid",int),
+    #"regularization_lambda":("reg_la",float),
 }
 
 not_shortened_dict = dict([
@@ -241,6 +246,9 @@ def process_single_arg(arg):
         params = process_file(arg)
     elif os.path.isdir(arg):
         params = process_single_harvest(arg)
+    else:
+        print("invalid arg in process_single_arg")
+        import ipdb; ipdb.set_trace()
     if params is None or len(params.keys()) == 0:
         return
     params = complete_default(params)
@@ -259,6 +267,31 @@ def print_twod(df,first_name,second_name,quantity_name):
         col_val = str(row[first_name])
         twodf.loc[row_val][col_val] = quantity
     print(twodf)
+
+def select_columns(df,args):
+    max_len=6
+    #pd.set_option('display.max_colwidth',7)
+    pd.set_option('expand_frame_repr', False)
+
+    columns = args.c.split(',')
+    print(df.columns)
+    # select only chosen columns
+    df = df[columns]
+    for c in columns:
+        if c=="harvest_dir":
+            # cannot truncate this information
+            continue
+        #import ipdb; ipdb.set_trace()
+        # truncate column content
+        col = df[c].astype('str').str[:max_len]
+        # truncate column name
+        del df[c]
+        trunc = c[:max_len]
+        if trunc in df.columns:
+            # already there, let's use the last charachters
+            trunc = c[-max_len:]
+        df[trunc] = col
+    return df
 
 def main():
     parser = argparse.ArgumentParser(description='Logs summarizer.')
@@ -289,6 +322,10 @@ def main():
         '--twod',
         help="2 factor table"
     )
+    parser.add_argument(
+        '-c',
+        help="select which columns to display, separated by commas"
+    )
     args = parser.parse_args()
     if len(args.logs_or_dirs) == 0:
         tmp = glob.glob("./harvest_*")
@@ -297,6 +334,9 @@ def main():
     tmp2 = filter(lambda curr: args.f in curr, tmp)
     paramss = process_multiple(tmp2)
     df = create_table(paramss,sortby=args.s,filterby=args.f,top=args.t)
+    #import ipdb; ipdb.set_trace()
+    if args.c is not None:
+        df = select_columns(df,args)
     if args.twod:
         factors = args.twod.split(',')
         print_twod(df,factors[0],factors[1],args.s)
