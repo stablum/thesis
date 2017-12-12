@@ -202,7 +202,7 @@ def sgd_masked(all_grads,params,masks,**kwargs):
         # minimization implies subtraction because we are dealing with gradients
         # of the negative loglikelihood
         if type(grad) is not T.TensorVariable:
-            raise Exception("why is ths grad not a T.TensorVariable??")
+            raise Exception("why is this grad not a T.TensorVariable but a {}??".format(type(grad)))
 
 
         if param.name in masks.keys():
