@@ -30,7 +30,7 @@ import utils
 import regularization
 
 update =update_algorithms.get_func()
-adam_masked = update_algorithms.adam_masked # FIXME: generalize like the 'update' placeholder
+#update = adam_masked = update_algorithms.adam_masked # FIXME: generalize like the 'update' placeholder
 #g = lambda x:x
 g_rij = activation_functions.get(config.g_rij)
 g_latent = activation_functions.get(config.g_latent)
@@ -566,7 +566,7 @@ def main():
     model.n_datapoints = looper.n_datapoints
 
     log("creating parameter updates...")
-    params_updates = adam_masked(
+    params_updates = update (
         model.grads_params,
         model.params,
         model.all_masks,
@@ -577,7 +577,7 @@ def main():
     params_update_fn = model_build.make_function(
         [model.Ri_mb_sym],
         [model.obj],
-        updates=params_updates,
+        updates=params_updates
     )
     params_update_fn.name = "params_update_fn"
 

@@ -153,7 +153,8 @@ def get_func():
         'adam_symbolic':adam_symbolic,
         'adam_np':adam_np,
         'adam_lasagne':lasagne.updates.adam,
-        'sgd':sgd
+        'sgd':sgd,
+        'sgd_masked':sgd_masked
     }
     return d[config.update_algorithm]
 
@@ -193,4 +194,31 @@ def adam_masked(all_grads, params, masks, learning_rate=0.001, beta1=0.9, beta2=
         updates[param] = param - step
 
     updates[t_prev] = t
+    return updates
+
+def sgd_masked(all_grads,params,masks,**kwargs):
+    updates = collections.OrderedDict()
+    for param, grad in zip(params, all_grads):
+        # minimization implies subtraction because we are dealing with gradients
+        # of the negative loglikelihood
+        if type(grad) is not T.TensorVariable:
+            raise Exception("why is ths grad not a T.TensorVariable??")
+
+
+        if param.name in masks.keys():
+            mask = masks[param.name]
+        else:
+            value = param.get_value(borrow=True)
+            mask = np.ones(value.shape).astype('float32')
+        try:
+            # subtensor..
+            ret = T.inc_subtensor(param, -1 * lr * grad * mask)
+            print("update: param is a subtensor %s"%(str(param)))
+            updates[param] = ret
+        except TypeError as e:
+            print("update: param is NOT a subtensor %s (exception %s)"%(str(param),str(e)))
+            # not subtensor..
+            # I didn't know any other way to check if param is a subtensor
+            ret = param - lr * grad * mask
+            updates[param] = ret
     return updates

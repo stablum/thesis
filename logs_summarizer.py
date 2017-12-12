@@ -247,7 +247,7 @@ def process_single_arg(arg):
     elif os.path.isdir(arg):
         params = process_single_harvest(arg)
     else:
-        print("invalid arg in process_single_arg")
+        print("invalid arg in process_single_arg:",arg)
         import ipdb; ipdb.set_trace()
     if params is None or len(params.keys()) == 0:
         return
