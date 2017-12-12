@@ -274,7 +274,6 @@ def select_columns(df,args):
     pd.set_option('expand_frame_repr', False)
 
     columns = args.c.split(',')
-    print(df.columns)
     # select only chosen columns
     df = df[columns]
     for c in columns:
