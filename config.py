@@ -7,10 +7,10 @@ import movielens
 
 n_epochs=2000
 
-K=30
+K=5
 TK=20# transformation's K (number of nested transformation steps)
-hid_dim=500
-n_hid_layers=1
+hid_dim=75
+n_hid_layers=4
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=2e+1
@@ -26,8 +26,8 @@ ratings_training_set_subsample_size = 5000
 
 regression_error_coef=0.5#1.#100.#1.#2.
 
-#update_algorithm = 'adam_symbolic'
 update_algorithm = 'adam_masked'
+#update_algorithm = 'sgd'
 
 adam_beta1 = 0.9
 adam_beta2 = 0.999
@@ -49,7 +49,7 @@ preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 spherical_likelihood = True
 
 chunk_len =64*1024
-minibatch_size = 64 # 1 #2 # 16 # 64
+minibatch_size = 1 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
