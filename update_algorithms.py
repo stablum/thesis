@@ -153,7 +153,7 @@ def get_func():
         'adam_symbolic':adam_symbolic,
         'adam_np':adam_np,
         'adam_lasagne':lasagne.updates.adam,
-        'adam_masked':adam_masked
+        'adam_masked':adam_masked,
         'sgd':sgd,
         'sgd_masked':sgd_masked
     }
