@@ -261,7 +261,7 @@ class Log(object):
                 prediction_function
             )
             testing_rmse = rmse_rrows(
-                splitter.validation_set,
+                splitter.training_set,
                 splitter.validation_set,
                 prediction_function
             )
