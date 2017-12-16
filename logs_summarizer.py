@@ -329,7 +329,7 @@ def main():
     if len(args.logs_or_dirs) == 0:
         tmp = glob.glob("./harvest_*")
     elif len(args.logs_or_dirs) >= 1:
-        tmp = args.logs_or_dirs[1:]
+        tmp = args.logs_or_dirs
     tmp2 = filter(lambda curr: args.f in curr, tmp)
     paramss = process_multiple(tmp2)
     df = create_table(paramss,sortby=args.s,filterby=args.f,top=args.t)
