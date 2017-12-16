@@ -41,7 +41,7 @@ initialization = initializations.normal
 
 g_rij = "linear"
 g_in = "elu"
-g_hid = "sigmoid"
+g_hid = "elu"
 g_latent = "linear"
 g_transform = "sigmoid"
 
