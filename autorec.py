@@ -30,7 +30,7 @@ import utils
 import regularization
 
 update =update_algorithms.get_func()
-adam_masked = update_algorithms.adam_masked # FIXME: generalize like the 'update' placeholder
+#adam_masked = update_algorithms.adam_masked # FIXME: generalize like the 'update' placeholder
 #g = lambda x:x
 g_rij = activation_functions.get(config.g_rij)
 g_latent = activation_functions.get(config.g_latent)
@@ -328,7 +328,7 @@ def main():
 
     print("parameters shapes:",[p.get_value().shape for p in model.params])
     print("creating parameter updates...")
-    params_updates = adam_masked(
+    params_updates = update(
         model.grads_params,
         model.params,
         model.all_masks,
