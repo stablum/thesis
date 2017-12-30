@@ -7,10 +7,10 @@ import movielens
 
 n_epochs=2000
 
-K=30
+K=5
 TK=20# transformation's K (number of nested transformation steps)
-hid_dim=150
-n_hid_layers=5
+hid_dim=50
+n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=2e+2
@@ -49,7 +49,7 @@ preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 spherical_likelihood = True
 
 chunk_len =64*1024
-minibatch_size = 1 #2 # 16 # 64
+minibatch_size = 1# 64 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
