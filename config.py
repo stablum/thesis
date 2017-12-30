@@ -7,10 +7,10 @@ import movielens
 
 n_epochs=2000
 
-K=30
+K=250
 TK=20# transformation's K (number of nested transformation steps)
-hid_dim=150
-n_hid_layers=5
+hid_dim=500
+n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=2e+2
@@ -41,7 +41,7 @@ initialization = initializations.normal
 
 g_rij = "linear"
 g_in = "elu"
-g_hid = "elu"
+g_hid = "sigmoid"
 g_latent = "linear"
 g_transform = "sigmoid"
 
