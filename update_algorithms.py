@@ -155,7 +155,8 @@ def get_func():
         'adam_lasagne':lasagne.updates.adam,
         'adam_masked':adam_masked,
         'sgd':sgd,
-        'sgd_masked':sgd_masked
+        'sgd_masked':sgd_masked,
+        'rprop_masked':rprop_masked
     }
     return d[config.update_algorithm]
 
@@ -195,6 +196,64 @@ def adam_masked(all_grads, params, masks, learning_rate=0.001, beta1=0.9, beta2=
         updates[param] = param - step
 
     updates[t_prev] = t
+    return updates
+
+def rprop_masked(
+        all_grads,
+        params,
+        masks,
+        learning_rate=0.001,
+        delta_min=1e-6,
+        delta_max=50.0,
+        eta_plus=1.2,
+        eta_minus=0.5,
+        delta_zero=0.1
+    ):
+    updates = collections.OrderedDict()
+
+    for param, g_t in zip(params, all_grads):
+
+        value = param.get_value(borrow=True)
+        if param.name in masks.keys():
+            mask = masks[param.name]
+        else:
+            mask = np.ones(value.shape).astype('float32')
+        grad_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+
+        # the various if's in the pseudocode are here handled as masks
+        prod = grad_prev * g_t
+        prod_plus = (prod > 0).astype('float32')
+        prod_minus = (prod < 0).astype('float32')
+        def iszero(stuff):
+            return (stuff < 1e-9).astype('float32') + (stuff > -1e-9).astype('float32')
+        prod_zero = iszero(prod).astype('float32')
+
+        # previous stored gradient is only in the case the either the current
+        # gradient or the previous are zero
+        grad_prev_update = (g_t * mask * (prod_plus+prod_zero))
+        grad_prev_update += grad_prev * (1-mask)
+
+        def tensor_min(stuff,val):
+            return stuff.clip(val,1e+9)
+
+        def tensor_max(stuff,val):
+            return stuff.clip(1e-9,val)
+
+        deltas = (mask * prod_plus) * tensor_min(grad_prev * eta_plus, T.constant(delta_max))
+        deltas += (mask * prod_minus) * tensor_max(grad_prev * eta_minus, delta_min)
+        deltas += (mask * prod_zero) * delta_zero
+
+        sgn = T.sgn(g_t)
+
+        # differently from the pseudo-code in the article, here i keep
+        # the sign without the inversion because I subtract the step
+        # from the parameters afterwards instead of adding it.
+        step = (mask * (prod_plus + prod_zero)) * (sgn) * deltas
+
+        updates[grad_prev] = grad_prev_update
+        updates[param] = param - learning_rate*step
+
     return updates
 
 def sgd_masked(all_grads,params,masks,**kwargs):

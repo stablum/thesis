@@ -26,7 +26,7 @@ ratings_training_set_subsample_size = 5000
 
 regression_error_coef=0.5#1.#100.#1.#2.
 
-update_algorithm = 'adam_masked'
+update_algorithm = 'rprop_masked'
 #update_algorithm = 'sgd'
 
 adam_beta1 = 0.9
