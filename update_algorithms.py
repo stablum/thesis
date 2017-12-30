@@ -238,9 +238,9 @@ def rprop_masked(
             return stuff.clip(val,1e+9)
 
         def tensor_max(stuff,val):
-            return stuff.clip(1e-9,val)
+            return stuff.clip(-1e+9,val)
 
-        deltas = (mask * prod_plus) * tensor_min(grad_prev * eta_plus, T.constant(delta_max))
+        deltas = (mask * prod_plus) * tensor_min(grad_prev * eta_plus, delta_max)
         deltas += (mask * prod_minus) * tensor_max(grad_prev * eta_minus, delta_min)
         deltas += (mask * prod_zero) * delta_zero
 
