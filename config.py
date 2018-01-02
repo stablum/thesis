@@ -7,10 +7,10 @@ import movielens
 
 n_epochs=2000
 
-K=30
+K=250
 TK=20# transformation's K (number of nested transformation steps)
-hid_dim=150
-n_hid_layers=5
+hid_dim=500
+n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=2e+2
@@ -26,7 +26,8 @@ ratings_training_set_subsample_size = 5000
 
 regression_error_coef=0.5#1.#100.#1.#2.
 
-update_algorithm = 'rprop_masked'
+#update_algorithm = 'rprop_masked'
+update_algorithm = 'adam_masked'
 #update_algorithm = 'sgd'
 
 adam_beta1 = 0.9
@@ -41,7 +42,7 @@ initialization = initializations.normal
 
 g_rij = "linear"
 g_in = "elu"
-g_hid = "elu"
+g_hid = "sigmoid"
 g_latent = "linear"
 g_transform = "sigmoid"
 
