@@ -14,7 +14,7 @@ n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=2e+2
-regularization_type="L2" # in L1/L2
+regularization_type="L1" # in L1/L2
 regularization_latent_kl=0.5#0#0.5
 input_dropout_p=0.0
 dropout_p=0.0
@@ -42,7 +42,7 @@ initialization = initializations.normal
 
 g_rij = "linear"
 g_in = "elu"
-g_hid = "tanh"
+g_hid = "sigmoid"
 g_latent = "linear"
 g_transform = "sigmoid"
 
