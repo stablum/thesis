@@ -144,6 +144,8 @@ class Model(object):
             return self.dataset.M
         elif config.regression_type == "item":
             return self.dataset.N
+        elif config.regression_type == "user+item":
+            return self.dataset.M + self.dataset.N
         else:
             raise Exception("config.regression_type not valid")
 
