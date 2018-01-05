@@ -124,6 +124,7 @@ def process_file(filename):
     best_testing_rmse = 99999
     last_training_rmse = 99999
     best_training_rmse = 99999
+    nan = False
     with open(filename,'r') as f:
         for line in f:
             param = process_line(line)
@@ -136,6 +137,8 @@ def process_file(filename):
                 tmp = check_match(testing_rmse_parser,line)
                 if tmp is not None:
                     last_testing_rmse = float(tmp)
+                    if tmp == "nan":
+                        nan = True
                 if last_testing_rmse < best_testing_rmse:
                     best_testing_rmse = last_testing_rmse
                 tmp = check_match(training_rmse_parser,line)
@@ -154,6 +157,7 @@ def process_file(filename):
         params['last_training_rmse'] = last_training_rmse
     if best_training_rmse != 99999:
         params['best_training_rmse'] = best_training_rmse
+    params['nan'] = str(nan)
     return params
 
 process_notes_file = process_log_file = process_file
