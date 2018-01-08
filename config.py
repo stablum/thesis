@@ -42,7 +42,7 @@ initialization = initializations.normal
 
 g_rij = "linear"
 g_in = "elu"
-g_hid = "elu"
+g_hid = "sigmoid"
 g_latent = "linear"
 g_transform = "sigmoid"
 
@@ -52,7 +52,7 @@ spherical_likelihood = True
 chunk_len =64*1024
 minibatch_size = 1 #2 # 16 # 64
 
-regression_type = "item" # in user/item/user+item
+regression_type = "user+item" # in user/item/user+item
 
 if socket.gethostname() in ['playertrackingmobile']:
     # locally
