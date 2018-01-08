@@ -9,11 +9,11 @@ n_epochs=2000
 
 K=250
 TK=20# transformation's K (number of nested transformation steps)
-hid_dim=75
-n_hid_layers=4
+hid_dim=500
+n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
-regularization_lambda=2e+2
+regularization_lambda=2e+3
 regularization_type="L2" # in L1/L2
 regularization_latent_kl=0.5#0#0.5
 input_dropout_p=0.0
@@ -26,6 +26,7 @@ ratings_training_set_subsample_size = 5000
 
 regression_error_coef=0.5#1.#100.#1.#2.
 
+#update_algorithm = 'rprop_masked'
 update_algorithm = 'adam_masked'
 #update_algorithm = 'sgd'
 
@@ -41,7 +42,7 @@ initialization = initializations.normal
 
 g_rij = "linear"
 g_in = "elu"
-g_hid = "elu"
+g_hid = "tanh"
 g_latent = "linear"
 g_transform = "sigmoid"
 
