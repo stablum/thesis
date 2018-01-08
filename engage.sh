@@ -12,11 +12,11 @@ echo -n "commit message:"
 read COMMIT_MESSAGE
 git commit -m "$COMMIT_MESSAGE"
 git push das4vu master
-#NODETYPE="ngpus=1"
+NODETYPE="ngpus=1"
 #NODETYPE="gpu=GTX680"
 #NODETYPE="fat,gpu=K20"
 #NODETYPE="gpu=C2050"
-NODETYPE="gpu=GTX480"
+#NODETYPE="gpu=GTX480"
 echo "NODETYPE:$NODETYPE"
 echo "TIMESTAMP:$TIMESTAMP"
 echo "after submitting the job will sleep for $SLEEPTIME seconds before retrieving outputs"
