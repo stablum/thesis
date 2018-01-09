@@ -10,7 +10,7 @@ n_epochs=2000
 K=250
 TK=20# transformation's K (number of nested transformation steps)
 hid_dim=500
-n_hid_layers=1
+n_hid_layers=2
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=2e+3
@@ -42,7 +42,7 @@ initialization = initializations.normal
 
 g_rij = "linear"
 g_in = "elu"
-g_hid = "tanh"
+g_hid = "elu"
 g_latent = "linear"
 g_transform = "sigmoid"
 
