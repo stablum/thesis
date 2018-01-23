@@ -1,0 +1,147 @@
+[RUN] 15/12/2017 K=5, hid_dim=75, n_hid=5, l2=2e+1, kl, lr 2e-5, g_hid=tanh, opt=sgd
+// harvest_vaerec_20171215_145741/
+
+[RUN] 15/12/2017 K=30, hid_dim=500, n_hid=1, l2=2e+1, kl, lr 2e-3, g_hid=tanh, opt=adam
+// harvest_vaerec_20171215_160343/
+    [RUN] 15/12/2017 like ^^ but mb 64 and lr 2e-4
+    // harvest_vaerec_20171215_164335/
+    [RUN] 15/12/2017 like harvest_vaerec_20171215_160343 but hid_dim=75 n_hid=4 K=5 
+    // harvest_vaerec_20171215_230412/
+        [RUN] 16/12/2017 like ^^ but g_hid is sigmoid
+        // harvest_vaerec_20171216_123543/
+        [RUN] 16/12/2017 like harvest_vaerec_20171215_230412 but g_hid is elu
+        // harvest_vaerec_20171216_123850/
+            [RUN] 17/12/2017 like ^^ but with K=30
+            // harvest_vaerec_20171217_135142/
+                [RUN] 18/12/2017 like ^^ but lr=2e-6
+                // harvest_vaerec_20171218_140252/
+                    [RUN] 18/12/2017 like ^^ but lambda=2e+2
+                    // harvest_vaerec_20171218_140623/
+            [RUN] 29/12/2017 like harvest_vaerec_20171216_123850 but lambda=2e+2 
+            // harvest_vaerec_20171229_142928/
+            // harvest_vaerec_20171229_142617/
+                [RUN] 29/12/2017 like ^^ but lr=2e-5
+                // harvest_vaerec_20171231_000602/
+                    [RUN] 29/12/2017 like ^^ but n_hid=5
+                    // harvest_vaerec_20171229_144459/
+                        [RUN] like ^^ but K=30
+                        // harvest_vaerec_20171229_144734/
+                            [RUN] like ^^ but hid_dim=150
+                            // harvest_vaerec_20171229_145015/
+                                [RUN] like ^^ but upd=rprop
+                                // harvest_vaerec_20171231_095145
+                    [RUN] 30/12/2017 like harvest_vaerec_20171229_142617 but with upd=rprop
+                    // harvest_vaerec_20171231_093043/
+                        [RUN] 31/12/2017 like ^^ but autorec
+                        // harvest_autorec_20171231_093140/
+                    [RUN] 05/01/2017 like harvest_vaerec_20171229_142617 but with K=250
+                    // harvest_vaerec_20180105_130143/
+                        [RUN] 08/01/2017 like ^^ but with lr=2e-5
+                        // harvest_vaerec_20180108_172722/
+        [RUN] 18/12/2017 like harvest_vaerec_20171216_123850 but l2=2e+2
+        // harvest_vaerec_20171218_141046/
+
+[RUN] 31/12/2017 autorec-like run of vaerec: n_hid=1, upd=rprop, n_hid=500, item-based (moreover, lr=2e-5, K=250,L2=2e+2)
+// harvest_vaerec_20171231_092357/
+    [RUN] 31/12/2017 like ^^ but actually autorec
+    // harvest_autorec_20171231_092706/
+        [RUN] 02/01/2018 like ^^ but upd=adam
+        // harvest_autorec_20180102_181908/
+            [RUN] 04/01/2018 like ^^ but back to vaerec
+            // harvest_vaerec_20180104_110655/
+            [RUN] 04/01/2018 like harvest_autorec_20180102_181908/ but n_hid=2
+            // harvest_autorec_20180104_110913/
+            [RUN] 04/01/2018 like harvest_autorec_20180102_181908/ but lambda=2e+3
+            // harvest_autorec_20180104_111150/
+            [RUN] 04/01/2018 like harvest_autorec_20180102_181908/ but regression_type=user+item
+            // harvest_autorec_20180104_111755/
+            // harvest_autorec_20180104_181843/
+                [RUN] 08/01/2018 like ^^ but, since it overfitted, lambda=2e+3
+                // harvest_autorec_20180108_160429
+                    [RUN] 08/01/2018 like ^^ but vaerec
+                    // harvest_vaerec_20180108_160004/
+            [RUN] 04/01/2018 like harvest_autorec_20180102_181908/ but g_hid=elu
+            // harvest_autorec_20180104_115748/
+                [RUN] 08/01/2018 like ^^ but, since it overfitted, lambda=2e+3
+                // harvest_autorec_20180108_154116
+                    [RUN] 09/01/2018 like ^^ but n_hid=2
+                    // harvest_autorec_20180109_113948/
+                        [RUN] 09/01/2018 like ^^ but lambda=2e+4
+                        // harvest_autorec_20180109_122750/
+                    [RUN] 20/01/2018 like harvest_autorec_20180108_154116/ but input_dropout_p=0.1
+                    // harvest_autorec_20180120_124230/
+
+                    [RUN] 20/01/2018 like harvest_autorec_20180108_154116/ but input_dropout_p=0.2
+                    // harvest_autorec_20180120_124401/
+                    
+                    [RUN] 20/01/2018 like harvest_autorec_20180108_154116/ but input_dropout_p=0.3
+                    // harvest_autorec_20180120_124541/
+
+                    [RUN] 21/01/2018 like harvest_autorec_20180108_154116/ but input_dropout_p=0.4
+                    // harvest_autorec_20180121_133902/ 
+                    [RUN] 21/01/2018 like harvest_autorec_20180108_154116/ but input_dropout_p=0.5
+                    // harvest_autorec_20180121_134037/
+                    [RUN] 20/01/2018 like harvest_autorec_20180108_154116/ but dropout_p=0.1
+                    // harvest_autorec_20180121_134553/
+                        [RUN] 22/01/2018 like ^^ but regularization_lambda=0.0
+                        // harvest_autorec_20180122_082448/
+                    [RUN] 20/01/2018 like harvest_autorec_20180108_154116/ but dropout_p=0.2
+                    // harvest_autorec_20180121_135436/
+                    
+                    [RUN] 20/01/2018 like harvest_autorec_20180108_154116/ but dropout_p=0.3
+                    // harvest_autorec_20180121_135621/
+
+                    [RUN] 21/01/2018 like harvest_autorec_20180108_154116/ but dropout_p=0.4
+                    // harvest_autorec_20180121_135755/
+                    [RUN] 21/01/2018 like harvest_autorec_20180108_154116/ but dropout_p=0.5
+                    // harvest_autorec_20180121_135921/
+            [RUN] 04/01/2018 like harvest_autorec_20180102_181908/ but g_hid=tanh
+            // harvest_autorec_20180104_115842/
+                [RUN] 08/01/2018 like ^^ but lambda=2e+3
+                // harvest_autorec_20180108_191235/
+            [RUN] 04/01/2018 like harvest_autorec_20180102_181908/ but reg_type=L1
+            // harvest_autorec_20180104_120001/
+            [RUN] 21/01/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.1
+            // harvest_autorec_20180121_131655
+            [RUN] 21/01/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.2
+            // harvest_autorec_20180121_132143/
+            [RUN] 21/01/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.3
+            // harvest_autorec_20180121_132355/  
+            [RUN] 21/01/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.4
+            // harvest_autorec_20180121_133312/
+            [RUN] 21/01/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.5
+            // harvest_autorec_20180121_133459/
+        [RUN] 02/01/2018 like harvest_autorec_20171231_092706/ but lr=2e-6
+        // harvest_autorec_20180102_182205/
+        [RUN] 02/01/2018 like harvest_autorec_20171231_092706/ but lr=2e-7
+        // harvest_autorec_20180102_182427/
+        [RUN] 04/01/2018 like harvest_autorec_20171231_092706/ but lambda=0.0
+        // harvest_vaerec_20180104_085850/
+    [RUN] 04/01/2018 like harvest_vaerec_20171231_092357/ but upd=adam
+    // harvest_vaerec_20180104_090124/
+
+DONES
+-----
+V report nan results in the summarizer
+V take the best model and do user+item
+
+TODOS 31/12/2017
+----------------
+- write about rprop
+- write about B scaling
+- read paper with free bits
+- did I write about the free bits?
+- why the nans?
+
+TODOS 12/01/2017
+----------------
+- check pytorch implementation of RProp
+- try batch normalization
+NOTE: vaerec is less powerful because z is produced by linear activation
+- less regularization for the vaerec, as it has the additional kl regularizer
+- maybe try with annealing of the kl divergence (start with 0 coefficient up to 0.5)
+- try regularize only the decoder : inference model doesn't really overfit, as the
+    variational parameters are already regularized by the kl
+- try dropout
+- try dropout only on the input layer
+
