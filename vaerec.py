@@ -28,8 +28,8 @@ import model_build
 import kl
 import utils
 import regularization
+import persistency
 
-update =update_algorithms.get_func()
 #update = adam_masked = update_algorithms.adam_masked # FIXME: generalize like the 'update' placeholder
 #g = lambda x:x
 g_rij = activation_functions.get(config.g_rij)
@@ -47,6 +47,7 @@ hid_dim = config.hid_dim
 latent_dim = config.K
 #log = print
 log = lambda *args: print(*args)#None
+
 class Model(object):
 
     def __init__(self,dataset):
@@ -57,6 +58,11 @@ class Model(object):
         self.Ri_mb_sym = theano.sparse.csr_matrix(name='Ri_mb',dtype='float32')
         self.make_net()
         self._n_datapoints = None # to be set later
+
+    @utils.cached_property
+    def update(self):
+        ret = update_algorithms.get_func()
+        return ret
 
     @property
     def n_datapoints(self):
@@ -368,6 +374,15 @@ class Model(object):
         ret = self.out_mu_det
         return ret
 
+    @property
+    def params_for_persistency(self):
+        params_values = lasagne.layers.get_all_param_values(self.all_layers)
+        return params_values
+
+    @params_for_persistency.setter
+    def params_for_persistency(self,params):
+        lasagne.layers.set_all_param_values(self.all_layers, params)
+
     @utils.cached_property
     def params(self):
         ret = lasagne.layers.get_all_params(self.l_out, trainable=True)
@@ -414,6 +429,35 @@ class Model(object):
             weights_regularization
         )
         return ret
+
+    @property
+    def params_updates_values(self):
+        ret = []
+        for k in list(self.params_updates.keys()):
+            ret.append(k.get_value())
+        return ret
+
+    @params_updates_values.setter
+    def params_updates_values(self,vals):
+        for new_value,k in zip(vals,list(self.params_updates.keys())):
+            k.set_value(new_value)
+
+    @property
+    def params_updates(self):
+        log("creating parameter updates...")
+        if '_params_updates' not in dir(self):
+            self._params_updates = self.update (
+                self.grads_params,
+                self.params,
+                self.all_masks,
+                learning_rate=config.lr_begin * config.minibatch_size
+            )
+        return self._params_updates
+
+    @params_updates.setter
+    def params_updates(self,val):
+        assert val is not None
+        self._params_updates = val
 
 def log_percentiles(quantity,name,_log):
     for q in [1,2,5, 10,20, 50,80,90,95,98,99]:
@@ -493,6 +537,7 @@ def main():
         nonlocal total_objs
         nonlocal total_likelihoods
         nonlocal total_out_log_sigmas
+        nonlocal model
         _log("\ntotal_loss:",total_loss)
         _log("total_kls mean:",np.mean(total_kls))
         _log("total_kls std:",np.std(total_kls))
@@ -530,6 +575,8 @@ def main():
         total_likelihoods = []
         total_out_log_sigmas = []
 
+        persistency.save(model,kwargs['lr'],kwargs['epochsloop'].epoch_nr)
+
     def train_with_rrow(i,Ri,lr): # Ri is an entire sparse row of ratings from a user
         nonlocal indices_mb_l
         nonlocal Ri_mb_l
@@ -560,24 +607,17 @@ def main():
         train_with_rrow,
         dataset,
         predict_to_5_fn,
-        epoch_hook=epoch_hook
+        epoch_hook=epoch_hook,
+        model=model
     )
     # model needs n_datapoints to divide regularizing lambda
     model.n_datapoints = looper.n_datapoints
-
-    log("creating parameter updates...")
-    params_updates = update (
-        model.grads_params,
-        model.params,
-        model.all_masks,
-        learning_rate=config.lr_begin * config.minibatch_size
-    )
 
     log("creating parameter update function..")
     params_update_fn = model_build.make_function(
         [model.Ri_mb_sym],
         [model.obj],
-        updates=params_updates
+        updates=model.params_updates
     )
     params_update_fn.name = "params_update_fn"
 
@@ -588,6 +628,7 @@ def main():
     obj_fn.name = "obj_fn"
 
     log("training ...")
+    #import ipdb; ipdb.set_trace()
     looper.start()
 
 if __name__=="__main__":

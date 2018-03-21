@@ -1,4 +1,5 @@
 import numpy as np
+import argparse
 import os
 from tqdm import tqdm
 import sys
@@ -8,10 +9,12 @@ import theano
 import theano.tensor as T
 import scipy.sparse
 import socket
+import glob
 # local imports
 
 import config
 import update_algorithms
+import persistency
 
 backup_files = [
     sys.argv[0],
@@ -31,6 +34,7 @@ backup_files = [
     "initializations.py",
     "split_dataset_schemas.py",
     "numutils.py",
+    "persistency.py",
 ]
 
 tqdm_mininterval=5
@@ -195,18 +199,30 @@ def test_value(theano_var, _test_value):
 class Log(object):
     _file = None
 
-    def __init__(self,dirname="logs",log_params={}):
+    def __init__(self,dirname="logs",resume=False,log_params={}):
         prefix = os.path.splitext(os.path.basename(sys.argv[0]))[0]
         time_str = time.strftime('%Y%m%d_%H%M%S')
-        log_filename = prefix + "_" + time_str + ".log"
-        try:
-            os.mkdir(dirname)
-        except Exception as e:
-            # cannot create dir (maybe it already exists?)
-            # loudly ignore the exception
-            print("cannot create dir %s: %s"%(dirname,str(e)))
+        if resume is True:
+            pattern = os.path.join(dirname,prefix+"_*.log")
+            logfiles = glob.glob(pattern)
+            if len(logfiles) != 1:
+                raise Exception("there must be only one logfile matching the pattern {}, but there are".format(
+                    pattern,
+                    len(logfiles)
+                ))
+            full_path = logfiles[0] # take the only logfile that matches the pattern
+            print("found logfile to resume: {}".format(full_path))
+        else: # create logs directory (if does not already exist) and new log file
+            log_filename = prefix + "_" + time_str + ".log"
+            try:
+                os.mkdir(dirname)
+            except Exception as e:
+                # cannot create dir (maybe it already exists?)
+                # loudly ignore the exception
+                print("cannot create dir %s: %s"%(dirname,str(e)))
 
-        full_path = os.path.join(dirname,log_filename)
+            full_path = os.path.join(dirname,log_filename)
+
         self._file = open(full_path, 'a')
         self("logging to %s"%full_path)
         self("initial learning rate: %.10f"%config.lr_begin)
@@ -307,16 +323,42 @@ class Log(object):
 
 class Epochsloop(object):
 
-    def __init__(self,dataset,U,V,prediction_function,log_params):
+    def parse_cmd_args(self):
+        # called by __init__
+        self.cmd_args_parser = argparse.ArgumentParser(description='argument parser')
+        self.cmd_args_parser.add_argument('--resume-state',action='store_true')
+
+        self.cmd_args = self.cmd_args_parser.parse_args(sys.argv[1:])
+        if self.cmd_args.resume_state:
+            # then should be already inside the harvest directory
+            last_dir = os.path.split(os.getcwd())[-1]
+            if 'harvest' not in last_dir:
+                raise Exception("program should be run from within a harvest dir if --resume-state is enabled")
+            __lr,state_epoch = persistency.load("state",self.model)
+            # actually the read learning rate __lr will be ignored, as the learning
+            # rate is calculated from the epoch.
+
+            # the saved state belongs to that epoch.
+            # the next computations belong to the subsequent epoch, hence the +1
+            self.epoch_offset = state_epoch + 1
+            self._log = Log(dirname='.',resume=True,log_params=self.log_params)
+        else:
+            self.make_and_cd_experiment_dir()
+            self._log = Log(dirname='.',resume=False,log_params=self.log_params)
+
+    def __init__(self,dataset,U,V,prediction_function,log_params,model):
+        assert model is not None
+        self.model = model
         self.dataset = dataset
+        self.epoch_offset = 1 # eventually overridden by self.parse_cmd_args()
+        self.log_params = log_params
         np.set_printoptions(precision=5, suppress=True)
-        self.make_and_cd_experiment_dir()
-        self._log = Log(dirname='.',log_params=log_params)
+        self.parse_cmd_args()
         self.splitter = config.split_dataset_schema(self.dataset)
         self.U = U
         self.V = V
         self.prediction_function = prediction_function
-        self.log_params = log_params
+        self.epoch_nr = None
 
     def log(self, *args, **kwargs):
         return self._log(*args,**kwargs)
@@ -349,14 +391,15 @@ class Epochsloop(object):
 
     def __iter__(self):
         # internal "hidden" iterator
-        self._iter = iter(tqdm(list(range(config.n_epochs)),desc="epochs"))
+        _range = range(self.epoch_offset,config.n_epochs)
+        self._iter = iter(tqdm(list(_range),desc="epochs"))
         return self
 
     def __next__(self):
         self.splitter.prepare_new_training_set()
-        epoch_nr = next(self._iter) # will raise StopIteration when done
+        self.epoch_nr = next(self._iter) # will raise StopIteration when done
 
-        _lr = update_algorithms.calculate_lr(epoch_nr)
+        _lr = update_algorithms.calculate_lr(self.epoch_nr)
 
         if type(self.U) is T.sharedvar.TensorSharedVariable:
             _U = self.U.get_value()
@@ -366,7 +409,7 @@ class Epochsloop(object):
             _V = self.V
         self._log.statistics(
             _lr,
-            epoch_nr,
+            self.epoch_nr,
             self.splitter,
             _U,
             _V,
@@ -381,9 +424,18 @@ class Looper(object):
         return self._epochsloop.n_datapoints
 
 def LooperRij(Looper):
-    def __init__(self,process_datapoint,dataset,U,V,prediction_function,log_params={}):
+    def __init__(
+            self,
+            process_datapoint,
+            dataset,
+            U,
+            V,
+            prediction_function,
+            log_params={},
+            model=None
+    ):
         self._process_datapoint = process_datapoint
-        self._epochsloop = Epochsloop(dataset,U,V,prediction_function,log_params)
+        self._epochsloop = Epochsloop(dataset,U,V,prediction_function,log_params,model)
 
     def start(self):
         for training_set,_lr in self._epochsloop:
@@ -399,11 +451,12 @@ class LooperRrows(Looper):
             dataset,
             prediction_function,
             epoch_hook=lambda *args,**kwargs: None,
-            log_params={}
+            log_params={},
+            model=None
     ):
         U = None
         V = None
-        self._epochsloop = Epochsloop(dataset,U,V,prediction_function,log_params)
+        self._epochsloop = Epochsloop(dataset,U,V,prediction_function,log_params,model)
         self._log = lambda *args, **kwargs: self._epochsloop.log(*args,**kwargs)
         self._process_rrow = process_rrow
         self._epoch_hook = epoch_hook
@@ -422,7 +475,8 @@ class LooperRrows(Looper):
 
             self._epoch_hook(
                 log=self._log,
-                epochsloop=self._epochsloop
+                epochsloop=self._epochsloop,
+                lr=_lr
             )
 
 def preprocess(data,dataset):

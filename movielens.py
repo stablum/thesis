@@ -14,10 +14,11 @@ import utils
 
 _tqdm.tqdm.pandas()
 tqdm = lambda *args,**kwargs : _tqdm.tqdm(*args,**kwargs,mininterval=5)
+search_in_dirs = ['.','..']
 paths = {}
-paths['small'] = os.path.join(".","ml-latest-small","ratings.csv")
-paths['22m'] = os.path.join(".","ml-latest","ratings.csv.shuf")
-paths['1m'] = os.path.join(".","ml-1m","ratings.dat.csv.shuf")
+paths['small'] = os.path.join("ml-latest-small","ratings.csv")
+paths['22m'] = os.path.join("ml-latest","ratings.csv.shuf")
+paths['1m'] = os.path.join("ml-1m","ratings.dat.csv.shuf")
 
 def new_index(l):
     # returns a dictionary with old_index:new_compressed_index entries
@@ -38,9 +39,7 @@ class DataSet(object):
 
     def __init__(self, path, chunk_len=128*1024):
 
-        # absolute path, to prevent problems for subsequent chdirs
-        self.path = os.path.abspath(path)
-
+        self.path = path
         self.chunk_len = chunk_len
 
         user_id_set = set()
@@ -65,6 +64,24 @@ class DataSet(object):
         print("M",self.M)
         print("N_compressed",self.N_compressed)
         print("M_compressed",self.M_compressed)
+
+    @property
+    def path(self):
+        assert '_path' in dir(self), "use setter of 'path' before getting it"
+        return self._path
+
+    @path.setter
+    def path(self,val):
+        # absolute path, to prevent problems for subsequent chdirs
+        global search_in_dirs
+
+        for d in search_in_dirs:
+            filename = os.path.join(d,val)
+            abs_filename = os.path.abspath(filename)
+            if os.path.isfile(abs_filename):
+                self._path = abs_filename
+                return
+        raise Exception("could not find file {} in dirs {}".format(self.path,search_in_dirs))
 
     def chunk(self, chunk_id):
         reader = self.reopen()
