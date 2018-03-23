@@ -90,7 +90,7 @@ elif optimizer == "gpu":
     theano.config.floatX='float32'
     theano.config.assert_no_cpu_op='raise'
     theano.config.allow_gc=False
-    theano.config.nvcc.fastmath=True
+    #theano.config.nvcc.fastmath=True
 
 elif optimizer == "gpu_omp":
     theano.config.optimizer='fast_run'
@@ -101,4 +101,4 @@ elif optimizer == "gpu_omp":
     theano.config.floatX='float32'
     theano.config.assert_no_cpu_op='raise'
     theano.config.allow_gc=False
-    theano.config.nvcc.fastmath=True
+    #theano.config.nvcc.fastmath=True
