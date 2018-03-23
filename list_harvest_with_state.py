@@ -5,12 +5,15 @@ import glob
 import sys
 import argparse
 import re
+import shutil
+import time
 
 def main():
     parser = argparse.ArgumentParser(description='list harvest dirs with state dir')
     parser.add_argument('--max-epoch', type=int)
     parser.add_argument('--automatic-max-epoch',action='store_true')
     parser.add_argument('--invert',action='store_true')
+    parser.add_argument('--delete-state-dir',action='store_true')
 
     args = parser.parse_args(sys.argv[1:])
     candidates = glob.glob("harvest_*")
@@ -38,8 +41,11 @@ def main():
                 else:
                     if epoch > threshold:
                         continue
+        if args.delete_state_dir:
+            dir_in_tmp = os.path.join('/tmp','deleted_state_{}'.format(time.time()))
+            shutil.move(state_dir,dir_in_tmp)
         print(c)
-
 
 if __name__=="__main__":
     main()
+
