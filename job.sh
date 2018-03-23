@@ -1,0 +1,24 @@
+#!/bin/bash --login
+#$ -l h_rt=168:00:00
+
+#### ignored option -l gpu=GTX480
+#### other possibility: -l gpu=GTX680
+#### other possibility: -l fat,gpu=K20
+#### other possibility: -l gpu=C2050
+#### other possibility: -l gpu=GTX480
+
+#module add python/3.3.2
+module add python/3.5.2
+module add opencl-nvidia/9.0
+module add cuda91/blas/9.1.85
+module add cuda91/fft/9.1.85
+module add cuda91/profiler/9.1.85
+module add cuda91/toolkit/9.1.85
+source ~/venv5/bin/activate
+cd thesis
+nvidia-smi
+echo -n "hostname:"
+hostname
+#LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/fstablum/.local/lib
+OMP_NUM_THREADS=8 THEANO_FLAGS=mode=FAST_RUN,device=cuda,init_gpu_device=cuda,floatX=float32,nvcc.flags=-D_FORCE_INLINES,print_active_device=True,enable_initial_driver_test=True,warn_float64=raise,force_device=True,assert_no_cpu_op=raise,allow_gc=False python3 $@
+
