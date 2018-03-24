@@ -20,8 +20,6 @@ def save(model,lr,epoch, epoch_dir=False):
         assert not os.path.isdir(dir_name), "state at epoch {} already exists".format(epoch)
     else:
         dir_name = "state"
-        if os.path.isdir(dir_name):
-            shutil.rmtree(dir_name)
 
     os.mkdir(dir_name)
     def gen_path(filename):
@@ -29,16 +27,24 @@ def save(model,lr,epoch, epoch_dir=False):
     def _open(path):
         return open(path,"w+")
     print('writing model parameters..')
-    with lzma.open(gen_path("params.pickle.xz"),"wb") as f:
+    filename = gen_path("params.pickle.xz")
+    os.remove(filename)
+    with lzma.open(filename,"wb") as f:
         pickle.dump(model.params_for_persistency,f)
     print('writing parameters update symbols and algorithm metainfo..')
-    with lzma.open(gen_path("params_updates_values.pickle.xz"),"wb") as f:
+    filename = gen_path("params_updates_values.pickle.xz")
+    os.remove(filename)
+    with lzma.open(filename,"wb") as f:
         pickle.dump(model.params_updates_values,f)
     print('writing learning rate..')
-    with _open(gen_path("lr")) as f:
+    filename = gen_path("lr")
+    os.remove(filename)
+    with _open(filename) as f:
         f.write(str(lr))
     print('writing epoch..')
-    with _open(gen_path("epoch")) as f:
+    filename = gen_path("epoch")
+    os.remove(filename)
+    with _open(filename) as f:
         f.write(str(epoch))
     print("state saved.")
 
