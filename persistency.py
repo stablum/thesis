@@ -21,7 +21,9 @@ def save(model,lr,epoch, epoch_dir=False):
     else:
         dir_name = "state"
 
-    os.mkdir(dir_name)
+    if not os.path.isdir(dir_name):
+        os.mkdir(dir_name)
+
     def gen_path(filename):
         return os.path.join(dir_name,filename)
     def _open(filename,*args,**kwargs):
