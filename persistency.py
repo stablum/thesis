@@ -24,27 +24,27 @@ def save(model,lr,epoch, epoch_dir=False):
     os.mkdir(dir_name)
     def gen_path(filename):
         return os.path.join(dir_name,filename)
-    def _open(path):
-        return open(path,"w+")
+    def _open(filename,*args,**kwargs):
+        if '.pickle.xz' in filename:
+            open_func = lambda *args,**kwargs : lzma.open(*args,"wb",**kwargs)
+        else:
+            open_func = lambda *args,**kwargs : open(*args,"w+",**kwargs)
+        path = gen_path(filename)
+        if os.path.isfile(path):
+            os.remove(path)
+        return open_func(path)
+
     print('writing model parameters..')
-    filename = gen_path("params.pickle.xz")
-    os.remove(filename)
-    with lzma.open(filename,"wb") as f:
+    with _open("params.pickle.xz") as f:
         pickle.dump(model.params_for_persistency,f)
     print('writing parameters update symbols and algorithm metainfo..')
-    filename = gen_path("params_updates_values.pickle.xz")
-    os.remove(filename)
-    with lzma.open(filename,"wb") as f:
+    with _open("params_updates_values.pickle.xz") as f:
         pickle.dump(model.params_updates_values,f)
     print('writing learning rate..')
-    filename = gen_path("lr")
-    os.remove(filename)
-    with _open(filename) as f:
+    with _open("lr") as f:
         f.write(str(lr))
     print('writing epoch..')
-    filename = gen_path("epoch")
-    os.remove(filename)
-    with _open(filename) as f:
+    with _open("epoch") as f:
         f.write(str(epoch))
     print("state saved.")
 
