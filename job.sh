@@ -30,7 +30,7 @@ case "$EXTENSION" in
         INTERPRETER=bash
         ;;
     *)
-        echo $1 does not have an identifiable extension
+        echo $1 does not have an identifiable extension, @=$@
         exit
 esac
 echo INTERPRETER:$INTERPRETER
