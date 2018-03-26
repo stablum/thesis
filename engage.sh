@@ -18,5 +18,5 @@ NODETYPE="GTX480"
 echo "NODETYPE:$NODETYPE"
 echo "TIMESTAMP:$TIMESTAMP"
 echo "after submitting the job will sleep for $SLEEPTIME seconds before retrieving outputs"
-$SSH "module load slurm ; quota -m; cd thesis; squeue | grep fstablum ; sbatch -J '$@' -o $TIMESTAMP.out -e $TIMESTAMP.err -D . --constraint='$NODETYPE' --time='$AVAILABLEHOURS:00:00' job.sh $@ ; sleep $SLEEPTIME; tail -f $TIMESTAMP.out & tail -f $TIMESTAMP.err "
+$SSH "module load slurm ; quota -m; cd thesis; squeue -o '%.18i %.9P %.50j %.8u %.2t %.10M %.6D %R' | grep fstablum ; sbatch -J '$@' -o $TIMESTAMP.out -e $TIMESTAMP.err -D . --constraint='$NODETYPE' --time='$AVAILABLEHOURS:00:00' job.sh $@ ; sleep $SLEEPTIME; tail -f $TIMESTAMP.out & tail -f $TIMESTAMP.err "
  
