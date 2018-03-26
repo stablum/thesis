@@ -4,6 +4,8 @@ import config
 import utils
 import scipy
 from tqdm import tqdm as _tqdm
+_tqdm.monitor_interval = 0
+
 tqdm = lambda *args,**kwargs : _tqdm(*args,mininterval=5,**kwargs)
 
 class PermList(object):

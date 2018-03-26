@@ -2,6 +2,8 @@ import numpy as np
 import argparse
 import os
 from tqdm import tqdm
+tqdm.monitor_interval = 0
+
 import sys
 import time
 import random

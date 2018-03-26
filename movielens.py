@@ -7,6 +7,7 @@ import scipy
 import scipy.sparse
 import numpy as np
 import tqdm as _tqdm
+_tqdm.monitor_interval = 0
 
 import config
 import utils

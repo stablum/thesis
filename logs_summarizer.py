@@ -5,6 +5,8 @@ import re
 import pandas as pd
 import argparse
 from tqdm import tqdm
+tqdm.monitor_interval = 0
+
 pd.set_option('display.max_colwidth', -1)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)

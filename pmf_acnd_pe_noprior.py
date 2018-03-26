@@ -9,6 +9,7 @@ import numpy as np
 import random
 import sys
 from tqdm import tqdm
+tqdm.monitor_interval = 0
 import ipdb
 
 # local imports

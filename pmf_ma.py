@@ -5,6 +5,7 @@ import ipdb
 import numpy as np
 import random
 from tqdm import tqdm
+tqdm.monitor_interval = 0
 from theano import tensor as T
 from theano import function
 from theano import pp
