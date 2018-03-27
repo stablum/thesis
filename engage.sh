@@ -9,7 +9,7 @@ bash sync_src.sh
 
 # kill the job before 7 AM
 AVAILABLEHOURS=$(expr 24 + 6 - $(date +%H))
-
+echo "AVAILABLEHOURS:$AVAILABLEHOURS"
 #NODETYPE="ngpus=1"
 #NODETYPE="GTX680"
 #NODETYPE="K20"
