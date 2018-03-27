@@ -8,7 +8,7 @@ TIMESTAMP=$(date +%Y%m%d_%H%M%S_%N)
 bash sync_src.sh
 
 # kill the job before 7 AM
-AVAILABLEHOURS=$(expr 24 + 6 - $(date +%H))
+AVAILABLEHOURS=$(expr \( 24 + 6 - $(date +%H) \) % 24)
 echo "AVAILABLEHOURS:$AVAILABLEHOURS"
 #NODETYPE="ngpus=1"
 #NODETYPE="GTX680"
