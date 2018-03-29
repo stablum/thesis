@@ -6,7 +6,11 @@ function pyname {
     echo $PYNAME
 }
 echo entering directory $1 ..
-pushd $1
-    python3 $(pyname $1) --resume-state
-popd
+if test -z "$1" ; then
+    echo "$0 did not specify directory to enter"
+else
+    pushd $1
+        python3 $(pyname $1) --resume-state
+    popd
+fi
 
