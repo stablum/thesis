@@ -20,8 +20,8 @@ COUNTER=0
 for HARVEST_DIR in $HARVESTS ; do
     let COUNTER=COUNTER+1
     echo -e "$RED ($COUNTER) resuming job on $HARVEST_DIR ... $NC"
-    #bash engage.sh resume_one.sh $HARVEST_DIR &
-    echo -e "$RED sleeping $SLEEPTIME ... $NC"
+    bash engage.sh resume_one.sh $HARVEST_DIR &
+    echo -e "$RED ($COUNTER) sleeping $SLEEPTIME ... $NC"
     sleep $SLEEPTIME
 done
 popd
