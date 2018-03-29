@@ -5,6 +5,7 @@ function pyname {
     PYNAME=$BASENAME.py
     echo $PYNAME
 }
+echo entering directory $1 ..
 pushd $1
     python3 $(pyname $1) --resume-state
 popd

@@ -327,6 +327,10 @@ class Epochsloop(object):
 
     def parse_cmd_args(self):
         # called by __init__
+
+        print("argv:",sys.argv)
+        print("cwd:",os.getcwd())
+
         self.cmd_args_parser = argparse.ArgumentParser(description='argument parser')
         self.cmd_args_parser.add_argument('--resume-state',action='store_true')
 
@@ -335,7 +339,7 @@ class Epochsloop(object):
             # then should be already inside the harvest directory
             last_dir = os.path.split(os.getcwd())[-1]
             if 'harvest' not in last_dir:
-                raise Exception("program should be run from within a harvest dir if --resume-state is enabled")
+                raise Exception("program should be run from within a harvest dir if --resume-state is enabled (cwd={})".format(os.getcwd()))
             __lr,state_epoch = persistency.load("state",self.model)
             # actually the read learning rate __lr will be ignored, as the learning
             # rate is calculated from the epoch.
