@@ -11,12 +11,13 @@ pushd ~/das4mount
 cd thesis
 
 SLEEPTIME=10
-
-echo "looping on the harvest dirs.. (pwd=$(pwd))"
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+echo "$RED looping on the harvest dirs.. (pwd=$(pwd)) $NC"
 python3.6m list_harvest_with_state.py --automatic-max-epoch | while read HARVEST_DIR ; do
-    echo resuming job on $HARVEST_DIR ...
+    echo "$RED resuming job on $HARVEST_DIR ... $NC"
     #bash engage.sh resume_one.sh $HARVEST_DIR &
-    echo "sleeping $SLEEPTIME ..."
+    echo "$RED sleeping $SLEEPTIME ... $NC"
     sleep $SLEEPTIME
 done
 popd
