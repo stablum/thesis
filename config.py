@@ -7,18 +7,18 @@ import movielens
 
 n_epochs=2000
 
-K=250
+K=5
 TK=20# transformation's K (number of nested transformation steps)
-hid_dim=500
-n_hid_layers=1
+hid_dim=75
+n_hid_layers=4
 chan_out_dim=K
 stochastic_prediction=False#True
-regularization_lambda=0.0#2e+3
+regularization_lambda=2e+2
 regularization_type="L2" # in L1/L2
 regularization_latent_kl=0.5#0#0.5
 input_dropout_p=0.0
-dropout_p=0.1
-lr_begin=2e-5#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
+dropout_p=0.0
+lr_begin=2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
 max_rating=5.
 
@@ -26,7 +26,6 @@ ratings_training_set_subsample_size = 5000
 
 regression_error_coef=0.5#1.#100.#1.#2.
 
-#update_algorithm = 'rprop_masked'
 update_algorithm = 'adam_masked'
 #update_algorithm = 'sgd'
 
@@ -90,7 +89,7 @@ elif optimizer == "gpu":
     theano.config.floatX='float32'
     theano.config.assert_no_cpu_op='raise'
     theano.config.allow_gc=False
-    #theano.config.nvcc.fastmath=True
+    theano.config.nvcc.fastmath=True
 
 elif optimizer == "gpu_omp":
     theano.config.optimizer='fast_run'
@@ -101,4 +100,4 @@ elif optimizer == "gpu_omp":
     theano.config.floatX='float32'
     theano.config.assert_no_cpu_op='raise'
     theano.config.allow_gc=False
-    #theano.config.nvcc.fastmath=True
+    theano.config.nvcc.fastmath=True
