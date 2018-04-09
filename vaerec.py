@@ -592,6 +592,7 @@ def main():
             Ri_mb = scipy.sparse.vstack(Ri_mb_l)
             Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
             _loss, = params_update_fn(Ri_mb)
+            log("_loss:",_loss)
             _kls, = marginal_latent_kl_fn(Ri_mb)
             _out_log_sigmas, = out_log_sigmas_fn(Ri_mb)
             _obj, = obj_fn(Ri_mb)
