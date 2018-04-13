@@ -46,10 +46,10 @@ num_leading_axes = 1
 chan_out_dim = config.chan_out_dim
 hid_dim = config.hid_dim
 latent_dim = config.K
-#log = print
-log = lambda *args: print(*args)#None
 
-class Model(object):
+log = lambda *args,**kwargs : print(*args,**kwargs)
+
+class Model(model_build.Abstract):
 
     def __init__(self,dataset):
         # having a reference to the dataset is required as some information such
@@ -58,21 +58,6 @@ class Model(object):
 
         self.Ri_mb_sym = theano.sparse.csr_matrix(name='Ri_mb',dtype='float32')
         self.make_net()
-        self._n_datapoints = None # to be set later
-
-    @utils.cached_property
-    def update(self):
-        ret = update_algorithms.get_func()
-        return ret
-
-    @property
-    def n_datapoints(self):
-        assert self._n_datapoints is not None
-        return self._n_datapoints
-
-    @n_datapoints.setter
-    def n_datapoints(self,val):
-        self._n_datapoints = val
 
     def input_dropout(self, layer):
         if config.input_dropout_p > 0:
@@ -81,16 +66,6 @@ class Model(object):
                 p=config.input_dropout_p,
                 rescale=True,
                 name="inputdrop_"+layer.name
-            )
-        return layer
-
-    def dropout(self,layer):
-        if config.dropout_p > 0:
-            layer = lasagne.layers.DropoutLayer(
-                layer,
-                p=config.dropout_p,
-                rescale=False,
-                name="drop_"+layer.name
             )
         return layer
 
@@ -193,22 +168,8 @@ class Model(object):
             ],
             name="out_concat_layer"
         )
-        log("all layers: ", self.all_layers)
+        self.log("all layers: ", self.all_layers)
 
-    @property
-    def all_layers(self):
-        return lasagne.layers.get_all_layers(self.l_out)
-
-    @utils.cached_property
-    def input_dim(self):
-        if config.regression_type == "user":
-            return self.dataset.M
-        elif config.regression_type == "item":
-            return self.dataset.N
-        elif config.regression_type == "user+item":
-            return self.dataset.M + self.dataset.N
-        else:
-            raise Exception("config.regression_type not valid")
 
     @utils.cached_property
     def Rij_mb_dense(self):
@@ -375,15 +336,6 @@ class Model(object):
         ret = self.out_mu_det
         return ret
 
-    @property
-    def params_for_persistency(self):
-        params_values = lasagne.layers.get_all_param_values(self.all_layers)
-        return params_values
-
-    @params_for_persistency.setter
-    def params_for_persistency(self,params):
-        lasagne.layers.set_all_param_values(self.all_layers, params)
-
     @utils.cached_property
     def params(self):
         ret = lasagne.layers.get_all_params(self.l_out, trainable=True)
@@ -431,35 +383,6 @@ class Model(object):
         )
         return ret
 
-    @property
-    def params_updates_values(self):
-        ret = []
-        for k in list(self.params_updates.keys()):
-            ret.append(k.get_value())
-        return ret
-
-    @params_updates_values.setter
-    def params_updates_values(self,vals):
-        for new_value,k in zip(vals,list(self.params_updates.keys())):
-            k.set_value(new_value)
-
-    @property
-    def params_updates(self):
-        log("creating parameter updates...")
-        if '_params_updates' not in dir(self):
-            self._params_updates = self.update (
-                self.grads_params,
-                self.params,
-                self.all_masks,
-                learning_rate=config.lr_begin * config.minibatch_size
-            )
-        return self._params_updates
-
-    @params_updates.setter
-    def params_updates(self,val):
-        assert val is not None
-        self._params_updates = val
-
 def log_percentiles(quantity,name,_log):
     for q in [1,2,5, 10,20, 50,80,90,95,98,99]:
         percentile = np.percentile(quantity,q)
@@ -475,6 +398,7 @@ def main():
     log("creating model..")
 
     model = Model(dataset)
+    model.log = log
     log("parameters shapes:",[p.get_value().shape for p in model.params])
 
     log("creating marginal_latent_kl diagnostic functions..")

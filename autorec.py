@@ -47,7 +47,7 @@ hid_dim = config.hid_dim
 latent_dim = config.K
 #log = print
 log = lambda *args: print(*args)#None
-class Model(object):
+class Model(model_build.Abstract):
 
     def __init__(self,dataset):
         # having a reference to the dataset is required as some information such
@@ -292,6 +292,7 @@ def main():
         print("\n\n")
 
         total_loss = 0
+        persistency.save(model,kwargs['lr'],kwargs['epochsloop'].epoch_nr)
 
     def train_with_rrow(i,Ri,lr): # Ri is an entire sparse row of ratings from a user
         nonlocal indices_mb_l
@@ -323,7 +324,8 @@ def main():
         train_with_rrow,
         dataset,
         predict_to_5_fn,
-        epoch_hook=epoch_hook
+        epoch_hook=epoch_hook,
+        model=model
     )
 
     # model needs n_datapoints to divide regularizing lambda
@@ -342,7 +344,7 @@ def main():
     params_update_fn = theano.function(
         [model.Ri_mb_sym],
         [model.regression_error_obj],
-        updates=params_updates
+        updates=model.params_updates
     )
     params_update_fn.name = "params_update_fn"
     print("done.")

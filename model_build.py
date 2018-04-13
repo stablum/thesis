@@ -8,6 +8,101 @@ import random
 import regularization
 from theano.compile.nanguardmode import NanGuardMode
 
+import utils
+import update_algorithms
+import config
+
+class Abstract(object):
+
+    @utils.cached_property
+    def update(self):
+        ret = update_algorithms.get_func()
+        return ret
+
+    @property
+    def log(self):
+        if '_log' not in dir(self):
+            self._log = lambda *args: print(*args)#None
+        return self._log
+
+    @log.setter
+    def log(self,val):
+        self._log = val
+
+    @property
+    def n_datapoints(self):
+        assert '_n_datapoints' in dir(self)
+        assert self._n_datapoints is not None
+
+        return self._n_datapoints
+
+    @n_datapoints.setter
+    def n_datapoints(self,val):
+        self._n_datapoints = val
+
+    def dropout(self,layer):
+        if config.dropout_p > 0:
+            layer = lasagne.layers.DropoutLayer(
+                layer,
+                p=config.dropout_p,
+                rescale=False,
+                name="drop_"+layer.name
+            )
+        return layer
+
+    @property
+    def all_layers(self):
+        return lasagne.layers.get_all_layers(self.l_out)
+
+    @utils.cached_property
+    def input_dim(self):
+        if config.regression_type == "user":
+            return self.dataset.M
+        elif config.regression_type == "item":
+            return self.dataset.N
+        elif config.regression_type == "user+item":
+            return self.dataset.M + self.dataset.N
+        else:
+            raise Exception("config.regression_type not valid")
+
+    @property
+    def params_for_persistency(self):
+        params_values = lasagne.layers.get_all_param_values(self.all_layers)
+        return params_values
+
+    @params_for_persistency.setter
+    def params_for_persistency(self,params):
+        lasagne.layers.set_all_param_values(self.all_layers, params)
+
+    @property
+    def params_updates_values(self):
+        ret = []
+        for k in list(self.params_updates.keys()):
+            ret.append(k.get_value())
+        return ret
+
+    @params_updates_values.setter
+    def params_updates_values(self,vals):
+        for new_value,k in zip(vals,list(self.params_updates.keys())):
+            k.set_value(new_value)
+
+    @property
+    def params_updates(self):
+        self.log("creating parameter updates...")
+        if '_params_updates' not in dir(self):
+            self._params_updates = self.update (
+                self.grads_params,
+                self.params,
+                self.all_masks,
+                learning_rate=config.lr_begin * config.minibatch_size
+            )
+        return self._params_updates
+
+    @params_updates.setter
+    def params_updates(self,val):
+        assert val is not None
+        self._params_updates = val
+
 def make_function( *args, **kwargs ):
     #kwargs['mode'] = NanGuardMode(nan_is_error=True, inf_is_error=True, big_is_error=True)
     fn = theano.function(*args,**kwargs)
