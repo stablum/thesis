@@ -29,6 +29,7 @@ import model_build
 import kl
 import utils
 import regularization
+import persistency
 
 update =update_algorithms.get_func()
 #adam_masked = update_algorithms.adam_masked # FIXME: generalize like the 'update' placeholder
