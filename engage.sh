@@ -2,7 +2,7 @@
 KEY=~/.ssh/das4vu
 HOST=fs0.das4.cs.vu.nl
 SSH="ssh -i $KEY fstablum@$HOST"
-SLEEPTIME=15
+SLEEPTIME=30
 ssh-add $KEY
 TIMESTAMP=$(date +%Y%m%d_%H%M%S_%N)
 bash sync_src.sh
