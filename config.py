@@ -5,6 +5,8 @@ import initializations
 import split_dataset_schemas
 import movielens
 
+seed=12345
+
 n_epochs=2000
 
 K=250
