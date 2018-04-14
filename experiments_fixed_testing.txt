@@ -102,9 +102,9 @@
             [RUN] 04/01/2018 like harvest_autorec_20180102_181908/ but reg_type=L1
             // harvest_autorec_20180104_120001/
             [RUN] 21/01/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.1
-            // TODO
+            // harvest_autorec_20180414_231814/
             [RUN] 21/01/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.2
-            // TODO
+            // harvest_autorec_20180414_232007/
             [RUN] 21/01/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.3
             // TODO
             [RUN] 21/01/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.4
