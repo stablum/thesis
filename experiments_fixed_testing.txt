@@ -78,13 +78,13 @@
                     // harvest_autorec_20180120_124541/
 
                     [RUN] 21/01/2018 like harvest_autorec_20180108_154116/ but input_dropout_p=0.4
-                    // harvest_autorec_20180414_020728/
+                    // TODO
                     [RUN] 21/01/2018 like harvest_autorec_20180108_154116/ but input_dropout_p=0.5
-                    // harvest_autorec_20180414_020911/
+                    // TODO
                     [RUN] 20/01/2018 like harvest_autorec_20180108_154116/ but dropout_p=0.1
-                    // harvest_autorec_20180414_021119/
+                    // TODO
                         [RUN] 22/01/2018 like ^^ but regularization_lambda=0.0
-                        // harvest_autorec_20180414_021410/
+                        // TODO
                     [RUN] 20/01/2018 like harvest_autorec_20180108_154116/ but dropout_p=0.2
                     // TODO
                     

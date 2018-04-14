@@ -59,15 +59,6 @@ class Model(model_build.Abstract):
         self.make_net()
         self._n_datapoints = None # to be set later
 
-    @property
-    def n_datapoints(self):
-        assert self._n_datapoints is not None
-        return self._n_datapoints
-
-    @n_datapoints.setter
-    def n_datapoints(self,val):
-        self._n_datapoints = val
-
     def input_dropout(self, layer):
         if config.input_dropout_p > 0:
             layer = lasagne_sparse.SparseInputDropoutLayer(
@@ -75,16 +66,6 @@ class Model(model_build.Abstract):
                 p=config.input_dropout_p,
                 rescale=True,
                 name="inputdrop_"+layer.name
-            )
-        return layer
-
-    def dropout(self,layer):
-        if config.dropout_p > 0:
-            layer = lasagne.layers.DropoutLayer(
-                layer,
-                p=config.dropout_p,
-                rescale=False,
-                name="drop_"+layer.name
             )
         return layer
 
@@ -139,17 +120,6 @@ class Model(model_build.Abstract):
             name="out_layer"
         )
         print("all layers: ",lasagne.layers.get_all_layers(self.l_out))
-
-    @utils.cached_property
-    def input_dim(self):
-        if config.regression_type == "user":
-            return self.dataset.M
-        elif config.regression_type == "item":
-            return self.dataset.N
-        elif config.regression_type == "user+item":
-            return self.dataset.M + self.dataset.N
-        else:
-            raise Exception("config.regression_type not valid")
 
     @utils.cached_property
     def Rij_mb_dense(self):
@@ -260,10 +230,6 @@ class Model(model_build.Abstract):
             "out_layer.W": self.mask_dec_W
         }
         return ret
-
-    @property
-    def all_layers(self):
-        return lasagne.layers.get_all_layers(self.l_out)
 
     @utils.cached_property
     def regularizer(self):

@@ -66,6 +66,7 @@ class MemoryRandomCompleteEpochs(Splitter):
     @utils.cached_property
     def entire(self):
         ret = self.dataset.read_entire()
+        random.seed(config.seed)
         random.shuffle(ret)
         return ret
 
