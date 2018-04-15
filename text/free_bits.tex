@@ -1,0 +1,19 @@
+\section{Free bits}
+
+\subsection{Diagnosing the collapse of the posterior approximation to the prior distribution}
+
+Such phenomenon can be diagnosed by looking at the individual Kullback-Leibler divergences
+at each latent dimension.
+
+In the case of the diagonal-covariance Multivariate Normal posterior approximation
+(the regular VAE), it's easy to find these individual KL values, as it can be analytically determined as:
+
+\begin{nalign}
+KL = \log \frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + ( \mu_1 - \mu_2 )^2}{2\sigma_2^2}-\frac{1}{2}
+\end{nalign}
+
+As the prior $\pzi$ is $\normal{\boldzi}{\mathbf{0}}{\mathbf{I}}$, the KL per-dimension is reduced to:
+
+\begin{nalign}
+KL = -\log \sigma_1 + \frac{\sigma_1^2 + \mu_1^2}{2}-\frac{1}{2}
+\end{nalign}

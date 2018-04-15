@@ -1,0 +1,69 @@
+\section{Scaling issues and regularization}
+
+In order to achieve the same intensity of learning per epoch even by varying
+the minibatch size it is necessary to re-scale some hyperparameters.
+
+Let's consider a complete objective for a typical learning task
+of quantities $y_i$ from respective datapoints $x_i$, using
+a dataset $\mathcal{D} = \{x_i,y_i\}_i^{|D|}$.
+As the datapoints
+are independent and identically-distributed, then it can be expressed as a sum over
+all the datapoints.
+One step of learning from this objective is usually referred as an "epoch".
+
+\begin{nalign}
+\label{complete_J}
+J = \sum_{i=1}^{|\mathcal{D}|}
+\ell(x_i,y_i) + \lambda \Omega(\Theta)
+\end{nalign}
+
+Where $\Omega$ is a regularization term, $\Theta$ is the set of the regularizable
+parameters and $\lambda$ is a fixed hyperparamter that determines the regularization amount.
+
+This objective is subject to Gradient Descent learning on the trainable parameters:
+
+\begin{nalign}
+\Theta_{t+1} = \Theta_t - \gamma\nabla_\Theta J_t
+\end{nalign}
+
+Where $\gamma$ is the learning rate hyperparameter.
+
+As $J$ is defined as a sum over independent datapoints, it is possible to use Stochastic
+Gradient Descent learning strategies, which take into account only a limited number of datapoints at each time.
+
+It's desirable to consider the average contribution of each datapoint to the objective
+$J$ \ref{complete_J}:
+
+\begin{nalign}
+\label{average_datapoint_J}
+J_a = 
+\frac{1}{|\mathcal{D}|}
+J =
+\frac{1}{|\mathcal{D}|}
+\sum_{i=1}^{|\mathcal{D}|}
+\ell(x_i,y_i) + \frac{\lambda}{|\mathcal{D}|} \Omega(\Theta)
+\end{nalign}
+
+If learning using $J_a$ is repeated $|\mathcal{D}|$ times within an epoch, then
+the algorithm achieves the same learning intensity as
+with $J$ by keeping the same learning rate $\gamma$.
+
+By considering splitting the dataset and the objective $J$ 
+\ref{complete_J} into a number of minibatches of size $B$, an approximation to $J_a$,
+useful for SGD-like algorithms,
+can be obtained:
+
+\begin{nalign}
+J_b = \frac{1}{B}\sum_{i=1}^{B} \ell (x_i, y_i) + \frac{\lambda}{|\mathcal{D}|}\Omega(\Theta)
+\end{nalign}
+
+An important consequence of using $J_b$ is that the intensity of the learning 
+is altered,
+because less updates would be applied to $\Theta$ at each epoch.
+In order to balance this phenomenon, the learning rule can be modified as follows:
+
+\begin{nalign}
+\Theta_{t+1} = \Theta_t - B\gamma\nabla_\Theta J_{b,t}
+\end{nalign}
+
+
