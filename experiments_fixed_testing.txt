@@ -73,7 +73,9 @@
                         [RUN] 15/04/2018 like ^^ but n_hid=2
                         // harvest_autorec_20180415_192852/
                         [RUN] 15/04/2018 like harvest_autorec_20180120_124230/ but with batch normalization
-                        // 
+                        // harvest_autorec_20180415_222644/
+                            [RUN] 15/04/2018 like ^^ but with mb_size=16
+                            // 
 
                     [RUN] 20/01/2018 like harvest_autorec_20180108_154116/ but input_dropout_p=0.2
                     // harvest_autorec_20180120_124401/
