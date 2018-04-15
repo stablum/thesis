@@ -98,7 +98,7 @@ class Model(object):
             pass
         else: # 1 or multiple hidden layers
             for hid_count in range(config.n_hid_layers):
-                self.l_hid_enc = self.dropout(latent_layer_type(
+                self.l_hid_enc = self.wrap(latent_layer_type(
                     self.l_hid_enc, # replace field with last hidden layer
                     num_units=hid_dim,
                     num_leading_axes=num_leading_axes,
@@ -107,7 +107,7 @@ class Model(object):
                 ))
                 latent_layer_type = lasagne.layers.DenseLayer
 
-        self.l_latent = self.dropout(lasagne.layers.DenseLayer(
+        self.l_latent = self.wrap(lasagne.layers.DenseLayer(
             self.l_hid_enc,
             num_units=latent_dim,
             num_leading_axes=num_leading_axes,
@@ -120,7 +120,7 @@ class Model(object):
         else: # 1 or multiple hidden layers
             self.l_hid_dec = self.l_latent
             for hid_count in range( config.n_hid_layers):
-                self.l_hid_dec = self.dropout(lasagne.layers.DenseLayer(
+                self.l_hid_dec = self.wrap(lasagne.layers.DenseLayer(
                     self.l_hid_dec, # replace with last hidden layer
                     num_units=hid_dim,
                     num_leading_axes=num_leading_axes,

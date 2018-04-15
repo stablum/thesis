@@ -40,7 +40,11 @@ class Abstract(object):
     def n_datapoints(self,val):
         self._n_datapoints = val
 
-    def dropout(self,layer):
+    def wrap(self,layer):
+
+        if config.batch_normalization is True:
+            layer = lasagne.layers.BatchNormLayer(layer)
+
         if config.dropout_p > 0:
             layer = lasagne.layers.DropoutLayer(
                 layer,
