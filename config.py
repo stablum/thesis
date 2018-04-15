@@ -7,7 +7,7 @@ import movielens
 
 seed=12345
 
-n_epochs=2000
+n_epochs=1000
 
 K=250
 TK=20# transformation's K (number of nested transformation steps)
