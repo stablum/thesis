@@ -356,11 +356,19 @@ class Epochsloop(object):
         assert model is not None
         self.model = model
         self.dataset = dataset
+        self.splitter = config.split_dataset_schema(self.dataset)
+
+        # order of instructions is important
+        # the following has to happen *before* loading the persistency state
+        model.n_datapoints = self.n_datapoints
+
         self.epoch_offset = 1 # eventually overridden by self.parse_cmd_args()
         self.log_params = log_params
         np.set_printoptions(precision=5, suppress=True)
+
+        # includes loading the persistency state
         self.parse_cmd_args()
-        self.splitter = config.split_dataset_schema(self.dataset)
+
         self.U = U
         self.V = V
         self.prediction_function = prediction_function
