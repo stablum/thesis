@@ -250,6 +250,7 @@ class Log(object):
         self("regularization_lambda:",config.regularization_lambda)
         self("dropout_p:",config.dropout_p)
         self("input_dropout_p:",config.input_dropout_p)
+        self("batch_normalization:",config.batch_normalization)
         self("regression_error_coef:",config.regression_error_coef)
         self("regression_type:",config.regression_type)
         self("regularization_latent_kl:",config.regularization_latent_kl)
