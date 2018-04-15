@@ -12,13 +12,13 @@ n_epochs=2000
 K=250
 TK=20# transformation's K (number of nested transformation steps)
 hid_dim=500
-n_hid_layers=1
+n_hid_layers=2
 chan_out_dim=K
 stochastic_prediction=False#True
-regularization_lambda=2e+2
+regularization_lambda=2e+3
 regularization_type="L2" # in L1/L2
 regularization_latent_kl=0.5#0#0.5
-input_dropout_p=0.5
+input_dropout_p=0.1
 dropout_p=0.0
 lr_begin=2e-5#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
@@ -44,7 +44,7 @@ initialization = initializations.normal
 
 g_rij = "linear"
 g_in = "elu"
-g_hid = "sigmoid"
+g_hid = "elu"
 g_latent = "linear"
 g_transform = "sigmoid"
 
