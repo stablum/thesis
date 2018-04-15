@@ -110,7 +110,7 @@
             [RUN] 21/01/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.4
             // harvest_autorec_20180414_232728/
             [RUN] 21/01/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.5
-            // TODO
+            // harvest_autorec_20180414_232855
         [RUN] 02/01/2018 like harvest_autorec_20171231_092706/ but lr=2e-6
         // harvest_autorec_20180102_182205/
         [RUN] 02/01/2018 like harvest_autorec_20171231_092706/ but lr=2e-7
