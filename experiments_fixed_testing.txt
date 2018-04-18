@@ -102,7 +102,7 @@
                     // harvest_autorec_20180414_230826/
 
                     [RUN] 14/04/2018 like harvest_autorec_20180108_154116/ but dropout_p=0.4
-                    // harvest_autorec_20180414_231012
+                    // harvest_autorec_20180418_210423/
                     [RUN] 14/04/2018 like harvest_autorec_20180108_154116/ but dropout_p=0.5
                     // harvest_autorec_20180414_231342
             [RUN] 04/01/2018 like harvest_autorec_20180102_181908/ but g_hid=tanh
