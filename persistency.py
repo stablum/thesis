@@ -37,10 +37,12 @@ def save(model,lr,epoch, epoch_dir=False):
         else:
             open_func = lambda *args,**kwargs : open(*args,"w+",**kwargs)
         path = gen_path(filename)
-        if os.path.isfile(path):
-            os.remove(path)
+
         # don't write on the actual path, copy new into actual paths later
         path = path+".new"
+
+        if os.path.isfile(path):
+            os.remove(path)
         print("opening file {}".format(path))
         return open_func(path)
 
