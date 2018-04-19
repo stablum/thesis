@@ -96,7 +96,7 @@
                         [RUN] 14/04/2018 like ^^ but regularization_lambda=0.0
                         // harvest_autorec_20180414_230120
                     [RUN] 14/04/2018 like harvest_autorec_20180108_154116/ but dropout_p=0.2
-                    // harvest_autorec_20180414_230529/
+                    // harvest_autorec_20180419_004209/
                     
                     [RUN] 14/04/2018 like harvest_autorec_20180108_154116/ but dropout_p=0.3
                     // harvest_autorec_20180419_003259/
