@@ -80,6 +80,12 @@
                                 // harvest_autorec_20180415_225823/
                                 [RUN] 15/04/2018 like ^^ but with lr=2e-3
                                 // harvest_autorec_20180415_225823/
+                            [RUN] 20/04/2018 like harvest_autorec_20180415_222644 but mb_size=64
+                            // TODO
+                            [RUN] 20/04/2018 like harvest_autorec_20180415_222644 but mb_size=256
+                            // TODO
+                        [RUN] 19/04/2018 like harvest_autorec_20180120_124230/ but vaerec
+                        // TODO
 
                     [RUN] 20/01/2018 like harvest_autorec_20180108_154116/ but input_dropout_p=0.2
                     // harvest_autorec_20180120_124401/
@@ -119,6 +125,8 @@
             // harvest_autorec_20180414_232303/
             [RUN] 14/04/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.4
             // harvest_autorec_20180414_232728/
+                [RUN] 20/04/2018 like ^^ but with reg=2e+3 to make it similar to harvest_autorec_20180120_124230/
+                // TODO
             [RUN] 14/04/2018 like harvest_autorec_20180102_181908/ but input_dropout_p=0.5
             // harvest_autorec_20180414_232855
         [RUN] 02/01/2018 like harvest_autorec_20171231_092706/ but lr=2e-6

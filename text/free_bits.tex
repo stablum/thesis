@@ -2,6 +2,10 @@
 
 \subsection{Diagnosing the collapse of the posterior approximation to the prior distribution}
 
+It was observed\cite{Kingma2017}\cite{1611.02731} (FIXME: cite Bowman et al., 2015 and Kaae Sønderby et al., 2016 )
+that in the initial phases of training, due to weakness of the term $\pxicondi$ the term $\kl{\pzi}{\qzcondi}$ 
+induces $\qzcondi$ to collapse to the prior $\pzi$.
+
 Such phenomenon can be diagnosed by looking at the individual Kullback-Leibler divergences
 at each latent dimension.
 
@@ -17,3 +21,5 @@ As the prior $\pzi$ is $\normal{\boldzi}{\mathbf{0}}{\mathbf{I}}$, the KL per-di
 \begin{nalign}
 KL = -\log \sigma_1 + \frac{\sigma_1^2 + \mu_1^2}{2}-\frac{1}{2}
 \end{nalign}
+
+
