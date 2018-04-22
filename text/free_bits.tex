@@ -3,8 +3,8 @@
 \subsection{Diagnosing the collapse of the posterior approximation to the prior distribution}
 
 It was observed\cite{Kingma2017}\cite{1611.02731} (FIXME: cite Bowman et al., 2015 and Kaae Sønderby et al., 2016 )
-that in the initial phases of training, due to weakness of the term $\pxicondi$ the term $\kl{\pzi}{\qzcondi}$ 
-induces $\qzcondi$ to collapse to the prior $\pzi$.
+that in the initial phases of training, due to weakness of the term $\pxcond$ the term $\kl{\pzonly}{\qzcond}$ 
+induces $\qzcond$ to collapse to the prior $\pzonly$.
 
 Such phenomenon can be diagnosed by looking at the individual Kullback-Leibler divergences
 at each latent dimension.
@@ -22,4 +22,16 @@ As the prior $\pzi$ is $\normal{\boldzi}{\mathbf{0}}{\mathbf{I}}$, the KL per-di
 KL = -\log \sigma_1 + \frac{\sigma_1^2 + \mu_1^2}{2}-\frac{1}{2}
 \end{nalign}
 
+ The $\kl{\qzcond}{\pzonly}$ term of the $\elbox$, if seen in the context of averaging within a minibatch $\mathcal{M}$, as in
+ $\expectxM{\kl{\qzcond}{\pzonly}}$,
+ can be interpreted as an approximation to a mutual information term $\mutinf{\boldz}{\boldx}$.
+ The implied minimization of the mutual information during optimization of the ELBO forces a high dependence of the $\boldx$ datapoints to the prior $\qzonly$,
+ leading to over-regularization of $\qzcond$.
 
+ In order to prevent the collapse of the posterior approximation to the prior, the gradients of the mutual information term can be zeroed by setting a lower-bound
+ value to the \emph{nats} expressed from that term, as in:
+\begin{nalign}
+     \max\left[\lambda,\expectxM{\kl{\qzcond}{\pzonly}}\right]
+\end{nalign}
+
+FIXME: why not try a smooth function instead of max?

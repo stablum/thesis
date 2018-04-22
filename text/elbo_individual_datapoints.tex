@@ -65,3 +65,15 @@ is dependent on only a single datapoint:
 \elboX = \sumiN -\entropy{\qphizi,\pzi} + \entropy{\qphizi } + \expectqphizi{\log \pxicondi}
 \end{nalign}
 
+It's noteworthy that $\elboX$ can be expressed by the following mutual information term: 
+
+\begin{nalign}
+    \mutinf{\boldz}{\boldx} &= \expectx{\kl{\qphiz}{\pzonly}}\\
+        & \approx \frac{1}{N}\sumiN \kl{\qphizi}{\pzi}
+\end{nalign}
+
+Hence the $\elboX$ can be expressed as:
+
+\begin{nalign}
+\elboX = - N\cdot \mutinf{\boldz}{\boldx} + \sumiN \expectqphizi{\log \pxicondi}
+\end{nalign}

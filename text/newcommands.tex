@@ -81,11 +81,14 @@
 \newcommand{\freeenergyxi}{\mathcal{F}\left(\boldxi\right)}
 \newcommand{\elboxi}{\mathcal{L}\left(\boldxi\right)}
 \newcommand{\elboX}{\mathcal{L}\left(\boldX\right)}
+\newcommand{\elbox}{\mathcal{L}\left(\boldx\right)}
 \newcommand{\expect}[2]{\mathbb{E}_{#1}\left[ #2 \right]}
+\newcommand{\mutinf}[2]{I\left( #1 ; #2 \right)}
 \newcommand{\zcondi}{\boldz|\boldxi}
 \newcommand{\zcond}{\boldz|\boldx}
 \newcommand{\qphizcondi}{q_\phi\left(\zcondi\right)}
 \newcommand{\qphiZ}{q_\phi\left(\boldZ|\boldX\right)}
+\newcommand{\qphiz}{q_\phi\left(\boldz|\boldx\right)}
 \newcommand{\ric}{r_{i\cdot}}
 \newcommand{\qui}{q(\boldui|\ric)}
 \newcommand{\rcj}{r_{\cdot j}}
@@ -93,6 +96,8 @@
 \newcommand{\rij}{r_{ij}}
 \newcommand{\expectqphi}[1]{\expect{\qphizcondi}{#1}}
 \newcommand{\expectqphiZ}[1]{\expect{\qphiZ}{#1}}
+\newcommand{\expectxM}[1]{\expect{\boldx\sim\mathcal{M}}{#1}}
+\newcommand{\expectx}[1]{\expect{\boldx}{#1}}
 \newcommand{\qphizi}{\qphi{\boldzi|\boldxi}}
 \newcommand{\expectqphizi}[1]{\expect{\qphizi}{#1}}
 \newcommand{\ptheta}[1]{p_\theta\left(#1\right)}
@@ -101,6 +106,7 @@
 \newcommand{\qphi}[1]{q_\phi\left(#1\right)}
 \newcommand{\qzcondi}{\qphi{\zcondi}}
 \newcommand{\qzcond}{\qphi{\zcond}}
+\newcommand{\qzonly}{\qphi{\boldz}}
 \newcommand{\logqzcondi}{\log \qzcondi}
 \newcommand{\pxicond}{\ptheta{\boldxi|\boldz}}
 \newcommand{\pxcond}{\ptheta{\boldx|\boldz}}
@@ -112,6 +118,7 @@
 \newcommand{\pX}{\ptheta{\boldX}}
 \newcommand{\pZ}{\ptheta{\boldZ}}
 \newcommand{\pzi}{\ptheta{\boldzi}}
+\newcommand{\pzonly}{\ptheta{\boldz}}
 \newcommand{\pthetaz}{\ptheta{\boldz}}
 \newcommand{\pzone}{\ptheta{\boldzone}}
 \newcommand{\qphizone}{\qphi{\boldzone|\boldxone}}

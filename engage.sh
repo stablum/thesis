@@ -7,8 +7,18 @@ ssh-add $KEY
 TIMESTAMP=$(date +%Y%m%d_%H%M%S_%N)
 bash sync_src.sh
 
+if test $(date +%u) -eq 5 ; then
+    # Friday
+    PLUS=48
+elif test $(date +%u) -eq 6 ; then
+    # Saturday
+    PLUS=24
+else
+    PLUS=0
+fi
+
 # kill the job before 7 AM
-AVAILABLEHOURS=$(expr \( 24 + 6 - $(date +%H) \) % 24)
+AVAILABLEHOURS=$(expr \( 24 + 6 - $(date +%H) \) % 24 + $PLUS)
 echo "AVAILABLEHOURS:$AVAILABLEHOURS"
 #NODETYPE="ngpus=1"
 #NODETYPE="GTX680"
