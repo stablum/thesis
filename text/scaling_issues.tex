@@ -66,4 +66,15 @@ In order to balance this phenomenon, the learning rule can be modified as follow
 \Theta_{t+1} = \Theta_t - B\gamma\nabla_\Theta J_{b,t}
 \end{nalign}
 
+The presence of the $B$ coefficient cancels out the effect of the $\frac{1}{B}$ 
+coefficient in the $J_b$ average on the datapoints:
 
+\begin{nalign}
+\Theta_{t+1} = \Theta_t - \gamma
+\left[
+    \sum_{i=1}\nabla_\Theta \ell (x_i, y_i) 
+    +
+    \frac{B\gamma}{|\mathcal{D}|}
+    \nabla_\Theta \Omega(\Theta)
+\right]
+\end{nalign}

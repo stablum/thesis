@@ -417,7 +417,7 @@ def main():
             model.out_log_sigma_lea
         ],
     )
-    out_log_sigmas_fn.name = "marginal_latent_kl_fn"
+    out_log_sigmas_fn.name = "out_log_sigmas_fn"
 
     log("done.")
     theano.printing.pprint(model.predict_to_1_det)
