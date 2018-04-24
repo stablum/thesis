@@ -87,7 +87,7 @@
                             [RUN] 20/04/2018 like harvest_autorec_20180415_222644 but mb_size=256
                             // harvest_autorec_20180425_012645/
                         [RUN] 19/04/2018 like harvest_autorec_20180120_124230/ but vaerec
-                        // TODO
+                        // harvest_vaerec_20180425_013444/
 
                     [RUN] 20/01/2018 like harvest_autorec_20180108_154116/ but input_dropout_p=0.2
                     // harvest_autorec_20180120_124401/

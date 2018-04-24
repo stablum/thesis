@@ -18,7 +18,7 @@ stochastic_prediction=False#True
 regularization_lambda=2e+3
 regularization_type="L2" # in L1/L2
 regularization_latent_kl=0.5#0#0.5
-input_dropout_p=0.1
+input_dropout_p=0.4
 dropout_p=0.0
 batch_normalization=False
 lr_begin=2e-5#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
@@ -45,7 +45,7 @@ initialization = initializations.normal
 
 g_rij = "linear"
 g_in = "elu"
-g_hid = "elu"
+g_hid = "sigmoid"
 g_latent = "linear"
 g_transform = "sigmoid"
 
