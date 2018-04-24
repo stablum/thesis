@@ -3,6 +3,9 @@
 \newcommand{\prodiN}[1]{\prod_{i=1}^N #1}
 \newcommand{\prodjM}[1]{\prod_{j=1}^M #1}
 \newcommand{\sumk}[1]{\sum_{k=1}^K #1}
+\newcommand{\sumj}[1]{\sum_{j=1}^J #1}
+\newcommand{\prodj}[1]{\prod_{j=1}^J #1}
+\newcommand{\prodjprime}[1]{\prod_{j^\prime=1}^J #1}
 \newcommand{\transpose}[1]{{#1}^{\top}}
 \newcommand{\net}[2]{\mathrm{net}_{#1}\left(#2\right)}
 \newcommand{\dataset}{\mathcal{D}}
@@ -12,7 +15,7 @@
 \newcommand{\chunk}{\mathtt{chunk}}
 \newcommand{\datapoint}{\mathtt{datapoint}}
 \newcommand{\Z}{\mathbf{Z}}\
-
+\newcommand{\boldSigma}{\mathbf{\Sigma}}
 \newcommand{\z}[1]{\mathbf{z}_{#1}}
 \newcommand{\pz}[2]{p_{\z{#1}}\left(#2\right)}
 \newcommand{\Fz}[2]{F_{\z{#1}}\left(#2\right)}
@@ -37,6 +40,7 @@
 
 % new style for derivative of transformations:
 
+\newcommand{\trace}[1]{\mathrm{Tr}\left(#1\right)}
 \newcommand{\derivtk}[1]{\deriv{t_k\left(#1\right)}{#1}}
 \newcommand{\Dtr}[1]{\deriv{\tr\left(#1\right)}{#1}}
 \newcommand{\Dtrinv}[1]{\deriv{\trinv{#1}}{#1}}
@@ -86,6 +90,7 @@
 \newcommand{\mutinf}[2]{I\left( #1 ; #2 \right)}
 \newcommand{\zcondi}{\boldz|\boldxi}
 \newcommand{\zcond}{\boldz|\boldx}
+\newcommand{\qphizcond}{q_\phi\left(\zcond\right)}
 \newcommand{\qphizcondi}{q_\phi\left(\zcondi\right)}
 \newcommand{\qphiZ}{q_\phi\left(\boldZ|\boldX\right)}
 \newcommand{\qphiz}{q_\phi\left(\boldz|\boldx\right)}
@@ -94,6 +99,7 @@
 \newcommand{\rcj}{r_{\cdot j}}
 \newcommand{\qvj}{q(\boldvj|\rcj)}
 \newcommand{\rij}{r_{ij}}
+\newcommand{\expectqph}[1]{\expect{\qphizcond}{#1}}
 \newcommand{\expectqphi}[1]{\expect{\qphizcondi}{#1}}
 \newcommand{\expectqphiZ}[1]{\expect{\qphiZ}{#1}}
 \newcommand{\expectxM}[1]{\expect{\boldx\sim\mathcal{M}}{#1}}
@@ -107,6 +113,7 @@
 \newcommand{\qzcondi}{\qphi{\zcondi}}
 \newcommand{\qzcond}{\qphi{\zcond}}
 \newcommand{\qzonly}{\qphi{\boldz}}
+\newcommand{\logqzcond}{\log \qzcond}
 \newcommand{\logqzcondi}{\log \qzcondi}
 \newcommand{\pxicond}{\ptheta{\boldxi|\boldz}}
 \newcommand{\pxcond}{\ptheta{\boldx|\boldz}}
@@ -128,6 +135,7 @@
 \newcommand{\pZcond}{\ptheta{\boldZ|\boldX}}
 \newcommand{\logpxicond}{\log \pxicond}
 \newcommand{\logpz}{\log \pthetaz}
+\newcommand{\boldzero}{\mathbf{0}}
 \newcommand{\boldzzero}{\boldz_0}
 \newcommand{\boldxzero}{\boldx_0}
 
@@ -155,9 +163,11 @@
 \newcommand{\partialboldz}[1]{\frac{\partial #1}{\partial \boldz}}
 \newcommand{\identity}{\mathbf{I}}
 \newcommand{\half}{\frac{1}{2}}
-\newcommand{\diffximutheta}{\left(\boldxi - \boldsymbol\mu_\theta\right)}
+\newcommand{\boldmu}{\boldsymbol\mu}
+\newcommand{\boldsigma}{\boldsymbol\sigma}
+\newcommand{\diffximutheta}{\left(\boldxi - \boldmu_\theta\right)}
 \newcommand{\diffxijmuthetaj}{\left(\xij - \mu_{\theta j}\right)}
-\newcommand{\diffTxizerotheta}{\left(\tr(\boldzzero) - \mathbf{0}\right)}
+\newcommand{\diffTxizerotheta}{\left(\tr(\boldzzero) - \boldzero\right)}
 \newcommand{\ltwonorm}[1]{||#1||_2^2}
 \newcommand{\kl}[2]{\mathbb{KL}\left[ #1 || #2 \right]}
 \newcommand{\justkl}{\mathbb{KL}}

@@ -1,0 +1,64 @@
+\section{Derivation of Kullback-Leibler divergence between diagonal-covariance Gaussian posterior approximation and spherical Gaussian prior}
+
+The Variational-Autoencoder introduced by \cite{1312.6114} makes use of a posterior approximation that takes the form of a diagonal-covariance Normal distribution
+$\qzcond = \normal{\boldz}{\boldmu}{\boldsigma}$;
+the prior distribution on the latent codes has a spherical Gaussian distribution with $\Sigma = I$ and $\boldmu = \boldzero$. Dimensionality of $\boldz$ is $J$.
+Follows a derivation which ends up in a convenient form:
+
+\begin{nalign}
+\kl{\qzcond}{\pzonly} &= \integral{\boldz}{\qzcond \left(\logpz - \logqzcond \right)}
+\end{nalign}
+
+By considering separately the two terms one obtains:
+
+\begin{nalign}
+\integral{\boldz}{\pzonly \logpz} &= \integral{\boldz}{\pzonly \left[\log \left( \left((2\pi)^J |\mathbf{I}| \right)^{-\half}\right)- \half (\transpose{\boldz} \mathbf{I}^{-1}\boldz )\right]} \\
+    &= -\half\left[J \log{2\pi} + \expectqph{\transpose{\boldz}\boldz}\right] \\
+    &= -\half\left[J \log{2\pi} + \left( \trace{\boldSigma} + \transpose{\boldmu}\boldmu \right)\right] \\
+    &= -\half\left[J \log{2\pi} + \left( \sumj{\sigma_j^2} + \sumj{\mu_j^2} \right) \right]\\
+\end{nalign}
+
+Where the trick $\expect{\boldx}{\transpose{\boldx}\mathbf{A}\boldx} = \trace{\mathbf{A}\boldSigma} + \transpose{\mathbf{m}}\mathbf{A}\mathbf{m}$ from \cite{cookbook} has been used.
+
+Second term is:
+\begin{nalign}
+\integral{\boldz}{\pzonly \logpz} &= -\half\left[ J\log (2\pi) + \log (|\boldSigma| ) + \expectqph{\transpose{(\boldz - \boldmu)} \boldSigma^{-1}(\boldz - \boldmu)} \right]\\
+    &= -\half\left[ J\log (2\pi) + \log (|\boldSigma| ) +\transpose{(\boldmu - \boldmu)} \boldSigma^{-1}(\boldmu - \boldmu) + \trace{\boldSigma^{-1}\boldSigma}\right]\\
+    &= -\half\left[ J\log (2\pi) + \sumj{\log \sigma_j^2} + J \right]\\
+\end{nalign}
+
+Where the trick  $\expect{\boldx}{\transpose{(\boldx - \mathbf{m^\prime})}\mathbf{A}(\boldx - \mathbf{m^\prime})} = \trace{\mathbf{A}\boldSigma} + \transpose{(\mathbf{m} - \mathbf{m^\prime})}\mathbf{A}(\mathbf{m} - \mathbf{m^\prime})$ from \cite{cookbook} has been used.
+
+Putting the two terms together:
+
+\begin{nalign}
+\kl{\qzcond}{\pzonly} &= \half \left[ \sumj{\log \sigma_j^2} + J - \sumj{\sigma_j^2} - \sumj{\mu_j^2} \right]\\
+    &= \half \sumj{\log \sigma_j^2 + 1 - \sigma_j^2 - \mu_j^2} ]
+\end{nalign}
+
+\subsection{KL of diagonal covariance gaussians is a sum of the KL of the individual variables}
+
+A Gaussian pdf with diagonal covariance matrix can be decomposed into a product of the
+individual independent latent variables. 
+
+First, the diagonal-covariance Gaussian can be interpreted as the product of
+individual one-dimensional independent Gaussian variables:
+
+\begin{nalign}
+\normal{\boldx}{\boldmu}{\boldSigma} &= \left((2\pi)^J |\boldSigma|\right)^{-\half}
+\exp\left\{-\half \transpose{(\boldx - \boldmu)}\boldSigma^{-1}(\boldx - \boldmu)\right\} \\
+ &= \left[\prodj{(2\pi\sigma_j^2)^{-\half}}\right]\exp\left\{-\half\left[\sumj{\transpose{(x_j-\mu_j)}\frac{1}{\sigma_j^2}(x_j-\mu_j)\right]}\right\} \\
+ &= \left[\prodj{(2\pi\sigma_j^2)^{-\half}}\right]\exp\left\{-\half\transpose{(x_j-\mu_j)}\frac{1}{\sigma_j^2}(x_j-\mu_j)\right\}\\
+ &= \prodj{\normal{x_j}{\mu_j}{\sigma^2_j}}
+\end{nalign}
+
+This fact can be used to get to a simpler way to calculate the KL divergence:
+\begin{nalign}
+\kl{\qzcond}{\pzonly} &= \integral{\boldz}{\left[\prodjprime{q(z_{j^\prime}|\boldx)}\right] \left\{ \log\left[\prodj{q(z_j|\boldx)}\right] - \log\left[\prodj{p(z_j)}\right]\right\}}\\
+ &= \integral{\boldz}{\left[\prodjprime{q(z_{j^\prime}|\boldx)}\right]\exp\left\{\sumj{\log q(z_j|\boldx) - \log p(z_i)}\right\}}\\
+ &= \sumj{\integral{\boldz}{\left[\prodjprime{q(z_{j^\prime}|\boldx)}\right]\exp\left\{\log q(z_j|\boldx) - \log p(z_i)\right\}}}\\
+ &= \sumj{\integral{z_j}{\left[\log q(z_j|\boldx) - \log p(z_j)\right]q(z_j|\boldx)}}\underbrace{\integral{\boldz_{-j}}{q(\boldz_{-j}|\boldx)}}_{=1} \\
+ &= \sumj{\kl{q(z_j|\boldx)}{p(z_j)}}
+\end{nalign}
+
+Where $\boldz_{-j}$ are the latent variables excluding $z_j$.
