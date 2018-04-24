@@ -6,7 +6,7 @@ the prior distribution on the latent codes has a spherical Gaussian distribution
 Follows a derivation which ends up in a convenient form:
 
 \begin{nalign}
-\kl{\qzcond}{\pzonly} &= \integral{\boldz}{\qzcond \left(\logpz - \logqzcond \right)}
+\kl{\qzcond}{\pzonly} &= \integral{\boldz}{\qzcond \left(\logqzcond - \logpz \right)}
 \end{nalign}
 
 By considering separately the two terms one obtains:
@@ -31,9 +31,9 @@ Where the trick  $\expect{\boldx}{\transpose{(\boldx - \mathbf{m^\prime})}\mathb
 
 Putting the two terms together:
 
-\begin{nalign}
-\kl{\qzcond}{\pzonly} &= \half \left[ \sumj{\log \sigma_j^2} + J - \sumj{\sigma_j^2} - \sumj{\mu_j^2} \right]\\
-    &= \half \sumj{\log \sigma_j^2 + 1 - \sigma_j^2 - \mu_j^2} ]
+\begin{nalign}\label{kl_multivariate}
+\kl{\qzcond}{\pzonly} &= \half \left[ \sumj{\sigma_j^2} + \sumj{\mu_j^2} - \sumj{\log \sigma_j^2} - J \right]\\
+    &= \half \sumj{ \sigma_j^2 + \mu_j^2 - \log \sigma_j^2 - 1}
 \end{nalign}
 
 \subsection{KL of diagonal covariance gaussians is a sum of the KL of the individual variables}
@@ -53,7 +53,7 @@ individual one-dimensional independent Gaussian variables:
 \end{nalign}
 
 This fact can be used to get to a simpler way to calculate the KL divergence:
-\begin{nalign}
+\begin{nalign}\label{kl_as_sum}
 \kl{\qzcond}{\pzonly} &= \integral{\boldz}{\left[\prodjprime{q(z_{j^\prime}|\boldx)}\right] \left\{ \log\left[\prodj{q(z_j|\boldx)}\right] - \log\left[\prodj{p(z_j)}\right]\right\}}\\
  &= \integral{\boldz}{\left[\prodjprime{q(z_{j^\prime}|\boldx)}\right]\exp\left\{\sumj{\log q(z_j|\boldx) - \log p(z_i)}\right\}}\\
  &= \sumj{\integral{\boldz}{\left[\prodjprime{q(z_{j^\prime}|\boldx)}\right]\exp\left\{\log q(z_j|\boldx) - \log p(z_i)\right\}}}\\
@@ -62,3 +62,18 @@ This fact can be used to get to a simpler way to calculate the KL divergence:
 \end{nalign}
 
 Where $\boldz_{-j}$ are the latent variables excluding $z_j$.
+
+\subsection{KL of a one-dimensional Gaussian vs unit circle (FIXME: name??) Gaussian}
+
+The Kullback-Leibler divergence of an arbitrary one-dimensional Gaussian $q(z) = \normal{z}{\mu}{\sigma^2}$
+versus
+a unit circle Gaussian $p(z)=\normal{z}{0}{1}$ can be derived as follows:
+
+\begin{nalign}\label{kl_one_d}
+\kl{q(z)}{p(z)} &= \expect{q}{\log q(z) - \log p(z)} \\
+&= \half \left[ -\log(2\pi\sigma^2) - \frac{1}{\sigma^2}\expect{q}{z^2} + \frac{2\mu}{\sigma^2} \expect{q}{z} - \frac{\mu^2}{\sigma^2} + \log{2\pi} + \expect{q}{z^2} \right]\\
+&= \half \left[ - \log(2\pi\sigma^2) - \frac{1}{\sigma^2}(\mu^2 + \sigma^2) + \frac{2\mu^2}{\sigma^2} - \frac{\mu^2}{\sigma^2} + \log{2\pi} + \mu^2 + \sigma^2 \right]\\
+&= \half \left[ - \log\sigma^2 - 1 + \mu^2 + \sigma^2 \right]
+\end{nalign}
+
+This allows us to get the same result as $\ref{kl_multivariate}$ by easily combining \ref{kl_as_sum} with \ref{kl_one_d}.
