@@ -81,7 +81,7 @@
                                 [RUN] 15/04/2018 like ^^ but with lr=2e-3
                                 // harvest_autorec_20180415_225823/
                                 [RUN] 22/05/2018 like harvest_autorec_20180415_223153/ but with lambda=2e+2 (less reg because it's underfitting
-                                                                                                                                // TODO
+                                // TODO
                             [RUN] 20/04/2018 like harvest_autorec_20180415_222644 but mb_size=64
                             // TODO
                             [RUN] 20/04/2018 like harvest_autorec_20180415_222644 but mb_size=256
