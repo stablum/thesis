@@ -38,6 +38,8 @@
                     // harvest_vaerec_20180105_130143/
                         [RUN] 08/01/2017 like ^^ but with lr=2e-5
                         // harvest_vaerec_20180108_172722/
+                [RUN] 25/04/2018 like harvest_vaerec_20171229_142617/ but with free_nats=2
+                // 
         [RUN] 18/12/2017 like harvest_vaerec_20171216_123850 but l2=2e+2
         // harvest_vaerec_20171218_141046/
 
