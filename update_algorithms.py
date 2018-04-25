@@ -233,7 +233,7 @@ def rprop_masked(
         prod_plus = (prod > 0).astype('float32')
         prod_minus = (prod < 0).astype('float32')
         def iszero(stuff):
-            return (stuff < 1e-9).astype('float32') + (stuff > -1e-9).astype('float32')
+            return (stuff < 1e-9).astype('float32') * (stuff > -1e-9).astype('float32')
         prod_zero = iszero(prod).astype('float32')
 
         # previous stored gradient is only in the case the either the current
