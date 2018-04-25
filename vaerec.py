@@ -239,6 +239,8 @@ class Model(model_build.Abstract):
     def regularizer_latent_kl(self):
         sigma = T.exp(self.latent_log_sigma_lea)
         ret = kl.kl_normal_diagonal_vs_unit(self.latent_mu_lea,sigma,latent_dim)
+        m = config.free_nats * theano.tensor.ones_like(ret)
+        ret = theano.tensor.maximum(ret,m)
         return ret
 
     @utils.cached_property
@@ -516,7 +518,7 @@ def main():
             Ri_mb = scipy.sparse.vstack(Ri_mb_l)
             Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
             _loss, = params_update_fn(Ri_mb)
-            log("_loss:",_loss)
+            #log("_loss:",_loss)
             _kls, = marginal_latent_kl_fn(Ri_mb)
             _out_log_sigmas, = out_log_sigmas_fn(Ri_mb)
             _obj, = obj_fn(Ri_mb)
