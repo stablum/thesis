@@ -24,7 +24,7 @@ lr_begin=2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
 max_rating=5.
 
-free_nats=2
+free_nats=4
 
 ratings_training_set_subsample_size = 5000
 
