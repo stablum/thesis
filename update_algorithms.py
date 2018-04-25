@@ -204,7 +204,7 @@ def rprop_masked(
         masks,
         learning_rate=0.001,
         delta_min=1e-6,
-        delta_max=50.0,
+        delta_max=2,#50.0,
         eta_plus=1.2,
         eta_minus=0.5,
         delta_zero=0.1
@@ -220,10 +220,13 @@ def rprop_masked(
             mask = np.ones(value.shape).astype('float32')
         grad_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
                                broadcastable=param.broadcastable)
-        deltas_prev = theano.shared(delta_zero*np.zeros(value.shape, dtype=value.dtype),
+        grad_prev.name=param.name+"_grad_prev"
+        deltas_prev = theano.shared(delta_zero*np.ones(value.shape, dtype=value.dtype),
                                broadcastable=param.broadcastable)
+        deltas_prev.name=param.name+"_deltas_prev"
         step_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
                                broadcastable=param.broadcastable)
+        step_prev.name=param.name+"_step_prev"
 
         # the various if's in the pseudocode are here handled as masks
         prod = grad_prev * g_t
@@ -239,9 +242,11 @@ def rprop_masked(
         grad_prev_update += grad_prev * (1-mask)
 
         def tensor_min(stuff,val):
+            #return stuff
             return stuff.clip(val,1e+9)
 
         def tensor_max(stuff,val):
+            #return stuff
             return stuff.clip(-1e+9,val)
 
         deltas = (mask * prod_plus) * tensor_min(deltas_prev * eta_plus, delta_max)

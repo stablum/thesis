@@ -17,7 +17,8 @@ _tqdm.tqdm.pandas()
 tqdm = lambda *args,**kwargs : _tqdm.tqdm(*args,**kwargs,mininterval=5)
 search_in_dirs = ['.','..']
 paths = {}
-paths['small'] = os.path.join("ml-latest-small","ratings.csv")
+paths['small'] = os.path.join("ml-latest-small","head2000.csv")
+paths['small_orig'] = os.path.join("ml-latest-small","ratings.csv")
 paths['22m'] = os.path.join("ml-latest","ratings.csv.shuf")
 paths['1m'] = os.path.join("ml-1m","ratings.dat.csv.shuf")
 

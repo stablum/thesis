@@ -518,6 +518,9 @@ def main():
             Ri_mb = scipy.sparse.vstack(Ri_mb_l)
             Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
             _loss, = params_update_fn(Ri_mb)
+
+            #for k in list(model.params_updates.keys())[-8:-4]:
+            #    print(k.name,k.get_value())
             #log("_loss:",_loss)
             _kls, = marginal_latent_kl_fn(Ri_mb)
             _out_log_sigmas, = out_log_sigmas_fn(Ri_mb)
@@ -547,6 +550,7 @@ def main():
         [model.obj],
         updates=model.params_updates
     )
+    #import ipdb; ipdb.set_trace()
     params_update_fn.name = "params_update_fn"
 
     obj_fn = model_build.make_function(

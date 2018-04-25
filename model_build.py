@@ -92,8 +92,8 @@ class Abstract(object):
 
     @property
     def params_updates(self):
-        self.log("creating parameter updates...")
         if '_params_updates' not in dir(self):
+            self.log("creating parameter updates...")
             self._params_updates = self.update (
                 self.grads_params,
                 self.params,

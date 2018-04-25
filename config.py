@@ -10,7 +10,7 @@ n_epochs=1000
 
 K=5
 TK=20# transformation's K (number of nested transformation steps)
-hid_dim=75
+hid_dim=20
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
@@ -20,11 +20,11 @@ regularization_latent_kl=0.5#0#0.5
 input_dropout_p=0.0
 dropout_p=0.0
 batch_normalization=False
-lr_begin=2e-8 #2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
+lr_begin=2e-18 #2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
 max_rating=5.
 
-free_nats=10000
+free_nats=0
 
 ratings_training_set_subsample_size = 5000
 
