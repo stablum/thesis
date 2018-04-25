@@ -220,7 +220,9 @@ def rprop_masked(
             mask = np.ones(value.shape).astype('float32')
         grad_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
                                broadcastable=param.broadcastable)
-        deltas_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+        deltas_prev = theano.shared(delta_zero*np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+        step_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
                                broadcastable=param.broadcastable)
 
         # the various if's in the pseudocode are here handled as masks
@@ -244,18 +246,21 @@ def rprop_masked(
 
         deltas = (mask * prod_plus) * tensor_min(deltas_prev * eta_plus, delta_max)
         deltas += (mask * prod_minus) * tensor_max(deltas_prev * eta_minus, delta_min)
-        deltas += (mask * prod_zero) * delta_zero
+        deltas += (mask * prod_zero) * deltas_prev
 
         sgn = T.sgn(g_t)
 
-        # differently from the pseudo-code in the article, here i keep
-        # the sign without the inversion because I subtract the step
-        # from the parameters afterwards instead of adding it.
-        step = (mask * (prod_plus + prod_zero)) * (sgn) * deltas
+        step = (mask * prod_plus) * (-sgn) * deltas
+        step += (mask * prod_minus) * step_prev
+        step += (mask * prod_zero) * (-sgn) * deltas
+
+        updates[param] = (mask * prod_plus) * ( param + learning_rate*step )
+        updates[param] += (mask * prod_minus) * ( param - learning_rate*step )
+        updates[param] += (mask * prod_zero) * ( param + learning_rate*step )
 
         updates[grad_prev] = grad_prev_update
+        updates[step_prev] = step
         updates[deltas_prev] = deltas
-        updates[param] = param - learning_rate*step
 
     return updates
 

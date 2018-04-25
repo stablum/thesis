@@ -238,9 +238,9 @@ class Model(model_build.Abstract):
     @utils.cached_property
     def regularizer_latent_kl(self):
         sigma = T.exp(self.latent_log_sigma_lea)
-        ret = kl.kl_normal_diagonal_vs_unit(self.latent_mu_lea,sigma,latent_dim)
-        m = config.free_nats * theano.tensor.ones_like(ret)
-        ret = theano.tensor.maximum(ret,m)
+        vanilla_kl = kl.kl_normal_diagonal_vs_unit(self.latent_mu_lea,sigma,latent_dim)
+        m = config.free_nats * theano.tensor.ones_like(vanilla_kl)
+        ret = theano.tensor.maximum(vanilla_kl,m)
         return ret
 
     @utils.cached_property

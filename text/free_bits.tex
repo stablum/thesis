@@ -6,21 +6,8 @@ It was observed\cite{Kingma2017}\cite{1611.02731} (FIXME: cite Bowman et al., 20
 that in the initial phases of training, due to weakness of the term $\pxcond$ the term $\kl{\pzonly}{\qzcond}$ 
 induces $\qzcond$ to collapse to the prior $\pzonly$.
 
-Such phenomenon can be diagnosed by looking at the individual Kullback-Leibler divergences
-at each latent dimension.
-
-In the case of the diagonal-covariance Multivariate Normal posterior approximation
-(the regular VAE), it's easy to find these individual KL values, as it can be analytically determined as:
-
-\begin{nalign}
-KL = \log \frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + ( \mu_1 - \mu_2 )^2}{2\sigma_2^2}-\frac{1}{2}
-\end{nalign}
-
-As the prior $\pzi$ is $\normal{\boldzi}{\mathbf{0}}{\mathbf{I}}$, the KL per-dimension is reduced to:
-
-\begin{nalign}
-KL = -\log \sigma_1 + \frac{\sigma_1^2 + \mu_1^2}{2}-\frac{1}{2}
-\end{nalign}
+If the latent variables are independent, then this phenomenon can be diagnosed by looking at the individual Kullback-Leibler divergences
+at each latent dimension, as shown in \ref{kl_as_sum} and, for the diagonal-covariance Normal, in \ref{kl_one_d}, \ref{kl_multivariate}.
 
  The $\kl{\qzcond}{\pzonly}$ term of the $\elbox$, if seen in the context of averaging within a minibatch $\mathcal{M}$, as in
  $\expectxM{\kl{\qzcond}{\pzonly}}$,
