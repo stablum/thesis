@@ -257,6 +257,7 @@ class Log(object):
         self("node_hostname:",socket.gethostname())
         self("preprocessing_type:",config.preprocessing_type)
         self("regularization_type:",config.regularization_type)
+        self("free_nats:",config.free_nats)
         for k,v in log_params.items():
             self(k+":",v)
 
