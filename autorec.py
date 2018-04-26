@@ -279,8 +279,8 @@ def main():
             print("reg:",_reg)
             """
             _loss, = params_update_fn(Ri_mb)
-            print("loss:",_loss)
             """
+            print("loss:",_loss)
             found_nan = False
             sec=10
             for k in list(model.params_updates.keys())[-sec*4:-sec*3]:
