@@ -153,8 +153,9 @@
 
 [RUN] 26/04/2018 test autorec rprop stability n_hid=1 hid_dim=7 K=5 lr=2e-2 reg=2e+2
 // harvest_autorec_20180426_235433/
-    [RUN] 26/04/2018 test autorec rprop stability n_hid=1 hid_dim=250 K=5 lr=2e-2 reg=2e+2
-    // 
+    [RUN] 26/04/2018 like ^^ but hid_dim=250 
+    // harvest_autorec_20180427_000807/s
+        [RUN] 26/04/2018 like ^^ but K=250
 
 DONES
 -----
