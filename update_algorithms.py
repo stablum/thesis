@@ -209,6 +209,7 @@ def rprop_masked(
         eta_minus=0.5,
         delta_zero=0.1
     ):
+    epsilon=1e-12
     updates = collections.OrderedDict()
 
     for param, g_t in zip(params, all_grads):
@@ -218,6 +219,15 @@ def rprop_masked(
             mask = masks[param.name]
         else:
             mask = np.ones(value.shape).astype('float32')
+        g_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+        g_debug.name="g_debug"
+        prod_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+        prod_debug.name="prod_debug"
+        mask_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+        mask_debug.name="mask_debug"
         grad_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
                                broadcastable=param.broadcastable)
         grad_prev.name=param.name+"_grad_prev"
@@ -227,13 +237,22 @@ def rprop_masked(
         step_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
                                broadcastable=param.broadcastable)
         step_prev.name=param.name+"_step_prev"
+        prod_plus_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+        prod_plus_debug.name=param.name+"_prod_plus_debug"
+        prod_minus_debug= theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+        prod_minus_debug.name=param.name+"_prod_minus_debug"
+        prod_zero_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+        prod_zero_debug.name=param.name+"_prod_zero_debug"
 
         # the various if's in the pseudocode are here handled as masks
         prod = grad_prev * g_t
-        prod_plus = (prod > 0).astype('float32')
-        prod_minus = (prod < 0).astype('float32')
+        prod_plus = (prod > epsilon).astype('float32')
+        prod_minus = (prod < -epsilon).astype('float32')
         def iszero(stuff):
-            return (stuff < 1e-9).astype('float32') * (stuff > -1e-9).astype('float32')
+            return (stuff < epsilon).astype('float32') * (stuff > -epsilon).astype('float32')
         prod_zero = iszero(prod).astype('float32')
 
         # previous stored gradient is only in the case the either the current
@@ -243,11 +262,11 @@ def rprop_masked(
 
         def tensor_min(stuff,val):
             #return stuff
-            return stuff.clip(val,1e+9)
+            return theano.tensor.clip(stuff,val,1e+9)
 
         def tensor_max(stuff,val):
             #return stuff
-            return stuff.clip(-1e+9,val)
+            return theano.tensor.clip(stuff,-1e+9,val)
 
         deltas = (mask * prod_plus) * tensor_min(deltas_prev * eta_plus, delta_max)
         deltas += (mask * prod_minus) * tensor_max(deltas_prev * eta_minus, delta_min)
@@ -266,6 +285,13 @@ def rprop_masked(
         updates[grad_prev] = grad_prev_update
         updates[step_prev] = step
         updates[deltas_prev] = deltas
+
+        updates[g_debug] = g_t
+        updates[mask_debug] = mask
+        updates[prod_debug] = prod
+        updates[prod_plus_debug] = prod_plus
+        updates[prod_minus_debug] = prod_minus
+        updates[prod_zero_debug] = prod_zero
 
     return updates
 

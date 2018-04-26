@@ -30,16 +30,19 @@
                             // harvest_vaerec_20171229_145015/
                                 [RUN] like ^^ but upd=rprop
                                 // harvest_vaerec_20171231_095145
+                                // TODO
                     [RUN] 30/12/2017 like harvest_vaerec_20171229_142617 but with upd=rprop
                     // harvest_vaerec_20171231_093043/
+                    // TODO
                         [RUN] 31/12/2017 like ^^ but autorec
                         // harvest_autorec_20171231_093140/
+                        // TODO
                     [RUN] 05/01/2017 like harvest_vaerec_20171229_142617 but with K=250
                     // harvest_vaerec_20180105_130143/
                         [RUN] 08/01/2017 like ^^ but with lr=2e-5
                         // harvest_vaerec_20180108_172722/
                 [RUN] 25/04/2018 like harvest_vaerec_20171229_142617/ but with free_nats=2
-                // harvest_vaerec_20180425_021628/
+                // harvest_vaerec_20180425_021628/harvest_vaerec_20171231_092357
                 [RUN] 25/04/2018 like harvest_vaerec_20171229_142617/ but with free_nats=4
                 // harvest_vaerec_20180425_022215/
                 [RUN] 25/04/2018 like harvest_vaerec_20171229_142617/ but with free_nats=10000
@@ -49,8 +52,10 @@
 
 [RUN] 31/12/2017 autorec-like run of vaerec: n_hid=1, upd=rprop, n_hid=500, item-based (moreover, lr=2e-5, K=250,L2=2e+2)
 // harvest_vaerec_20171231_092357/
+// TODO
     [RUN] 31/12/2017 like ^^ but actually autorec
     // harvest_autorec_20171231_092706/
+    // TODO
         [RUN] 02/01/2018 like ^^ but upd=adam
         // harvest_autorec_20180102_181908/
             [RUN] 04/01/2018 like ^^ but back to vaerec
@@ -153,9 +158,9 @@ V take the best model and do user+item
 
 TODOS 31/12/2017
 ----------------
-- write about rprop
-- write about B scaling
-- read paper with free bits
+V write about rprop
+V write about B scaling
+V read paper with free bits
 - did I write about the free bits?
 - why the nans?
 

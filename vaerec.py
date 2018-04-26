@@ -5,6 +5,7 @@ import ipdb
 import theano
 import theano.sparse
 from theano import tensor as T
+from theano.compile.nanguardmode import NanGuardMode
 import lasagne
 import lasagne_sparse
 
@@ -519,8 +520,15 @@ def main():
             Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
             _loss, = params_update_fn(Ri_mb)
 
-            #for k in list(model.params_updates.keys())[-8:-4]:
-            #    print(k.name,k.get_value())
+            found_nan = False
+            sec=7
+            for k in list(model.params_updates.keys())[-sec*2:-sec]:
+                print(k.name,k.get_value()[0][:10])
+                if np.sum(np.isnan(k.get_value())):
+                    found_nan = True
+            if found_nan:
+                print("found NaN")
+                sys.exit(0)
             #log("_loss:",_loss)
             _kls, = marginal_latent_kl_fn(Ri_mb)
             _out_log_sigmas, = out_log_sigmas_fn(Ri_mb)
