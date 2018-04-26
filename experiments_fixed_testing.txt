@@ -160,7 +160,9 @@
             [RUN] 26/04/2018 like ^^ but lr=1.0
             // harvest_autorec_20180427_011724/
             [RUN] 26/04/2018 like harvest_autorec_20180427_003144/ but lr=2e-5
-            // 
+            // harvest_autorec_20180427_012235/
+            [RUN] 26/04/2018 like harvest_autorec_20180427_003144/ but lr=2e-7
+            // harvest_autorec_20180427_012235/
 
 DONES
 -----
