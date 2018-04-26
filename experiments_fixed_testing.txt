@@ -151,8 +151,10 @@
     [RUN] 04/01/2018 like harvest_vaerec_20171231_092357/ but upd=adam
     // harvest_vaerec_20180104_090124/
 
-[RUN] 26/04/2018 test rprop stability n_hid=1 hid_dim=7 lr=2e-2 reg=2e+2
-// harvest_autorec_20180426_234725/
+[RUN] 26/04/2018 test autorec rprop stability n_hid=1 hid_dim=7 K=5 lr=2e-2 reg=2e+2
+// harvest_autorec_20180426_235433/
+    [RUN] 26/04/2018 test autorec rprop stability n_hid=1 hid_dim=250 K=5 lr=2e-2 reg=2e+2
+    // 
 
 DONES
 -----
