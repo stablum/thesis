@@ -521,7 +521,7 @@ def main():
             _loss, = params_update_fn(Ri_mb)
 
             found_nan = False
-            sec=7
+            sec=10
             for k in list(model.params_updates.keys())[-sec*2:-sec]:
                 print(k.name,k.get_value()[0][:10])
                 if np.sum(np.isnan(k.get_value())):

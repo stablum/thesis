@@ -265,6 +265,7 @@ def main():
         nonlocal indices_mb_l
         nonlocal Ri_mb_l
         nonlocal total_loss
+        nonlocal debug_fn
 
         indices_mb_l.append((i,))
         Ri_mb_l.append(Ri)
@@ -272,7 +273,24 @@ def main():
             Ri_mb = scipy.sparse.vstack(Ri_mb_l)
 
             Ri_mb.data = cftools.preprocess(Ri_mb.data, dataset) #(Ri_mb.data - 1.) / (config.max_rating - 1.)
+            """
+            _obj,_reg = debug_fn(Ri_mb)
+            print("obj:",_obj)
+            print("reg:",_reg)
+            """
             _loss, = params_update_fn(Ri_mb)
+            print("loss:",_loss)
+            """
+            found_nan = False
+            sec=10
+            for k in list(model.params_updates.keys())[-sec*4:-sec*3]:
+                print(k.name,k.get_value(),"sum:",np.sum(k.get_value()),"std:",np.std(k.get_value()))
+                if np.sum(np.isnan(k.get_value())):
+                    found_nan = True
+            if found_nan:
+                print("found NaN")
+                sys.exit(0)
+            """
             total_loss += _loss
             Ri_mb_l = []
             indices_mb_l = []
@@ -297,6 +315,16 @@ def main():
 
     # model needs n_datapoints to divide regularizing lambda
     model.n_datapoints = looper.n_datapoints
+
+    debug_fn = theano.function(
+        [model.Ri_mb_sym],
+        [
+            model.obj,
+            model.regularizer,
+        ]
+    )
+    debug_fn.name="debug_fn"
+
 
     print("parameters shapes:",[p.get_value().shape for p in model.params])
     print("creating parameter updates...")

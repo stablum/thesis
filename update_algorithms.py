@@ -271,27 +271,30 @@ def rprop_masked(
         deltas = (mask * prod_plus) * tensor_min(deltas_prev * eta_plus, delta_max)
         deltas += (mask * prod_minus) * tensor_max(deltas_prev * eta_minus, delta_min)
         deltas += (mask * prod_zero) * deltas_prev
+        deltas += (1 - mask ) * deltas_prev
 
         sgn = T.sgn(g_t)
 
         step = (mask * prod_plus) * (-sgn) * deltas
         step += (mask * prod_minus) * step_prev
         step += (mask * prod_zero) * (-sgn) * deltas
+        step += (1 - mask) * step_prev
 
         updates[param] = (mask * prod_plus) * ( param + learning_rate*step )
         updates[param] += (mask * prod_minus) * ( param - learning_rate*step )
         updates[param] += (mask * prod_zero) * ( param + learning_rate*step )
+        updates[param] += (1-mask) * param
 
         updates[grad_prev] = grad_prev_update
         updates[step_prev] = step
         updates[deltas_prev] = deltas
 
         updates[g_debug] = g_t
-        updates[mask_debug] = mask
         updates[prod_debug] = prod
         updates[prod_plus_debug] = prod_plus
         updates[prod_minus_debug] = prod_minus
         updates[prod_zero_debug] = prod_zero
+        updates[mask_debug] = mask.astype('float32')
 
     return updates
 
