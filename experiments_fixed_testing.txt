@@ -156,6 +156,9 @@
     [RUN] 26/04/2018 like ^^ but hid_dim=250 
     // harvest_autorec_20180427_000807/s
         [RUN] 26/04/2018 like ^^ but K=250
+        // harvest_autorec_20180427_003144/
+            [RUN] 26/04/2018 like ^^ but lr=1.0
+            // 
 
 DONES
 -----
