@@ -154,7 +154,7 @@
 [RUN] 26/04/2018 test autorec rprop stability n_hid=1 hid_dim=7 K=5 lr=2e-2 reg=2e+2
 // harvest_autorec_20180426_235433/
     [RUN] 26/04/2018 like ^^ but hid_dim=250 
-    // harvest_autorec_20180427_000807/s
+    // harvest_autorec_20180427_000807/
         [RUN] 26/04/2018 like ^^ but K=250
         // harvest_autorec_20180427_003144/
             [RUN] 26/04/2018 like ^^ but lr=1.0
@@ -166,12 +166,11 @@
                 [RUN] 26/04/2018 like ^^ but hid_dim=1000
                 // harvest_autorec_20180427_020741/
                     [RUN] 26/04/2018 like ^^ but n_hid=2
-                    // harvest_autorec_20180427_021325/s
+                    // harvest_autorec_20180427_021325/
                         [RUN] 26/04/2018 like ^^ but mb_size=64
-                        // 
-
-                    
-
+                        // harvest_autorec_20180427_022040/
+                            [RUN] 27/04/2018 like ^^ but vaerec
+                            // harvest_vaerec_20180427_232240/
 
 DONES
 -----
