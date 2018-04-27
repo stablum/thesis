@@ -219,15 +219,6 @@ def rprop_masked(
             mask = masks[param.name]
         else:
             mask = np.ones(value.shape).astype('float32')
-        g_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
-                               broadcastable=param.broadcastable)
-        g_debug.name="g_debug"
-        prod_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
-                               broadcastable=param.broadcastable)
-        prod_debug.name="prod_debug"
-        mask_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
-                               broadcastable=param.broadcastable)
-        mask_debug.name="mask_debug"
         grad_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
                                broadcastable=param.broadcastable)
         grad_prev.name=param.name+"_grad_prev"
@@ -237,6 +228,16 @@ def rprop_masked(
         step_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
                                broadcastable=param.broadcastable)
         step_prev.name=param.name+"_step_prev"
+        """
+        g_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+        g_debug.name="g_debug"
+        prod_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+        prod_debug.name="prod_debug"
+        mask_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+        mask_debug.name="mask_debug"
         prod_plus_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
                                broadcastable=param.broadcastable)
         prod_plus_debug.name=param.name+"_prod_plus_debug"
@@ -246,6 +247,7 @@ def rprop_masked(
         prod_zero_debug = theano.shared(np.zeros(value.shape, dtype=value.dtype),
                                broadcastable=param.broadcastable)
         prod_zero_debug.name=param.name+"_prod_zero_debug"
+        """
 
         # the various if's in the pseudocode are here handled as masks
         prod = grad_prev * g_t
@@ -289,12 +291,14 @@ def rprop_masked(
         updates[step_prev] = step
         updates[deltas_prev] = deltas
 
+        """
         updates[g_debug] = g_t
         updates[prod_debug] = prod
         updates[prod_plus_debug] = prod_plus
         updates[prod_minus_debug] = prod_minus
         updates[prod_zero_debug] = prod_zero
         updates[mask_debug] = mask.astype('float32')
+        """
 
     return updates
 
