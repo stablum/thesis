@@ -165,6 +165,13 @@
             // harvest_autorec_20180427_020257/
                 [RUN] 26/04/2018 like ^^ but hid_dim=1000
                 // harvest_autorec_20180427_020741/
+                    [RUN] 26/04/2018 like ^^ but n_hid=2
+                    // harvest_autorec_20180427_021325/s
+                        [RUN] 26/04/2018 like ^^ but mb_size=64
+                        // 
+
+                    
+
 
 DONES
 -----
