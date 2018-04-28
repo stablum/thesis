@@ -170,7 +170,7 @@
                         [RUN] 26/04/2018 like ^^ but mb_size=64
                         // harvest_autorec_20180427_022040/
                             [RUN] 27/04/2018 like ^^ but vaerec
-                            // harvest_vaerec_20180427_232240/
+                            // harvest_vaerec_20180427_235430/
 
 DONES
 -----
