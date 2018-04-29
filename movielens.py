@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import collections
 import os
 import sys
 import pandas as pd
@@ -149,6 +150,12 @@ class DataSet(object):
     def std(self):
         mean,std = self.mean_and_std
         return std
+
+    @utils.cached_property
+    def count(self):
+        rr = self.all_ratings
+        ret = collections.Counter(rr)
+        return ret
 
 class DataSetIndividualRatings(DataSet):
     def read_entire(self):
