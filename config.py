@@ -8,10 +8,10 @@ import movielens
 seed=12345
 n_epochs=1000
 
-K=5
-TK=20# transformation's K (number of nested transformation steps)
-hid_dim=75
-n_hid_layers=4
+K=250
+TK=0# transformation's K (number of nested transformation steps)
+hid_dim=1000
+n_hid_layers=2
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=2e+2
@@ -20,7 +20,7 @@ regularization_latent_kl=0.5#0#0.5
 input_dropout_p=0.0
 dropout_p=0.0
 batch_normalization=False
-lr_begin=2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
+lr_begin=2e-7#2e-2 #2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
 max_rating=5.
 
@@ -30,7 +30,7 @@ ratings_training_set_subsample_size = 5000
 
 regression_error_coef=0.5#1.#100.#1.#2.
 
-update_algorithm = 'adam_masked'
+update_algorithm = 'rprop_masked'
 #update_algorithm = 'sgd'
 
 adam_beta1 = 0.9
@@ -53,7 +53,7 @@ preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 spherical_likelihood = True
 
 chunk_len =64*1024
-minibatch_size = 1 #2 # 16 # 64
+minibatch_size = 128 # 64 #1 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
