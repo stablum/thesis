@@ -9,7 +9,7 @@ seed=12345
 n_epochs=1000
 
 K=5
-TK=0# transformation's K (number of nested transformation steps)
+TK=20# transformation's K (number of nested transformation steps)
 hid_dim=75
 n_hid_layers=4
 chan_out_dim=K

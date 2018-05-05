@@ -173,9 +173,9 @@
                             // harvest_vaerec_20180427_235430/
 
 [RUN] 05/05/2018 testing new NFK in varec.py. Like harvest_vaerec_20171229_142617/
-// 
+// harvest_vaerec_20180505_221826/
     [RUN] 05/05/2018 like ^^ but NFK=20
-    
+    // 
 
 DONES
 -----
