@@ -341,3 +341,6 @@ def reparameterization_trick(in_var,name,dim=None):
     sample = mu + (epsilon * sigma)
     sample.name = name+'_sample'
     return sample
+
+def scalar(sometensor):
+    return sometensor.reshape((),ndim=0)

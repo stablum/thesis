@@ -38,6 +38,7 @@ g_rij = activation_functions.get(config.g_rij)
 g_latent = activation_functions.get(config.g_latent)
 g_hid = activation_functions.get(config.g_hid)
 g_log_sigma = lasagne.nonlinearities.linear
+g_transform = activation_functions.get(config.g_transform)
 weights_regularization = regularization.get(config.regularization_type)
 sigma = 1.
 sigma_u = 100.
@@ -47,6 +48,7 @@ num_leading_axes = 1
 chan_out_dim = config.chan_out_dim
 hid_dim = config.hid_dim
 latent_dim = config.K
+TK=config.TK
 
 log = lambda *args,**kwargs : print(*args,**kwargs)
 
@@ -78,51 +80,68 @@ class Model(model_build.Abstract):
         ))
 
         self.l_hid_enc = self.l_in
-        latent_layer_type = lasagne_sparse.SparseInputDenseLayer
+        latent0_layer_type = lasagne_sparse.SparseInputDenseLayer
         if config.n_hid_layers == 0:
             pass
         else: # 1 or multiple hidden layers
             for hid_count in range(config.n_hid_layers):
-                self.l_hid_enc = self.wrap(latent_layer_type(
+                self.l_hid_enc = self.wrap(latent0_layer_type(
                     self.l_hid_enc, # replace field with last hidden layer
                     num_units=hid_dim,
                     num_leading_axes=num_leading_axes,
                     nonlinearity=g_hid,
                     name="hidden_enc_layer_{}".format(hid_count)
                 ))
-                latent_layer_type = lasagne.layers.DenseLayer
+                latent0_layer_type = lasagne.layers.DenseLayer
 
-        self.l_latent_mu = latent_layer_type(
+        self.l_latent0_mu = latent0_layer_type(
             self.l_hid_enc,
             num_units=latent_dim,
             num_leading_axes=num_leading_axes,
             nonlinearity=g_latent,
-            name="latent_mu"
+            name="latent0_mu"
         )
-        self.l_latent_log_sigma = latent_layer_type(
+        self.l_latent0_log_sigma = latent0_layer_type(
             self.l_hid_enc,
             num_units=latent_dim,
             num_leading_axes=num_leading_axes,
             nonlinearity=g_log_sigma,
-            name="latent_log_sigma"
+            name="latent0_log_sigma"
         )
-        self.l_latent_merge = lasagne.layers.ConcatLayer(
+        self.l_latent0_merge = lasagne.layers.ConcatLayer(
             [
-                self.l_latent_mu,
-                self.l_latent_log_sigma
+                self.l_latent0_mu,
+                self.l_latent0_log_sigma
             ],
-            name="latent_concat"
+            name="latent0_concat"
         )
-        self.l_latent_sampling = model_build.SamplingLayer(
-            self.l_latent_merge,
+        self.l_latent0_sampling = model_build.SamplingLayer(
+            self.l_latent0_merge,
             dim=latent_dim,
-            name="latent_sampling"
+            name="latent0_sampling"
         )
 
+        self.l_transformations = []
+        l_prev = self.l_latent0_sampling
+        for k in range(TK):
+            l = model_build.ILTTLayer(
+                l_prev,
+                dim=latent_dim,
+                name="ILLT{}".format(k+1), #1-based displaying
+                nonlinearity=g_transform
+            )
+            l_prev = l
+            self.l_transformations.append(l)
+
+        if len(self.l_transformations) == 0:
+            self.l_transformation_last = self.l_latent0_sampling
+        else:
+            self.l_transformation_last = self.l_transformations[-1] #NK-th
+
         if config.n_hid_layers == 0:
-            self.l_hid_mu_dec = self.l_hid_log_sigma_dec = self.l_latent_sampling
+            self.l_hid_mu_dec = self.l_hid_log_sigma_dec = self.l_transformation_last
         else: # 1 or multiple hidden layers
-            curr_l_hid = self.l_latent_sampling
+            curr_l_hid = self.l_transformation_last
             for hid_count in range( config.n_hid_layers - 1 ):
                 curr_l_hid = self.wrap(lasagne.layers.DenseLayer(
                     curr_l_hid, # replace with last hidden layer
@@ -225,39 +244,39 @@ class Model(model_build.Abstract):
         # the 1/2 coefficient is external to this term,
         # being config.regression_error_coef
         # a.k.a. likelihood!!!
-        term1 = -self.mask_sum * np.array(2*np.pi).astype('float32')
+        term_constant = -self.mask_sum * np.array(2*np.pi).astype('float32')
         masked_log_sigma = self.out_log_sigma_lea * self.mask
-        term2 = -T.sum(masked_log_sigma)
+        term_logdetsigma = -T.sum(masked_log_sigma)
         sigma = T.exp(self.out_log_sigma_lea)
         masked_loss_sq = self.loss_sq * self.mask
         inv_sigma = 1./sigma
-        term3 = - T.sum(masked_loss_sq * inv_sigma)
-        ret = term1 + term2 + term3
-        ret = ret.reshape((),ndim=0) # to scalar
+        term_scaled_error = - T.sum(masked_loss_sq * inv_sigma)
+        ret = term_constant + term_logdetsigma + term_scaled_error
+        ret = model_build.scalar(ret)
         return ret
 
     @utils.cached_property
-    def regularizer_latent_kl(self):
-        sigma = T.exp(self.latent_log_sigma_lea)
-        vanilla_kl = kl.kl_normal_diagonal_vs_unit(self.latent_mu_lea,sigma,latent_dim)
+    def regularizer_latent0_kl(self):
+        sigma = T.exp(self.latent0_log_sigma_lea)
+        vanilla_kl = kl.kl_normal_diagonal_vs_unit(self.latent0_mu_lea,sigma,latent_dim)
         m = config.free_nats * theano.tensor.ones_like(vanilla_kl)
         ret = theano.tensor.maximum(vanilla_kl,m)
         return ret
 
     @utils.cached_property
-    def marginal_latent_kl(self):
-        term1 = - self.latent_log_sigma_lea
-        term2 = 0.5*(T.pow(self.latent_sigma_lea,2) + T.pow(self.latent_mu_lea,2))
+    def marginal_latent0_kl(self):
+        term1 = - self.latent0_log_sigma_lea
+        term2 = 0.5*(T.pow(self.latent0_sigma_lea,2) + T.pow(self.latent0_mu_lea,2))
         term3 = - 0.5
         return term1 + term2 + term3
 
     @utils.cached_property
-    def marginal_latent_kl_mean(self):
-        return T.mean(self.marginal_latent_kl)
+    def marginal_latent0_kl_mean(self):
+        return T.mean(self.marginal_latent0_kl)
 
     @utils.cached_property
-    def marginal_latent_kl_std(self):
-        return T.std(self.marginal_latent_kl)
+    def marginal_latent0_kl_std(self):
+        return T.std(self.marginal_latent0_kl)
 
     @utils.cached_property
     def excluded_loss(self):
@@ -269,12 +288,14 @@ class Model(model_build.Abstract):
         """
         the ELBO is expressed as two terms: likelihood, which is positive
         (has to be maximized)
-        and KL between approximate posterior and prior on latent
+        and KL between approximate posterior and prior on latent0
         which is negative (has to be minimized)
         """
         ret = self.likelihood * config.regression_error_coef
         if config.regularization_latent_kl > 0.:
-            ret -= self.regularizer_latent_kl * config.regularization_latent_kl
+            ret -= self.regularizer_latent0_kl * config.regularization_latent_kl
+        ret += self.latentK_term_obj
+        ret += self.transformation_term_obj
         return ret
 
     @utils.cached_property
@@ -288,6 +309,79 @@ class Model(model_build.Abstract):
         ret /= config.minibatch_size # it's an average!
         if config.regularization_lambda > 0.:
             ret += self.regularizer * config.regularization_lambda / self.n_datapoints
+        return ret
+
+    @utils.cached_property
+    def latentK_term_obj(self):
+        term_constant= - 0.5 * self.mask_sum * np.array(2*np.pi).astype('float32')
+        term_l2 = - 0.5 * T.sum(self.latentK_lea ** 2)
+        ret = term_constant + term_l2
+        ret.name = "latentK_term_obj"
+        ret = model_build.scalar(ret)
+        return ret
+
+    @utils.cached_property
+    def transformation_ws(self):
+        ret = map(lambda l: l.w, self.l_transformations)
+        return ret
+
+    @utils.cached_property
+    def transformation_bs(self):
+        ret = map(lambda l: l.b, self.l_transformations)
+        return ret
+
+    @utils.cached_property
+    def transformation_us(self):
+        ret = map(lambda l: l.u, self.l_transformations)
+        return ret
+
+    @utils.cached_property
+    def transformation_zs(self):
+        ret = map(
+            lambda l: lasagne.layers.get_output(l,deterministic=False),
+            self.l_transformations
+        )
+        return ret
+
+    @utils.cached_property
+    def transformation_term_obj(self):
+        ret = T.constant(0).astype('float32')
+        zkminusone = self.latent0_sample_lea
+        h = g_transform
+        for k,w,b,u,z in zip(
+                range(TK),
+                self.transformation_ws,
+                self.transformation_bs,
+                self.transformation_us,
+                self.transformation_zs
+        ):
+            zkminusone.name = "z_{}".format(k-1)
+            zw = T.dot(zkminusone,w)
+            a = zw + b
+            a_range = T.arange(a.shape[0])
+            h_a = h(a)
+            #h_prime_output = T.grad(h_a,a)
+
+            def do_grad_h (i,ai):
+                #ai = a[i,:]
+                hai = h(ai)
+                shai = model_build.scalar(hai)
+                print("shai",shai)
+                gr = T.grad( shai, ai)
+                return gr
+
+            hprime,_updates = theano.scan(
+                fn=do_grad_h,
+                sequences=[a_range,a],
+            )
+            d = T.dot(w.T,u)
+
+            m = hprime * d
+            s = 1+m
+            ret += T.log(T.abs_(s))
+            zkminusone = z
+        ret.name = "transformation_term_obj"
+        ret = model_build.scalar(T.sum(ret))
         return ret
 
     @utils.cached_property
@@ -315,18 +409,38 @@ class Model(model_build.Abstract):
         return ret
 
     @utils.cached_property
-    def latent_mu_lea(self):
-        ret = lasagne.layers.get_output(self.l_latent_mu,deterministic=False)
+    def latent0_mu_lea(self):
+        ret = lasagne.layers.get_output(self.l_latent0_mu,deterministic=False)
         return ret
 
     @utils.cached_property
-    def latent_log_sigma_lea(self):
-        ret = lasagne.layers.get_output(self.l_latent_log_sigma,deterministic=False)
+    def latent0_log_sigma_lea(self):
+        ret = lasagne.layers.get_output(self.l_latent0_log_sigma,deterministic=False)
         return ret
 
     @utils.cached_property
-    def latent_sigma_lea(self):
-        ret = T.exp(self.latent_log_sigma_lea)
+    def latent0_sigma_lea(self):
+        ret = T.exp(self.latent0_log_sigma_lea)
+        return ret
+
+    @utils.cached_property
+    def latent0_sample_lea(self):
+        ret = lasagne.layers.get_output(self.l_latent0_sampling,deterministic=False)
+        return ret
+
+    @utils.cached_property
+    def latent0_sample_det(self):
+        ret = lasagne.layers.get_output(self.l_latent0_sampling,deterministic=True)
+        return ret
+
+    @utils.cached_property
+    def latentK_lea(self):
+        ret = lasagne.layers.get_output(self.l_transformation_last,deterministic=False)
+        return ret
+
+    @utils.cached_property
+    def latentK_det(self):
+        ret = lasagne.layers.get_output(self.l_transformation_last,deterministic=True)
         return ret
 
     @utils.cached_property
@@ -404,14 +518,14 @@ def main():
     model.log = log
     log("parameters shapes:",[p.get_value().shape for p in model.params])
 
-    log("creating marginal_latent_kl diagnostic functions..")
-    marginal_latent_kl_fn = model_build.make_function(
+    log("creating marginal_latent0_kl diagnostic functions..")
+    marginal_latent0_kl_fn = model_build.make_function(
         [model.Ri_mb_sym],
         [
-            model.marginal_latent_kl
+            model.marginal_latent0_kl
         ],
     )
-    marginal_latent_kl_fn.name = "marginal_latent_kl_fn"
+    marginal_latent0_kl_fn.name = "marginal_latent0_kl_fn"
 
     log("creating out_log_sigmas diagnostic functions..")
     out_log_sigmas_fn = model_build.make_function(
@@ -521,7 +635,7 @@ def main():
             _loss, = params_update_fn(Ri_mb)
 
             #log("_loss:",_loss)
-            _kls, = marginal_latent_kl_fn(Ri_mb)
+            _kls, = marginal_latent0_kl_fn(Ri_mb)
             _out_log_sigmas, = out_log_sigmas_fn(Ri_mb)
             _obj, = obj_fn(Ri_mb)
             _likelihood, = likelihood_fn(Ri_mb)
