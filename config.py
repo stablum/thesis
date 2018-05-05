@@ -11,7 +11,7 @@ n_epochs=1000
 K=250
 TK=0# transformation's K (number of nested transformation steps)
 hid_dim=1000
-n_hid_layers=2
+n_hid_layers=3
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=2e+2
@@ -53,7 +53,7 @@ preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 spherical_likelihood = True
 
 chunk_len =64*1024
-minibatch_size = 256 #128 # 64 #1 #2 # 16 # 64
+minibatch_size = 64 #1 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
