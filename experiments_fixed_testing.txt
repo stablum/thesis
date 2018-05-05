@@ -172,6 +172,11 @@
                             [RUN] 27/04/2018 like ^^ but vaerec
                             // harvest_vaerec_20180427_235430/
 
+[RUN] 05/05/2018 testing new NFK in varec.py. Like harvest_vaerec_20171229_142617/
+// 
+    [RUN] 05/05/2018 like ^^ but NFK=20
+    
+
 DONES
 -----
 V report nan results in the summarizer
