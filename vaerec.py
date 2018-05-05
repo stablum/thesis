@@ -537,7 +537,7 @@ def main():
     out_log_sigmas_fn.name = "out_log_sigmas_fn"
 
     log("done.")
-    theano.printing.pprint(model.predict_to_1_det)
+    #theano.printing.pprint(model.predict_to_1_det)
 
     predict_to_1_fn = model_build.make_function( # FIXME: change name
         [model.Ri_mb_sym],
