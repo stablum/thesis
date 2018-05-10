@@ -177,6 +177,14 @@
                             // harvest_autorec_20180505_222951/
                             [RUN] 05/05/2018 like harvest_autorec_20180427_022040/ but n_hid=3
                             // harvest_autorec_20180505_223935/
+                    [RUN] like  harvest_autorec_20180427_020741/ but mb=64
+                    // TODO
+                    [RUN] like  harvest_autorec_20180427_020741/ but mb=32
+                    // TODO
+                    [RUN] like  harvest_autorec_20180427_020741/ but mb=16
+                    // TODO
+                    [RUN] like  harvest_autorec_20180427_020741/ but with adam. will it work?
+                    // TODO
 
 [RUN] 05/05/2018 testing new NFK in varec.py. Like harvest_vaerec_20171229_142617/
 // harvest_vaerec_20180505_221826/
@@ -208,3 +216,16 @@ NOTE: vaerec is less powerful because z is produced by linear activation
 - try dropout
 - try dropout only on the input layer
 
+TODOS 9/05/2018
+---------------
+- stick to elu + model size and try vaerec.
+- for thesis: plot test error vs mb size for autorec vs vaerec
+- check Mart's models hyperparameters and performances for comparison. 
+- write in "thesis format": problem stated, background material, method (vaerec + pointers to Mart's thesis: how am I improving it + user+item), experiments (play hyperparameters), conclusion (future directions + adversarial networks + autoregressive flows)
+- try to understand if just varying the hyperparameters is enough or the model needs to be improved (future directions...)
+- try rprop with vaerec
+- remove kl divergence of copy of best autorec->vaerec to compare with autorec.
+
+FOR LATER:
+----------
+- play with KL coefficient
