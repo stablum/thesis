@@ -171,12 +171,19 @@
                         // harvest_autorec_20180427_022040/
                             [RUN] 27/04/2018 like ^^ but vaerec
                             // harvest_vaerec_20180427_235430/
+                                [RUN] 11/05/2018 like ^^ but RPROP
+                                // TODO
+                                    [RUN] 11/05/2018 like ^^ but kl=0
+                                    // TODO
+                                [RUN] 11/05/2018 like ^^ but kl=0
+                                // TODO
                             [RUN] 05/05/2018 like harvest_autorec_20180427_022040/ but mb_size=128
                             // harvest_autorec_20180505_222725/
                             [RUN] 05/05/2018 like harvest_autorec_20180427_022040/ but mb_size=256
                             // harvest_autorec_20180505_222951/
                             [RUN] 05/05/2018 like harvest_autorec_20180427_022040/ but n_hid=3
                             // harvest_autorec_20180505_223935/
+                            
                     [RUN] like  harvest_autorec_20180427_020741/ but mb=64
                     // TODO
                     [RUN] like  harvest_autorec_20180427_020741/ but mb=32
@@ -185,6 +192,14 @@
                     // TODO
                     [RUN] like  harvest_autorec_20180427_020741/ but with adam. will it work?
                     // TODO
+                    [RUN] like harvest_autorec_20180427_021325 but vaerec
+                    // TODO
+                        [RUN] like ^^ but RPROP
+                        // TODO
+                            [RUN] like ^^ but kl=0
+                            // TODO
+                        [RUN] like ^^(FIXME) but kl=0
+                        // TODO
 
 [RUN] 05/05/2018 testing new NFK in varec.py. Like harvest_vaerec_20171229_142617/
 // harvest_vaerec_20180505_221826/
