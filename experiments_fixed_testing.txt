@@ -194,7 +194,7 @@
                     [RUN] like  harvest_autorec_20180427_020741/ but mb=16
                     // harvest_autorec_20180520_120606/
                     [RUN] like  harvest_autorec_20180427_020741/ but with adam. will it work?
-                    // TODO
+                    // harvest_autorec_20180520_122031/
                     [RUN] like harvest_autorec_20180427_021325 but vaerec
                     // TODO
                         [RUN] like ^^ but RPROP
