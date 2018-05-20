@@ -187,22 +187,22 @@
                             [RUN] 05/05/2018 like harvest_autorec_20180427_022040/ but n_hid=3
                             // harvest_autorec_20180505_223935/
                             
-                    [RUN] like  harvest_autorec_20180427_020741/ but mb=64
-                    // harvest_autorec_20180520_114839/
-                    [RUN] like  harvest_autorec_20180427_020741/ but mb=32
-                    // harvest_autorec_20180520_115952/
-                    [RUN] like  harvest_autorec_20180427_020741/ but mb=16
-                    // harvest_autorec_20180520_120606/
-                    [RUN] like  harvest_autorec_20180427_020741/ but with adam. will it work?
-                    // harvest_autorec_20180520_122031/
-                    [RUN] like harvest_autorec_20180427_021325 but vaerec
-                    // TODO
-                        [RUN] like ^^ but RPROP
-                        // TODO
-                            [RUN] like ^^ but kl=0
+                        [RUN] like  harvest_autorec_20180427_020741/ but mb=64
+                        // harvest_autorec_20180520_114839/
+                        [RUN] like  harvest_autorec_20180427_020741/ but mb=32
+                        // harvest_autorec_20180520_115952/
+                        [RUN] like  harvest_autorec_20180427_020741/ but mb=16
+                        // harvest_autorec_20180520_120606/
+                        [RUN] like  harvest_autorec_20180427_020741/ but with adam. will it work?
+                        // harvest_autorec_20180520_122031/
+                        [RUN] like harvest_autorec_20180427_021325 but vaerec
+                        // harvest_vaerec_20180520_123413/
+                            [RUN] like ^^ but adam
                             // TODO
-                        [RUN] like ^^ (FIXME) but kl=0
-                        // TODO
+                                [RUN] like ^^ but kl=0
+                                // TODO
+                            [RUN] like ^^ (FIXME) but kl=0
+                            // TODO
 
 [RUN] 05/05/2018 testing new NFK in varec.py. Like harvest_vaerec_20171229_142617/
 // harvest_vaerec_20180505_221826/
