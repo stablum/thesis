@@ -9,7 +9,7 @@ seed=12345
 n_epochs=1000
 
 K=250
-TK=20# transformation's K (number of nested transformation steps)
+TK=0# transformation's K (number of nested transformation steps)
 hid_dim=1000
 n_hid_layers=2
 chan_out_dim=K
@@ -30,7 +30,7 @@ ratings_training_set_subsample_size = 5000
 
 regression_error_coef=0.5#1.#100.#1.#2.
 
-update_algorithm = 'rprop_masked'
+update_algorithm = 'adam_masked'
 #update_algorithm = 'sgd'
 
 adam_beta1 = 0.9
