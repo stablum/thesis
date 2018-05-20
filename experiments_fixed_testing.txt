@@ -200,8 +200,8 @@
                             [RUN] like ^^ but adam
                             // harvest_vaerec_20180520_124121/
                                 [RUN] like ^^ but kl=0
-                                // TODO
-                            [RUN] like ^^ (FIXME) but kl=0
+                                // harvest_vaerec_20180520_124723/
+                            [RUN] like harvest_vaerec_20180520_123413 but kl=0
                             // TODO
 
 [RUN] 05/05/2018 testing new NFK in varec.py. Like harvest_vaerec_20171229_142617/
