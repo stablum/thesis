@@ -171,7 +171,7 @@
                         // harvest_autorec_20180427_022040/
                             [RUN] 27/04/2018 like ^^ but vaerec
                             // harvest_vaerec_20180427_235430/
-                            // TODO
+                            // harvest_vaerec_20180520_110918/
                                 [RUN] 11/05/2018 like ^^ but adam
                                 // harvest_vaerec_20180512_110634/
                                     [RUN] 11/05/2018 like ^^ but kl=0
