@@ -198,7 +198,7 @@
                         [RUN] like harvest_autorec_20180427_021325 but vaerec
                         // harvest_vaerec_20180520_123413/
                             [RUN] like ^^ but adam
-                            // TODO
+                            // harvest_vaerec_20180520_124121/
                                 [RUN] like ^^ but kl=0
                                 // TODO
                             [RUN] like ^^ (FIXME) but kl=0
