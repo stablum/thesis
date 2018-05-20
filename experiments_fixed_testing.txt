@@ -190,7 +190,7 @@
                     [RUN] like  harvest_autorec_20180427_020741/ but mb=64
                     // harvest_autorec_20180520_114839/
                     [RUN] like  harvest_autorec_20180427_020741/ but mb=32
-                    // TODO
+                    // harvest_autorec_20180520_115952/
                     [RUN] like  harvest_autorec_20180427_020741/ but mb=16
                     // TODO
                     [RUN] like  harvest_autorec_20180427_020741/ but with adam. will it work?
