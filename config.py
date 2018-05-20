@@ -30,7 +30,7 @@ ratings_training_set_subsample_size = 5000
 
 regression_error_coef=0.5#1.#100.#1.#2.
 
-update_algorithm = 'rprop_masked'
+update_algorithm = 'adam_masked'
 #update_algorithm = 'sgd'
 
 adam_beta1 = 0.9
@@ -53,7 +53,7 @@ preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 spherical_likelihood = True
 
 chunk_len =64*1024
-minibatch_size = 16 #2 # 16 # 64
+minibatch_size = 1 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
