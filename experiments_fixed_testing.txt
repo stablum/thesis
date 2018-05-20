@@ -175,9 +175,9 @@
                             // harvest_vaerec_20180520_112106/
                                 [RUN] 11/05/2018 like ^^ but adam
                                 // harvest_vaerec_20180512_110634/
-                                // TODO
+                                // harvest_vaerec_20180520_112616/
                                     [RUN] 11/05/2018 like ^^ but kl=0
-                                    // TODO
+                                    // 
                                 [RUN] 11/05/2018 like ^^ but kl=0
                                 // TODO
                             [RUN] 05/05/2018 like harvest_autorec_20180427_022040/ but mb_size=128
