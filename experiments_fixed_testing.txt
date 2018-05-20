@@ -171,8 +171,9 @@
                         // harvest_autorec_20180427_022040/
                             [RUN] 27/04/2018 like ^^ but vaerec
                             // harvest_vaerec_20180427_235430/
+                            // TODO
                                 [RUN] 11/05/2018 like ^^ but adam
-                                // TODO
+                                // harvest_vaerec_20180512_110634/
                                     [RUN] 11/05/2018 like ^^ but kl=0
                                     // TODO
                                 [RUN] 11/05/2018 like ^^ but kl=0
@@ -198,7 +199,7 @@
                         // TODO
                             [RUN] like ^^ but kl=0
                             // TODO
-                        [RUN] like ^^(FIXME) but kl=0
+                        [RUN] like ^^ (FIXME) but kl=0
                         // TODO
 
 [RUN] 05/05/2018 testing new NFK in varec.py. Like harvest_vaerec_20171229_142617/
@@ -241,6 +242,21 @@ TODOS 9/05/2018
 - try rprop with vaerec
 - remove kl divergence of copy of best autorec->vaerec to compare with autorec.
 
+TODOS 16/05/2018
+----------------
+- introduction : 
+    - 1.1 background
+        - describe the multiple ways to do recommendations
+        - rprop
+        - adam
+        - variational bayes (condensed derivations as well, pointers to appendix)
+        - variational autoencoder (condensed derivations as well, pointers to appendix)
+    - 1.2 vaerec
+- 2 method:
+    - vaerec
+    - 2.x related work
+
+- search "ELBO surgery" paper
 FOR LATER:
 ----------
 - play with KL coefficient

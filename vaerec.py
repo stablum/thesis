@@ -241,7 +241,7 @@ class Model(model_build.Abstract):
     @utils.cached_property
     def likelihood(self):
         # this is the expected reconstruction error
-        # the 1/2 coefficient is external to this term,
+        # the 1/2 coefficient is EXTERNAL to this term,
         # being config.regression_error_coef
         # a.k.a. likelihood!!!
         term_constant = -self.mask_sum * np.array(2*np.pi).astype('float32')
@@ -291,8 +291,10 @@ class Model(model_build.Abstract):
         and KL between approximate posterior and prior on latent0
         which is negative (has to be minimized)
         """
+        # WARNING: regression_error_coef should be 0.5!!!
         ret = self.likelihood * config.regression_error_coef
         if config.regularization_latent_kl > 0.:
+            # WARNING: regularization_latent_kl should be ~ 1.0 usually
             ret -= self.regularizer_latent0_kl * config.regularization_latent_kl
         ret += self.latentK_term_obj
         ret += self.transformation_term_obj
