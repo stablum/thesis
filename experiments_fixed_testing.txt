@@ -204,13 +204,13 @@
                             [RUN] like harvest_vaerec_20180520_123413 but kl=0
                             // harvest_vaerec_20180520_125542/
                     [RUN] like harvest_autorec_20180427_020741/ but vaerec
-                    // 
+                    // harvest_vaerec_20180520_213139/
                         [RUN] like ^^ but adam
-                        // 
+                        // harvest_vaerec_20180520_213309/
                             [RUN] like ^^ but kl=0
-                            // 
+                            // harvest_vaerec_20180520_213528/
                         [RUN] like FIXME but kl=0
-                        // 
+                        // harvest_vaerec_20180520_213628/
 
 [RUN] 05/05/2018 testing new NFK in varec.py. Like harvest_vaerec_20171229_142617/
 // harvest_vaerec_20180505_221826/
