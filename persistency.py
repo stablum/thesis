@@ -4,6 +4,7 @@ import shutil
 import lzma
 import glob
 import re
+import config
 
 rename_pattern = "(.*)\.new"
 rename_prog = re.compile(rename_pattern)
