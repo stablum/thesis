@@ -72,17 +72,22 @@ def load(dir_name,model):
     def _open(path):
         return open(path,"r")
 
-    print("put params into model")
-    with _xzopen(gen_path("params.pickle"),"rb") as f:
-        model.params_for_persistency = pickle.load(f)
-    print('loading parameters update symbols and algorithm metainfo..')
-    with _xzopen(gen_path("params_updates_values.pickle"),"rb") as f:
-        model.params_updates_values = pickle.load(f)
-    print('loading learning rate..')
-    with _open(gen_path("lr")) as f:
-        lr = float(f.read())
-    print('loading epoch number..')
-    with _open(gen_path("epoch")) as f:
-        epoch = int(f.read())
+    if not os.path.isdir(dir_name):
+        print("directory {} does not exist. Instead of loading state, revert to default")
+        lr = config.lr_begin
+        epoch = 0
+    else:
+        print("put params into model")
+        with _xzopen(gen_path("params.pickle"),"rb") as f:
+            model.params_for_persistency = pickle.load(f)
+        print('loading parameters update symbols and algorithm metainfo..')
+        with _xzopen(gen_path("params_updates_values.pickle"),"rb") as f:
+            model.params_updates_values = pickle.load(f)
+        print('loading learning rate..')
+        with _open(gen_path("lr")) as f:
+            lr = float(f.read())
+        print('loading epoch number..')
+        with _open(gen_path("epoch")) as f:
+            epoch = int(f.read())
 
     return lr, epoch
