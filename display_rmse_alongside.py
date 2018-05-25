@@ -17,10 +17,18 @@ def process(filename):
                 if stuff is None:
                     print(spaces,"None??")
                 else:
+                    if 'best_testing_rmse' not in stuff.keys():
+                        testing="missing"
+                    else:
+                        testing=str(stuff['best_testing_rmse'])
+                    if 'best_training_rmse' not in stuff.keys():
+                        training="missing"
+                    else:
+                        training=str(stuff['best_training_rmse'])
                     #print(spaces,"this is a harvest dir:",d)
                     print(
-                        spaces+"  "+str(stuff['best_testing_rmse']),
-                        "train:"+str(stuff['best_training_rmse'])
+                        spaces+"  "+testing,
+                        "train:"+training
                     )
 def main():
     parser = argparse.ArgumentParser(description='Logs summarizer.')

@@ -266,7 +266,7 @@ TODOS 16/05/2018
     - vaerec
     - 2.x related work
 
-- search "ELBO surgery" paper
+V search "ELBO surgery" paper
 FOR LATER:
 ----------
 - play with KL coefficient
