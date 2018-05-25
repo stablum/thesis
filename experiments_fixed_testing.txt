@@ -173,7 +173,7 @@
                             // harvest_vaerec_20180427_235430/
                             // harvest_vaerec_20180520_110918/
                             // harvest_vaerec_20180520_112106/
-                            // 
+                            // harvest_vaerec_20180525_181739/
                                 [RUN] 11/05/2018 like ^^ but adam
                                 // harvest_vaerec_20180512_110634/
                                 // harvest_vaerec_20180520_112616/
@@ -198,6 +198,7 @@
                         // harvest_autorec_20180520_122031/
                         [RUN] like harvest_autorec_20180427_021325 but vaerec
                         // harvest_vaerec_20180520_123413/
+                        // 
                             [RUN] like ^^ but adam
                             // harvest_vaerec_20180520_124121/
                                 [RUN] like ^^ but kl=0
