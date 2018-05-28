@@ -207,6 +207,7 @@
                                 // harvest_vaerec_20180525_203234/
                             [RUN] like harvest_vaerec_20180520_123413 but kl=0
                             // harvest_vaerec_20180520_125542/
+                            // harvest_vaerec_20180526_104634/
                     [RUN] like harvest_autorec_20180427_020741/ but vaerec
                     // harvest_vaerec_20180520_213139/
                         [RUN] like ^^ but adam
