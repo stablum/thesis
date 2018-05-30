@@ -271,6 +271,17 @@ TODOS 16/05/2018
     - vaerec
     - 2.x related work
 
+TODOS 30/05/2018
+----------------
+
+- describe how the model is (not) performing better
+- hypotheses on why is not performing better
+- testing the hypotheses
+- finally baseline autorec harvest_autorec_20180427_022040/ is comparable to harvest_vaerec_20180520_113325/ : describe in the text
+- write why the vaerec is not happy with rprop
+- kl=0 improves both testing and training. Why is that? Too much regularization probably, and test by removing other forms of regularization like the usual L2 set to 0.
+- debug why are normalizing flows getting stuck.
+
 V search "ELBO surgery" paper
 FOR LATER:
 ----------
