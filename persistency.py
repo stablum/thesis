@@ -74,7 +74,7 @@ def load(dir_name,model):
         return open(path,"r")
 
     if not os.path.isdir(dir_name):
-        print("directory {} does not exist. Instead of loading state, revert to default")
+        print("directory {} does not exist. Instead of loading state, revert to default".format(dir_name))
         lr = config.lr_begin
         epoch = 0
     else:
