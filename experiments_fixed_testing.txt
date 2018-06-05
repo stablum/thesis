@@ -211,7 +211,7 @@
                     [RUN] like harvest_autorec_20180427_020741/ but vaerec
                     // harvest_vaerec_20180602_151020/
                         [RUN] like ^^ but adam
-                        // 
+                        // harvest_vaerec_20180602_151546/
                             [RUN] like ^^ but kl=0
                             // harvest_vaerec_20180520_213139/
                             // harvest_vaerec_20180530_220845/
@@ -285,6 +285,12 @@ TODOS 30/05/2018
 - write why the vaerec is not happy with rprop
 - kl=0 improves both testing and training. Why is that? Too much regularization probably, and test by removing other forms of regularization like the usual L2 set to 0.
 - debug why are normalizing flows getting stuck.
+
+TODOS 04/06/2018
+----------------
+- mb size 64 for the comparison kl=0 experiments
+- describe in text the annealing
+- try heavvily the annealing T=100
 
 V search "ELBO surgery" paper
 FOR LATER:
