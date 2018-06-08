@@ -205,9 +205,17 @@
                                 [RUN] like ^^ but kl=0
                                 // harvest_vaerec_20180520_124723/
                                 // harvest_vaerec_20180525_203234/
+                                    [RUN] like ^^ but mb=64
+                                    // TODO
+                                [RUN] like harvest_vaerec_20180525_184951/ but mb=64
+                                // TODO
                             [RUN] like harvest_vaerec_20180520_123413 but kl=0
                             // harvest_vaerec_20180520_125542/
                             // harvest_vaerec_20180526_104634/
+                                [RUN] like harvest_vaerec_20180526_104634/ but mb=64
+                                // TODO
+                            [RUN] like harvest_vaerec_20180525_184131 but mb=64
+                            // TODO
                     [RUN] like harvest_autorec_20180427_020741/ but vaerec
                     // harvest_vaerec_20180602_151020/
                         [RUN] like ^^ but adam
@@ -215,11 +223,19 @@
                             [RUN] like ^^ but kl=0
                             // harvest_vaerec_20180520_213139/
                             // harvest_vaerec_20180530_220845/
-                        [RUN] like FIXME but kl=0
+                                [RUN] like ^^ but mb=64
+                                // TODO
+                            [RUN] like harvest_vaerec_20180602_151546/ but mb=64
+                            // TODO
+                        [RUN] like harvest_vaerec_20180602_151020/ but kl=0
                         // harvest_vaerec_20180520_213309/
                         // harvest_vaerec_20180520_213528/
                         // harvest_vaerec_20180520_213628/
                         // harvest_vaerec_20180531_190110/
+                            [RUN] like ^^ but mb=64
+                            // TODO
+                        [RUN] like harvest_vaerec_20180602_151020/ but mb=64
+                        // TODO
 
 [RUN] 05/05/2018 testing new NFK in varec.py. Like harvest_vaerec_20171229_142617/
 // harvest_vaerec_20180505_221826/
@@ -289,7 +305,7 @@ TODOS 30/05/2018
 TODOS 04/06/2018
 ----------------
 - mb size 64 for the comparison kl=0 experiments
-- describe in text the annealing
+V describe in text the annealing
 - try heavvily the annealing T=100
 
 V search "ELBO surgery" paper

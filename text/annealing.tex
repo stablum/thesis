@@ -9,5 +9,17 @@ the parameter adjustment needs to be of inferior magnitude than the initial one.
 This desirable aspect of the learning is achieved by progressively reducing the
 learning rate over the epochs.
 
+The learning rate annealing schema that has been chosen is described by the following
+formula \cite{annealing}:
 
+\begin{nalign}
+\gamma^{(t)} = \frac{\gamma^{(0)} }{1 + t/T}
+\end{nalign}
 
+where $\gamma^{(t)}$ is the learning rate at epoch $t$,
+$\gamma^{(0)}$ is the initial learning rate
+and $T$ is a hyperparameter whose amount
+is the number of epochs it takes for the learning rate
+to halve.
+
+The decaying curve is gradual and non-linear, with a long tail.
