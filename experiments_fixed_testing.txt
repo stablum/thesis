@@ -213,7 +213,7 @@
                             // harvest_vaerec_20180520_125542/
                             // harvest_vaerec_20180526_104634/
                                 [RUN] like harvest_vaerec_20180526_104634/ but mb=64
-                                // TODO
+                                // harvest_vaerec_20180608_225338/
                             [RUN] like harvest_vaerec_20180525_184131 but mb=64
                             // TODO
                     [RUN] like harvest_autorec_20180427_020741/ but vaerec
