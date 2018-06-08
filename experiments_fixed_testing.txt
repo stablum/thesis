@@ -208,7 +208,7 @@
                                     [RUN] like ^^ but mb=64
                                     // harvest_vaerec_20180608_224259/
                                 [RUN] like harvest_vaerec_20180525_184951/ but mb=64
-                                // TODO
+                                // harvest_vaerec_20180608_224803/
                             [RUN] like harvest_vaerec_20180520_123413 but kl=0
                             // harvest_vaerec_20180520_125542/
                             // harvest_vaerec_20180526_104634/
