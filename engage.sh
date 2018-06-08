@@ -21,10 +21,10 @@ fi
 AVAILABLEHOURS=$(expr \( 24 + 6 - $(date +%H) \) % 24 + $PLUS)
 echo "AVAILABLEHOURS:$AVAILABLEHOURS"
 #NODETYPE="ngpus=1"
-#NODETYPE="GTX680"
+NODETYPE="GTX680"
 #NODETYPE="K20"
 #NODETYPE="C2050"
-NODETYPE="GTX480"
+#NODETYPE="GTX480"
 echo "NODETYPE:$NODETYPE"
 echo "TIMESTAMP:$TIMESTAMP"
 echo "after submitting the job will sleep for $SLEEPTIME seconds before retrieving outputs"

@@ -1,0 +1,14 @@
+\section{Equivalences between AutoRec and VaeRec models}
+
+In order to perform an adequate comparison between the AutoRec and VaeRec
+models it's important to establish if there are any available equivalences.
+In other words, it is interesting to see if a specific choice of hyperparameters
+of the VaeRec leads to a model that is similar to the VaeRec both in its definition
+and its performance.
+
+Luckily such a model can be found in the VaeRec by setting the KL coefficient to 0.
+This way that extra regularization term is absent and the VaeRec model becomes analogous
+to the AutoRec model. An hypothesis can be formulated that in such similar models
+the performances will be similar as well.
+
+Experimental results confirm the hypothesis. FIXME:ADD EXPERIMENTAL RESULTS
