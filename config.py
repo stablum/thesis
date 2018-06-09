@@ -54,7 +54,7 @@ preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 spherical_likelihood = True
 
 chunk_len =64*1024
-minibatch_size = 64 # 1 #2 # 16 # 64
+minibatch_size = 64 #1 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
