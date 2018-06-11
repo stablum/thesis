@@ -233,9 +233,9 @@
                         // harvest_vaerec_20180520_213628/
                         // harvest_vaerec_20180531_190110/
                             [RUN] like ^^ but mb=64
-                            // TODO
+                            // harvest_vaerec_20180609_190016/
                         [RUN] like harvest_vaerec_20180602_151020/ but mb=64
-                        // TODO
+                        // harvest_vaerec_20180610_004021/
 
 [RUN] 05/05/2018 testing new NFK in varec.py. Like harvest_vaerec_20171229_142617/
 // harvest_vaerec_20180505_221826/
@@ -271,7 +271,6 @@ TODOS 9/05/2018
 ---------------
 - stick to elu + model size and try vaerec.
 - for thesis: plot test error vs mb size for autorec vs vaerec
-- check Mart's models hyperparameters and performances for comparison. 
 - write in "thesis format": problem stated, background material, method (vaerec + pointers to Mart's thesis: how am I improving it + user+item), experiments (play hyperparameters), conclusion (future directions + adversarial networks + autoregressive flows)
 - try to understand if just varying the hyperparameters is enough or the model needs to be improved (future directions...)
 - try rprop with vaerec
@@ -299,16 +298,23 @@ TODOS 30/05/2018
 - testing the hypotheses
 - finally baseline autorec harvest_autorec_20180427_022040/ is comparable to harvest_vaerec_20180520_113325/ : describe in the text
 - write why the vaerec is not happy with rprop
+    Probably because it's too stochastic (doubly)
+    Also write "empirically blabla"
 - kl=0 improves both testing and training. Why is that? Too much regularization probably, and test by removing other forms of regularization like the usual L2 set to 0.
 - debug why are normalizing flows getting stuck.
 
 TODOS 04/06/2018
 ----------------
-- mb size 64 for the comparison kl=0 experiments
+V mb size 64 for the comparison kl=0 experiments
 V describe in text the annealing
-- try heavvily the annealing T=100
-
 V search "ELBO surgery" paper
+- try heavvily the annealing T=10 and starting with a higher learning rate
+
+TODOS 11/06/2018
+----------------
+- try adamax? Maybe it works good to replace rprop
+- check Mart's models hyperparameters and performances for comparison. 
+
 FOR LATER:
 ----------
 - play with KL coefficient
