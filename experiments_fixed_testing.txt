@@ -292,7 +292,6 @@ TODOS 16/05/2018
 
 TODOS 30/05/2018
 ----------------
-
 - describe how the model is (not) performing better
 - hypotheses on why is not performing better
 - testing the hypotheses
@@ -312,9 +311,9 @@ V search "ELBO surgery" paper
 
 TODOS 11/06/2018
 ----------------
-- try adamax? Maybe it works good to replace rprop
 - check Mart's models hyperparameters and performances for comparison. 
 
 FOR LATER:
 ----------
 - play with KL coefficient
+- try adamax? Maybe it works good to replace rprop
