@@ -23,6 +23,7 @@ shorten_dict = {
     "learning_rate":("lr",float),
     "lr annealing T":("T",int),
     "update algorithm":("upd",str),
+    "regularization_latent_kl":("r_KL",float),
     #"best_testing_rmse":("test_rmse",float),
     #"best_training_rmse":("train_rmse",float),
     #"minibatch_size":("mb_sz",int),
