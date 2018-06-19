@@ -225,6 +225,8 @@
                             // harvest_vaerec_20180530_220845/
                                 [RUN] like ^^ but mb=64
                                 // harvest_vaerec_20180608_231009/
+                                    [RUN] like ^^ but autorec (for comparison purposes)
+                                    // TODO
                             [RUN] like harvest_vaerec_20180602_151546/ but mb=64
                             // harvest_vaerec_20180609_032309/
                         [RUN] like harvest_vaerec_20180602_151020/ but kl=0
@@ -312,10 +314,12 @@ V search "ELBO surgery" paper
 TODOS 11/06/2018
 ----------------
 - check Mart's models hyperparameters and performances for comparison. 
+    - try 500 as latent z dimensionality
 
-TODOS 18/06/2018
+TODOS 18/06/2018 
 ----------------
 - there seem to be a trend that favors higher batch sizes. Try mb_size=128/256/512
+- try zdim=500
 
 FOR LATER:
 ----------

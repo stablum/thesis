@@ -11,4 +11,30 @@ This way that extra regularization term is absent and the VaeRec model becomes a
 to the AutoRec model. An hypothesis can be formulated that in such similar models
 the performances will be similar as well.
 
-Experimental results confirm the hypothesis. FIXME:ADD EXPERIMENTAL RESULTS
+Experimental results confirm the hypothesis:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c|r|r}
+\thead{Minibatch \\size }& 
+\thead{hid.layer \\ width }& 
+\thead{num. hidden \\layers } &
+\thead{latent z \\ dimensionality} & 
+\thead{AutoRec (RProp) \\ testing RMSE }&
+\thead{VaeRec (Adam) \\ testing RMSE }
+\\
+\hline
+64 & 1000 & 1 & 250 & TODO  & 0.8335  \\
+64 & 1000 & 2 & 250 & 0.8341  & 0.8365  \\
+64 & 1000 & 1 & 500 & TODO  & TODO  \\
+64 & 1000 & 2 & 500 & TODO  & TODO  \\
+128 & 1000 & 1 & 250 & TODO  & TODO  \\
+128 & 1000 & 2 & 250 & TODO  & TODO  \\
+128 & 1000 & 1 & 500 & TODO  & TODO  \\
+128 & 1000 & 2 & 500 & TODO  & TODO  \\
+\end{tabular}
+\caption{Comparison of similar VaeRec and AutoRec models}
+\end{table}
+
+The testing error achieved by both AutoRec and VaeRec models
+are very similar under similar hyperparameter settings.
