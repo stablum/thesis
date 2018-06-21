@@ -196,47 +196,47 @@
                         // harvest_autorec_20180520_120606/
                         [RUN] like  harvest_autorec_20180427_020741/ but with adam. will it work?
                         // harvest_autorec_20180520_122031/
-                        [RUN] like harvest_autorec_20180427_021325 but vaerec
+                        [RUN] like harvest_autorec_20180427_021325 but vaerec A
                         // harvest_vaerec_20180520_123413/
                         // harvest_vaerec_20180525_184131/
-                            [RUN] like ^^ but adam
+                            [RUN] like ^^ but adam B
                             // harvest_vaerec_20180520_124121/
                             // harvest_vaerec_20180525_184951/
-                                [RUN] like ^^ but kl=0
+                                [RUN] like ^^ but kl=0 C
                                 // harvest_vaerec_20180520_124723/
                                 // harvest_vaerec_20180525_203234/
-                                    [RUN] like ^^ but mb=64
+                                    [RUN] like ^^ but mb=64 D
                                     // harvest_vaerec_20180608_224259/
-                                [RUN] like harvest_vaerec_20180525_184951/ but mb=64
+                                [RUN] like harvest_vaerec_20180525_184951/ but mb=64 E
                                 // harvest_vaerec_20180608_224803/
-                            [RUN] like harvest_vaerec_20180520_123413 but kl=0
+                            [RUN] like harvest_vaerec_20180520_123413 but kl=0 F
                             // harvest_vaerec_20180520_125542/
                             // harvest_vaerec_20180526_104634/
-                                [RUN] like harvest_vaerec_20180526_104634/ but mb=64
+                                [RUN] like harvest_vaerec_20180526_104634/ but mb=64 G
                                 // harvest_vaerec_20180608_225338/
-                            [RUN] like harvest_vaerec_20180525_184131 but mb=64
+                            [RUN] like harvest_vaerec_20180525_184131 but mb=64 H
                             // harvest_vaerec_20180608_230221/
-                    [RUN] like harvest_autorec_20180427_020741/ but vaerec
+                    [RUN] like harvest_autorec_20180427_020741/ but vaerec A
                     // harvest_vaerec_20180602_151020/
-                        [RUN] like ^^ but adam
+                        [RUN] like ^^ but adam B
                         // harvest_vaerec_20180602_151546/
-                            [RUN] like ^^ but kl=0
+                            [RUN] like ^^ but kl=0 C
                             // harvest_vaerec_20180520_213139/
                             // harvest_vaerec_20180530_220845/
-                                [RUN] like ^^ but mb=64
+                                [RUN] like ^^ but mb=64 D
                                 // harvest_vaerec_20180608_231009/
                                     [RUN] like ^^ but autorec (for comparison purposes)
                                     // TODO
-                            [RUN] like harvest_vaerec_20180602_151546/ but mb=64
+                            [RUN] like harvest_vaerec_20180602_151546/ but mb=64 E
                             // harvest_vaerec_20180609_032309/
-                        [RUN] like harvest_vaerec_20180602_151020/ but kl=0
+                        [RUN] like harvest_vaerec_20180602_151020/ but kl=0 F
                         // harvest_vaerec_20180520_213309/
                         // harvest_vaerec_20180520_213528/
                         // harvest_vaerec_20180520_213628/
                         // harvest_vaerec_20180531_190110/
-                            [RUN] like ^^ but mb=64
+                            [RUN] like ^^ but mb=64 G
                             // harvest_vaerec_20180609_190016/
-                        [RUN] like harvest_vaerec_20180602_151020/ but mb=64
+                        [RUN] like harvest_vaerec_20180602_151020/ but mb=64 H
                         // harvest_vaerec_20180610_004021/
 
 [RUN] 05/05/2018 testing new NFK in varec.py. Like harvest_vaerec_20171229_142617/
@@ -319,7 +319,6 @@ TODOS 11/06/2018
 TODOS 18/06/2018 
 ----------------
 - there seem to be a trend that favors higher batch sizes. Try mb_size=128/256/512
-- try zdim=500
 
 FOR LATER:
 ----------
