@@ -226,7 +226,7 @@
                                 [RUN] like ^^ but mb=64 D
                                 // harvest_vaerec_20180608_231009/
                                     [RUN] like ^^ but autorec (for comparison purposes)
-                                    // TODO
+                                    // harvest_autorec_20180625_122221/
                                         [RUN] like ^^ but RProp (the correct learning rate)
                                         // TODO
                             [RUN] like harvest_vaerec_20180602_151546/ but mb=64 E
