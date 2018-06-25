@@ -145,7 +145,7 @@ class MemoryRandomCompleteEpochsSparseRows(MemoryRandomCompleteEpochs):
         ratings = super()._validation_set
         return self._to_sparse_rows(ratings)
 
-    @property
+    @utils.cached_property # caching is ok because the permutation is done by the caller
     def _training_set(self):
         ratings = super()._training_set
         return self._to_sparse_rows(ratings)
