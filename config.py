@@ -16,7 +16,7 @@ chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=2e+2
 regularization_type="L2" # in L1/L2
-regularization_latent_kl=1.0#0#0.5
+regularization_latent_kl=0.0#0#0.5
 input_dropout_p=0.0
 dropout_p=0.0
 batch_normalization=False
@@ -30,7 +30,7 @@ ratings_training_set_subsample_size = 5000
 
 regression_error_coef=0.5#1.#100.#1.#2.
 
-update_algorithm = 'rprop_masked'
+update_algorithm = 'adam_masked'
 #update_algorithm = 'sgd'
 
 adam_beta1 = 0.9
