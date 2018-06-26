@@ -234,7 +234,15 @@
                             [RUN] like harvest_vaerec_20180602_151546/ but mb=64 E
                             // harvest_vaerec_20180609_032309/
                                 [RUN] like ^^ but l2=0
+                                // harvest_vaerec_20180626_172942/
+                                    [RUN] like ^^ but lr=2e-5
+                                    // TODO
+                                        [RUN] like ^^ but T=10
+                                        // TODO
+                                [RUN] like harvest_vaerec_20180609_032309/ but lr=2e-5
                                 // TODO
+                                    [RUN] like ^^ but T=10
+                                    // TODO
                         [RUN] like harvest_vaerec_20180602_151020/ but kl=0 F
                         // harvest_vaerec_20180520_213309/
                         // harvest_vaerec_20180520_213528/
