@@ -17,16 +17,16 @@ else
     PLUS=0
 fi
 
-# kill the job before 8 AM
-AVAILABLEHOURS=$(expr \( 24 + 7 - $(date +%H) \) % 24 + $PLUS)
+# kill the job before 9 AM
+AVAILABLEHOURS=$(expr \( 24 + 8 - $(date +%H) \) % 24 + $PLUS)
 echo "AVAILABLEHOURS:$AVAILABLEHOURS"
 #NODETYPE="ngpus=1"
 #NODETYPE="GTX680"
 #NODETYPE="K20"
 #NODETYPE="C2050"
 #NODETYPE="GTX480"
-#NODETYPE=""
-NODETYPE="gpunode"
+NODETYPE=""
+#NODETYPE="gpunode"
 echo "NODETYPE:$NODETYPE"
 echo "TIMESTAMP:$TIMESTAMP"
 echo "after submitting the job will sleep for $SLEEPTIME seconds before retrieving outputs"
