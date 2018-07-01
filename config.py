@@ -20,7 +20,7 @@ regularization_latent_kl=1.0#0#0.5
 input_dropout_p=0.0
 dropout_p=0.0
 batch_normalization=False
-lr_begin=2e-6#2e-2 #2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
+lr_begin=2e-7#2e-2 #2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=10
 max_rating=5.
 
