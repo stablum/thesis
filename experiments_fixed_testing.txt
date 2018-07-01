@@ -235,8 +235,14 @@
                                         // harvest_vaerec_20180627_123737/
                                             [RUN] like ^^ but with gpu (debug)
                                             // harvest_vaerec_20180627_170328/
+                                [RUN] like harvest_vaerec_20180608_231009 but T=10
+                                // TODO
                                 [RUN] like harvest_vaerec_20180608_231009/ but lr=2e-5
                                 // harvest_vaerec_20180626_172056/
+                                [RUN] like harvest_vaerec_20180608_231009 but lr=2e-6
+                                // TODO
+                                    [RUN] like ^^ but T=10
+                                    // TODO
                             [RUN] like harvest_vaerec_20180602_151546/ but mb=64 E
                             // harvest_vaerec_20180609_032309/
                                 [RUN] like ^^ but l2=0
@@ -250,7 +256,7 @@
                                         [RUN] like ^^ but T=10
                                         // harvest_vaerec_20180630_170223/
                                     [RUN] like harvest_vaerec_20180626_172942/ but T=10
-                                    // 
+                                    // harvest_vaerec_20180701_155038/
                                 [RUN] like harvest_vaerec_20180609_032309/ but lr=2e-5
                                 // harvest_vaerec_20180626_231647/
                                     [RUN] like ^^ but T=10
