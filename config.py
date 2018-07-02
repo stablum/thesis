@@ -8,7 +8,7 @@ import movielens
 seed=12345
 n_epochs=1000
 
-K=250
+K=500
 TK=0# transformation's K (number of nested transformation steps)
 hid_dim=1000
 n_hid_layers=1
@@ -20,8 +20,8 @@ regularization_latent_kl=0.0#0#0.5
 input_dropout_p=0.0
 dropout_p=0.0
 batch_normalization=False
-lr_begin=2e-6#2e-2 #2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
-lr_annealing_T=10
+lr_begin=2e-7#2e-2 #2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
+lr_annealing_T=n_epochs
 max_rating=5.
 
 free_nats=0
