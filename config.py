@@ -70,7 +70,8 @@ if debug:
     optimizer = "debug"
 else:
     movielens_which='1m'
-    optimizer = "gpu_omp"
+    optimizer = "debug"
+    #optimizer = "gpu_omp"
 
 if optimizer == "debug":
     theano.config.exception_verbosity="high"
