@@ -262,24 +262,24 @@
                                     [RUN] like harvest_vaerec_20180626_172942 but lr=2e-6
                                     // harvest_vaerec_20180628_134442/
                                     // harvest_vaerec_20180630_170223/
+                                    // harvest_vaerec_20180702_131808/
                                         [RUN] like ^^ but T=10
                                         // harvest_vaerec_20180702_131150/
+                                        // harvest_vaerec_20180630_170536/
+                                        // harvest_vaerec_20180630_170823/
                                     [RUN] like harvest_vaerec_20180626_172942/ but T=10
                                     // harvest_vaerec_20180701_155038/
+                                        [RUN] like ^^ but hid_dim=500
+                                        // harvest_vaerec_20180702_021610/
+                                        // harvest_vaerec_20180702_021611/
                                 [RUN] like harvest_vaerec_20180609_032309/ but lr=2e-5
                                 // harvest_vaerec_20180626_231647/
                                     [RUN] like ^^ but T=10
                                     // harvest_vaerec_20180626_232310/
-                                [RUN] like harvest_vaerec_20180626_172942 but lr=2e-6
+                                [RUN] like harvest_vaerec_20180609_032309/ but lr=2e-6
                                 // TODO
                                     [RUN] like ^^ but T=10
-                                    // harvest_vaerec_20180630_170536/
-                                    // harvest_vaerec_20180630_170823/
-                                [RUN] like harvest_vaerec_20180626_172942 but T=10
-                                // TODO
-                                    [RUN] like ^^ but hid_dim=500
-                                    // harvest_vaerec_20180702_021610/
-                                    // harvest_vaerec_20180702_021611/
+                                    // TODO
                                 [RUN] like harvest_vaerec_20180609_032309 but hid_dim=500
                                 // harvest_vaerec_20180702_021708/
                         [RUN] like harvest_vaerec_20180602_151020/ but kl=0 F
@@ -372,6 +372,12 @@ TODOS 11/06/2018
 TODOS 18/06/2018 
 ----------------
 - there seem to be a trend that favors higher batch sizes. Try mb_size=128/256/512
+
+TODOS 2/07/2018
+---------------
+- there has to be some L2 regularization. Just not as much (tradeoff)
+- T=10 with best model with lr=2e-7
+
 
 FOR LATER:
 ----------
