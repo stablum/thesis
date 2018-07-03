@@ -282,6 +282,10 @@
                                     // TODO
                                 [RUN] like harvest_vaerec_20180609_032309 but hid_dim=500
                                 // harvest_vaerec_20180702_021708/
+                                [RUN] like harvest_vaerec_20180602_151546 but T=10
+                                // TODO
+                                    [RUN] like ^^ but hid_dim=500
+                                    // TODO
                         [RUN] like harvest_vaerec_20180602_151020/ but kl=0 F
                         // harvest_vaerec_20180520_213309/
                         // harvest_vaerec_20180520_213528/

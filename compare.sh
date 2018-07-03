@@ -16,7 +16,11 @@ for i in $( seq "${#@}" ) ; do
     TRAINING_FILES="$TRAINING_FILES /tmp/tr$i.txt"
     TESTING_FILES="$TESTING_FILES /tmp/te$i.txt"
 done
+
+
+(
+diff -U0 $1/config.py $2/config.py 2> /dev/null
 (
 paste  $TRAINING_FILES $TESTING_FILES
-) | cat -n | less 
+) | cat -n ) | less 
     
