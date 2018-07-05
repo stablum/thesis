@@ -250,6 +250,8 @@
                                         // harvest_vaerec_20180702_014551/
                                             [RUN] like ^^ but hid_dim=500
                                             // harvest_vaerec_20180702_021405/
+                                            [RUN] like harvest_vaerec_20180702_014551 but l2=2
+                                            // TODO
                             [RUN] like harvest_vaerec_20180602_151546/ but mb=64 E
                             // harvest_vaerec_20180609_032309/
                                 [RUN] like ^^ but l2=0
@@ -366,12 +368,12 @@ TODOS 04/06/2018
 V mb size 64 for the comparison kl=0 experiments
 V describe in text the annealing
 V search "ELBO surgery" paper
-- try heavvily the annealing T=10 and starting with a higher learning rate
+V try heavvily the annealing T=10 and starting with a higher learning rate
 
 TODOS 11/06/2018
 ----------------
 - check Mart's models hyperparameters and performances for comparison. 
-    - try 500 as latent z dimensionality
+    V try 500 as latent z dimensionality
 
 TODOS 18/06/2018 
 ----------------
@@ -380,6 +382,7 @@ TODOS 18/06/2018
 TODOS 2/07/2018
 ---------------
 - there has to be some L2 regularization. Just not as much (tradeoff)
+    - and this could be combined with higher learning rate
 - T=10 with best model with lr=2e-7
 
 
