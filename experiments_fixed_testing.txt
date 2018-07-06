@@ -279,7 +279,7 @@
                                         // harvest_vaerec_20180702_021610/
                                         // harvest_vaerec_20180702_021611/
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=1
-                                    //
+                                    // harvest_vaerec_20180706_122353
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=2
                                     //
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=3
