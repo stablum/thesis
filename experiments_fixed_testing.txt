@@ -262,7 +262,7 @@
                                         // harvest_vaerec_20180626_230951/
                                         // harvest_vaerec_20180626_231120/
                                             [RUN] like ^^ but l2=2
-                                            // TODO
+                                            // harvest_vaerec_20180705_142001/
                                     [RUN] like harvest_vaerec_20180626_172942 but lr=2e-6
                                     // harvest_vaerec_20180628_134442/
                                     // harvest_vaerec_20180630_170223/
@@ -272,7 +272,7 @@
                                         // harvest_vaerec_20180630_170536/
                                         // harvest_vaerec_20180630_170823/
                                             [RUN] like ^^ but l2=2
-                                            // TODO
+                                            // harvest_vaerec_20180705_142407
                                     [RUN] like harvest_vaerec_20180626_172942/ but T=10
                                     // harvest_vaerec_20180701_155038/
                                         [RUN] like ^^ but hid_dim=500

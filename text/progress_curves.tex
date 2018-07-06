@@ -6,8 +6,39 @@ training set and validation set.
 Analysis of these charts provides insight on issues such as choice of learning rate,
 choice of learning rate annealing parameters, overfitting and underfitting.
 
-
 \subsection{Choice of learning rate}
 
 \subsection{Effect of learning rate annealing}
+
+\subsection{Tradeoff between KL divergence and weights regularization}
+
+Both weights decay and KL divergence are regularizers that enable the model to achieve
+generalization. The contribution of both these terms is compounded, so that 
+coefficients need to be tuned in order to avoid over-regularization.
+
+As an example, this can be seen in the following plot, where a VaeRec model
+using L2 regularization with coefficient 200 is tested with, and without
+the KL term:
+
+% python3 plot_2.py harvest_vaerec_20180602_151546 harvest_vaerec_20180530_220845 "with kl" "without kl" --save text/with_kl_vs_without_kl.png
+\begin{figure}[H]
+\includegraphics[scale=0.7]{with_kl_vs_without_kl.png}
+\caption{VaeRec with and without KL divergence, minibatch size set at 1}
+\end{figure}
+
+For additional comparison, here are the result by using a minibatch update schema
+with size set at 64:
+
+\begin{figure}[H]
+\includegraphics[scale=0.7]{with_kl_vs_without_kl_mb64.png}
+\caption{VaeRec with and without KL divergence, minibatch size set at 64}
+\end{figure}
+
+Using the minibatch shows considerable improvements for both variants (with and without KL
+divergence).  It is interesting how the model with KL improves in such a drastic way
+by using minibatch learning. This is probably caused by the KL regularizer being
+very noisy with individual samples, causing over-regularization, as typical with SGD
+(without minibatch) schemas. By using a minibatch
+the KL regularizer becomes less noisy by smoothening via averaging. 
+
 

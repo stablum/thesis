@@ -5,14 +5,9 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
 import argparse
+import glob
 
 quantity_re = re.compile("^\d+:\d+:\d+\s+\d+:\d+:\d+\s+(.*):\s+(.*)$")
-
-parser = argparse.ArgumentParser(description="plot quantities from log file")
-parser.add_argument('filename')
-parser.add_argument('quantity_name')
-parser.add_argument('--save')
-args = parser.parse_args()
 
 def usage():
     print("usage: {} filename quantity_name".format(sys.argv[0]))
@@ -25,6 +20,8 @@ def collect_quantities(filename,quantity_name):
         if tmp is None:
             pass # did no match
         else:
+            if filename=="harvest_vaerec_20180520_213139/vaerec_20180520_213140.log":
+                print("tg",tmp.group())
             found_quantity_name = tmp.group(1)
             found_quantity_str = tmp.group(2)
             if found_quantity_name == quantity_name:
@@ -50,4 +47,11 @@ def main():
         plt.show()
 
 if __name__ == "__main__":
+    global parser
+
+    parser = argparse.ArgumentParser(description="plot quantities from log file")
+    parser.add_argument('filename')
+    parser.add_argument('quantity_name')
+    parser.add_argument('--save')
+    args = parser.parse_args()
     main()
