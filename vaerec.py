@@ -108,6 +108,33 @@ class Model(model_build.Abstract):
             nonlinearity=g_log_sigma,
             name="latent0_log_sigma"
         )
+
+        self.l_transformations_w = []
+        self.l_transformations_b = []
+        self.l_transformations_u = []
+        for k in range(TK):
+            w = latent0_layer_type(
+                self.l_hid_enc,
+                num_units=latent_dim,
+                num_leading_axes=num_leading_axes,
+                nonlinearity=g_latent
+            )
+            b = latent0_layer_type(
+                self.l_hid_enc,
+                num_units=1,
+                num_leading_axes=num_leading_axes,
+                nonlinearity=g_latent
+            )
+            u = latent0_layer_type(
+                self.l_hid_enc,
+                num_units=latent_dim,
+                num_leading_axes=num_leading_axes,
+                nonlinearity=g_latent
+            )
+            self.l_transformations_w.append(w)
+            self.l_transformations_b.append(b)
+            self.l_transformations_u.append(u)
+
         self.l_latent0_merge = lasagne.layers.ConcatLayer(
             [
                 self.l_latent0_mu,
@@ -125,10 +152,15 @@ class Model(model_build.Abstract):
         l_prev = self.l_latent0_sampling
         for k in range(TK):
             l = model_build.ILTTLayer(
-                l_prev,
+                [
+                    l_prev,
+                    self.l_transformations_w[k],
+                    self.l_transformations_b[k],
+                    self.l_transformations_u[k]
+                ],
                 dim=latent_dim,
                 name="ILLT{}".format(k+1), #1-based displaying
-                nonlinearity=g_transform
+                nonlinearity=g_transform,
             )
             l_prev = l
             self.l_transformations.append(l)
@@ -324,17 +356,26 @@ class Model(model_build.Abstract):
 
     @utils.cached_property
     def transformation_ws(self):
-        ret = map(lambda l: l.w, self.l_transformations)
+        ret = map(
+            lambda l: lasagne.layers.get_output(l,deterministic=False).T,
+            self.l_transformations_w
+        )
         return ret
 
     @utils.cached_property
     def transformation_bs(self):
-        ret = map(lambda l: l.b, self.l_transformations)
+        ret = map(
+            lambda l: lasagne.layers.get_output(l,deterministic=False).T,
+            self.l_transformations_b
+        )
         return ret
 
     @utils.cached_property
     def transformation_us(self):
-        ret = map(lambda l: l.u, self.l_transformations)
+        ret = map(
+            lambda l: lasagne.layers.get_output(l,deterministic=False),
+            self.l_transformations_u
+        )
         return ret
 
     @utils.cached_property

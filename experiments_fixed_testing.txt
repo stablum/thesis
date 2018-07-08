@@ -293,11 +293,11 @@
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=7
                                     // harvest_vaerec_20180706_124419/
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=8
-                                    //
+                                    // harvest_vaerec_20180706_124648/
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=9
-                                    //
+                                    // harvest_vaerec_20180706_124932/
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=10
-                                    //
+                                    // harvest_vaerec_20180706_125124/
                                 [RUN] like harvest_vaerec_20180609_032309/ but lr=2e-5
                                 // harvest_vaerec_20180626_231647/
                                     [RUN] like ^^ but T=10

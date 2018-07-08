@@ -269,49 +269,23 @@ class SamplingLayer(lasagne.layers.Layer):
             output_shape = input_shape
         return output_shape
 
-class ILTTLayer(lasagne.layers.Layer):
+class ILTTLayer(lasagne.layers.base.MergeLayer):
     def __init__(self,*args,**kwargs):
         self.dim = kwargs.pop('dim',None)
         self.nonlinearity = kwargs.pop('nonlinearity',None)
+
         super(ILTTLayer, self).__init__(*args, **kwargs)
 
-        self.w = self.add_param(
-            lasagne.init.GlorotUniform(),
-            (
-                self.input_shape[1],
-                1 # a scalar is fed into nonlinearity 'h'
-            ),
-            name="w",
-            regularizable=False
-        )
-        self.b = self.add_param(
-            lasagne.init.Uniform(),
-            (
-                1,
-            ),
-            name="b",
-            regularizable=False
-        )
-        self.u = self.add_param(
-            lasagne.init.GlorotUniform(),
-            (
-                self.input_shape[1], # output has same dimension as input points
-                1, # input is the scalar provided by 'h'
-            ),
-            name="u",
-            regularizable=False
-        )
-
     def get_output_shape_for(self, input_shape):
-        return input_shape[:1] + (self.dim,)
+        return input_shape[0][:1] + (self.dim,)
 
-    def get_output_for(self, input, **kwargs):
-
-        activation = T.dot(input, self.w)
-        if self.b is not None:
-            activation = activation + self.b
+    def get_output_for(self, inputs, **kwargs):
+        input,w,b,u = inputs
+        activation = T.dot(input, w.T)
+        if b is not None:
+            activation = activation +  b
         h = self.nonlinearity(activation)
-        ret = input + T.dot(h,self.u.T)
+        ret = input + T.dot(h,u)
         return ret
 
 def split_distr(in_var,dim):
