@@ -391,6 +391,7 @@ class Model(model_build.Abstract):
         ret = T.constant(0).astype('float32')
         zkminusone = self.latent0_sample_lea
         h = g_transform
+        self.aa = []
         for k,w,b,u,z in zip(
                 range(TK),
                 self.transformation_ws,
@@ -401,6 +402,7 @@ class Model(model_build.Abstract):
             zkminusone.name = "z_{}".format(k-1)
             zw = T.dot(zkminusone,w)
             a = zw + b
+            self.aa.append(a)
             a_range = T.arange(a.shape[0])
             h_a = h(a)
             #h_prime_output = T.grad(h_a,a)
@@ -643,8 +645,11 @@ def main():
 
         validation_objs = []
         for curr in tqdm(validation_splits(),desc="objs validation set"):
+            aa = a_fn(curr)
             _obj = obj_fn(curr)
             validation_objs.append(_obj)
+            for a in aa:
+                print("shape",a.shape)
         log_percentiles(validation_objs,"objs validation set",_log)
         validation_likelihoods = []
         for curr in tqdm(validation_splits(),desc="likelihoods validation set"):
@@ -714,6 +719,12 @@ def main():
         [model.obj]
     )
     obj_fn.name = "obj_fn"
+
+    a_fn = model_build.make_function(
+        [model.Ri_mb_sym],
+        model.aa
+    )
+    a_fn.name="a_fn"
 
     log("training ...")
     #import ipdb; ipdb.set_trace()
