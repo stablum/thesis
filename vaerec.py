@@ -117,19 +117,22 @@ class Model(model_build.Abstract):
                 self.l_hid_enc,
                 num_units=latent_dim,
                 num_leading_axes=num_leading_axes,
-                nonlinearity=g_latent
+                nonlinearity=g_latent,
+                name="transformation_w"
             )
             b = latent0_layer_type(
                 self.l_hid_enc,
                 num_units=1,
                 num_leading_axes=num_leading_axes,
-                nonlinearity=g_latent
+                nonlinearity=g_latent,
+                name="transformation_b"
             )
             u = latent0_layer_type(
                 self.l_hid_enc,
                 num_units=latent_dim,
                 num_leading_axes=num_leading_axes,
-                nonlinearity=g_latent
+                nonlinearity=g_latent,
+                name="transformation_u"
             )
             self.l_transformations_w.append(w)
             self.l_transformations_b.append(b)
@@ -356,34 +359,39 @@ class Model(model_build.Abstract):
 
     @utils.cached_property
     def transformation_ws(self):
-        ret = map(
-            lambda l: lasagne.layers.get_output(l,deterministic=False).T,
-            self.l_transformations_w
-        )
+        ret = []
+        for l in self.l_transformations_w:
+            o = lasagne.layers.get_output(l,deterministic=False)
+            o.name="transformation_w!!"
+            ret.append(o)
         return ret
 
     @utils.cached_property
     def transformation_bs(self):
-        ret = map(
-            lambda l: lasagne.layers.get_output(l,deterministic=False).T,
-            self.l_transformations_b
-        )
+        ret = []
+        for l in self.l_transformations_b:
+            o = lasagne.layers.get_output(l,deterministic=False)
+            o = o.T
+            o.name="transformation_b!!"
+            ret.append(o)
         return ret
 
     @utils.cached_property
     def transformation_us(self):
-        ret = map(
-            lambda l: lasagne.layers.get_output(l,deterministic=False),
-            self.l_transformations_u
-        )
+        ret = []
+        for l in self.l_transformations_u:
+            o = lasagne.layers.get_output(l,deterministic=False)
+            o.name="transformation_u!!"
+            ret.append(o)
         return ret
 
     @utils.cached_property
     def transformation_zs(self):
-        ret = map(
-            lambda l: lasagne.layers.get_output(l,deterministic=False),
-            self.l_transformations
-        )
+        ret = []
+        for l in self.l_transformations:
+            o = lasagne.layers.get_output(l,deterministic=False)
+            o.name="transformation_z!!"
+            ret.append(o)
         return ret
 
     @utils.cached_property
@@ -399,32 +407,55 @@ class Model(model_build.Abstract):
                 self.transformation_us,
                 self.transformation_zs
         ):
+            b.name="transformation_b!"
             zkminusone.name = "z_{}".format(k-1)
-            zw = T.dot(zkminusone,w)
+            zw,_updates = theano.scan(
+                fn=T.dot,
+                sequences=[zkminusone,w]
+            )
+            zw.name="zw!"
+            #zw.tag.test_value = np.ones((3,3))
+            print(type(zw))
             a = zw + b
+            a = a.T
+            a.name="a!"
             self.aa.append(a)
+            self.aa.append(b)
+            self.aa.append(zw)
             a_range = T.arange(a.shape[0])
+            a_range.name="a_range"
             h_a = h(a)
+            h_a.name="h_a!"
             #h_prime_output = T.grad(h_a,a)
 
             def do_grad_h (i,ai):
                 #ai = a[i,:]
                 hai = h(ai)
+                hai.name="hai"
                 shai = model_build.scalar(hai)
+                shai.name="shai"
                 print("shai",shai)
                 gr = T.grad( shai, ai)
+                gr.name="shai_grad"
                 return gr
 
             hprime,_updates = theano.scan(
                 fn=do_grad_h,
                 sequences=[a_range,a],
             )
-            d = T.dot(w.T,u)
+            d,_updates = theano.scan(
+                fn=T.dot,
+                sequences=[u,w]
+            )
+            d.name="d!"
 
             m = hprime * d
+            m.name="m!"
             s = 1+m
+            s.name="s!"
             ret += T.log(T.abs_(s))
             zkminusone = z
+            zkminusone.name="zk-1!"
         ret.name = "transformation_term_obj"
         ret = model_build.scalar(T.sum(ret))
         return ret
@@ -706,6 +737,13 @@ def main():
     model.n_datapoints = looper.n_datapoints
 
     log("creating parameter update function..")
+    _ = model.obj # trigger getter
+    a_fn = model_build.make_function(
+        [model.Ri_mb_sym],
+        model.aa
+    )
+    a_fn.name="a_fn"
+
     params_update_fn = model_build.make_function(
         [model.Ri_mb_sym],
         [model.obj],
@@ -720,11 +758,6 @@ def main():
     )
     obj_fn.name = "obj_fn"
 
-    a_fn = model_build.make_function(
-        [model.Ri_mb_sym],
-        model.aa
-    )
-    a_fn.name="a_fn"
 
     log("training ...")
     #import ipdb; ipdb.set_trace()
