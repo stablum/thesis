@@ -332,7 +332,7 @@ class Model(model_build.Abstract):
             # WARNING: regularization_latent_kl should be ~ 1.0 usually
             ret -= self.regularizer_latent0_kl * config.regularization_latent_kl
         ret += self.latentK_term_obj
-        ret += self.transformation_term_obj
+        #ret += self.transformation_term_obj
         return ret
 
     @utils.cached_property
@@ -676,11 +676,8 @@ def main():
 
         validation_objs = []
         for curr in tqdm(validation_splits(),desc="objs validation set"):
-            aa = a_fn(curr)
             _obj = obj_fn(curr)
             validation_objs.append(_obj)
-            for a in aa:
-                print("shape",a.shape)
         log_percentiles(validation_objs,"objs validation set",_log)
         validation_likelihoods = []
         for curr in tqdm(validation_splits(),desc="likelihoods validation set"):
@@ -711,9 +708,14 @@ def main():
         if len(Ri_mb_l) >= config.minibatch_size:
             Ri_mb = scipy.sparse.vstack(Ri_mb_l)
             Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
-            _loss, = params_update_fn(Ri_mb)
+            tmp = params_update_fn(Ri_mb)
+            _loss,_lh,_regkl,_trans = tmp[0:4]
+            _grads = tmp[4:]
 
-            #log("_loss:",_loss)
+            print("_grads")
+            for p,g in zip(model.params,_grads):
+                print(p.name,"g: min",g.min(),"max",g.max(), "val:",p.get_value().min(),p.get_value().max())
+            print("_loss:",_loss,"_lh:",_lh,"_regkl:",_regkl,"_trans:",_trans)
             _kls, = marginal_latent0_kl_fn(Ri_mb)
             _out_log_sigmas, = out_log_sigmas_fn(Ri_mb)
             _obj, = obj_fn(Ri_mb)
@@ -738,15 +740,22 @@ def main():
 
     log("creating parameter update function..")
     _ = model.obj # trigger getter
+    """
     a_fn = model_build.make_function(
         [model.Ri_mb_sym],
         model.aa
     )
     a_fn.name="a_fn"
+    """
 
     params_update_fn = model_build.make_function(
         [model.Ri_mb_sym],
-        [model.obj],
+        [
+            model.obj,
+            model.likelihood,
+            model.regularizer_latent0_kl,
+            model.transformation_term_obj,
+        ]+model.grads_params,
         updates=model.params_updates
     )
     #import ipdb; ipdb.set_trace()
