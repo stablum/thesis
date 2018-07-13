@@ -58,6 +58,15 @@ class Abstract(object):
     def all_layers(self):
         return lasagne.layers.get_all_layers(self.l_out)
 
+    @property
+    def all_layers_outputs(self):
+        ret = []
+        for l in self.all_layers:
+            o = lasagne.layers.get_output(l,deterministic=True)
+            o.name="output_of_layer_"+l.name
+            ret.append(o)
+        return ret
+
     @utils.cached_property
     def input_dim(self):
         if config.regression_type == "user":
@@ -108,7 +117,7 @@ class Abstract(object):
         self._params_updates = val
 
 def make_function( *args, **kwargs ):
-    #kwargs['mode'] = NanGuardMode(nan_is_error=True, inf_is_error=True, big_is_error=True)
+    kwargs['mode'] = NanGuardMode(nan_is_error=True, inf_is_error=False, big_is_error=False)
     fn = theano.function(*args,**kwargs)
     return fn
 
@@ -239,10 +248,16 @@ class MaskedDenseLayer(lasagne.layers.dense.DenseLayer):
             trainable=False
         )
     def get_output_for(self, input, **kwargs):
-        activation = T.dot(input, T.mul(self.W,self.mask.T))
+        m = T.mul(self.W,self.mask.T)
+        m.name = "m_"+self.name
+        activation = T.dot(input, m)
+        activation.name = "activation_"+self.name
         if self.b is not None:
             activation = activation + self.b.dimshuffle('x', 0)
-        return self.nonlinearity(activation)
+            activation.name = "activation_dimshuffle_"+self.name
+        ret = self.nonlinearity(activation)
+        ret.name = "ret_"+self.name
+        return ret
 
 class SamplingLayer(lasagne.layers.Layer):
 
@@ -256,9 +271,11 @@ class SamplingLayer(lasagne.layers.Layer):
             mu = inputs[0]
             log_sigma = inputs[1]
             sample = reparameterization_trick([mu,log_sigma],"samplinglayersplit")
+            sample.name="sample(1)_"+self.name
         else:
             assert self.dim is not None
-            sample = reparameterization_trick(inputs,"samplinglayermerged",dim=self.dim)
+            sample = reparameterization_trick(inputs,"samplinglayermerged_"+self.name,dim=self.dim)
+            sample.name="sample(2)_"+self.name
 
         return sample
 
@@ -282,10 +299,17 @@ class ILTTLayer(lasagne.layers.base.MergeLayer):
     def get_output_for(self, inputs, **kwargs):
         input,w,b,u = inputs
         activation = T.dot(input, w.T)
+        activation.name="activation_"+self.name
         if b is not None:
             activation = activation +  b
+            activation.name = "activation+b_"+self.name
         h = self.nonlinearity(activation)
-        ret = input + T.dot(h,u)
+        h.name = "h_"+self.name
+        dot = T.dot(h,u)
+        dot.name = "dot_"+self.name
+        ret = input + dot
+        ret.name = "ret_"+self.name
+        ret = theano.printing.Print('print the ret')(ret)
         return ret
 
 def split_distr(in_var,dim):

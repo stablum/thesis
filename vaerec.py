@@ -240,7 +240,9 @@ class Model(model_build.Abstract):
 
     @utils.cached_property
     def mask_sum(self):
-        return T.cast(T.sum(self.mask),'float32')
+        ret = T.cast(T.sum(self.mask),'float32')
+        ret.name = "mask_sum"
+        return ret
 
     @utils.cached_property
     def mask_mb_sum(self):
@@ -280,30 +282,47 @@ class Model(model_build.Abstract):
         # being config.regression_error_coef
         # a.k.a. likelihood!!!
         term_constant = -self.mask_sum * np.array(2*np.pi).astype('float32')
+        term_constant.name="likelihood_term_constant"
         masked_log_sigma = self.out_log_sigma_lea * self.mask
+        masked_log_sigma.name="likelihood_masked_log_sigma"
         term_logdetsigma = -T.sum(masked_log_sigma)
+        term_logdetsigma.name = "likelihood_term_logdetsigma"
         sigma = T.exp(self.out_log_sigma_lea)
+        sigma.name="likelihood_sigma"
         masked_loss_sq = self.loss_sq * self.mask
+        masked_loss_sq.name="likelihood_masked_loss_sq"
         inv_sigma = 1./sigma
+        inv_sigma.name = "likelihood_inv_sigma"
         term_scaled_error = - T.sum(masked_loss_sq * inv_sigma)
+        term_scaled_error.name = "likelihood_term_scaled_error"
         ret = term_constant + term_logdetsigma + term_scaled_error
+        ret.name = "likelihood_ret"
         ret = model_build.scalar(ret)
+        ret.name = "likelihood_scalar_ret"
         return ret
 
     @utils.cached_property
     def regularizer_latent0_kl(self):
         sigma = T.exp(self.latent0_log_sigma_lea)
+        sigma.name = "rl0kl_sigma"
         vanilla_kl = kl.kl_normal_diagonal_vs_unit(self.latent0_mu_lea,sigma,latent_dim)
+        vanilla_kl.name="rl0kl_vanilla_kl"
         m = config.free_nats * theano.tensor.ones_like(vanilla_kl)
+        m.name = "rl0kl_m"
         ret = theano.tensor.maximum(vanilla_kl,m)
+        ret.name = "rl0kl_ret"
         return ret
 
     @utils.cached_property
     def marginal_latent0_kl(self):
         term1 = - self.latent0_log_sigma_lea
+        term1.name="ml0kl_term1"
         term2 = 0.5*(T.pow(self.latent0_sigma_lea,2) + T.pow(self.latent0_mu_lea,2))
+        term2.name="ml0kl_term2"
         term3 = - 0.5
-        return term1 + term2 + term3
+        ret = term1 + term2 + term3
+        ret.name="ml0kl_ret"
+        return ret
 
     @utils.cached_property
     def marginal_latent0_kl_mean(self):
@@ -333,6 +352,7 @@ class Model(model_build.Abstract):
             ret -= self.regularizer_latent0_kl * config.regularization_latent_kl
         ret += self.latentK_term_obj
         #ret += self.transformation_term_obj
+        ret.name="elbo_ret"
         return ret
 
     @utils.cached_property
@@ -710,11 +730,14 @@ def main():
             Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
             tmp = params_update_fn(Ri_mb)
             _loss,_lh,_regkl,_trans = tmp[0:4]
-            _grads = tmp[4:]
+            _grads = tmp[4:-len(model.all_layers)]
+            _layers_outputs = tmp[-len(model.all_layers):]
 
             print("_grads")
             for p,g in zip(model.params,_grads):
                 print(p.name,"g: min",g.min(),"max",g.max(), "val:",p.get_value().min(),p.get_value().max())
+            for l,o in zip(model.all_layers,_layers_outputs):
+                print("layer",l.name,"min",o.min(),"max",o.max())
             print("_loss:",_loss,"_lh:",_lh,"_regkl:",_regkl,"_trans:",_trans)
             _kls, = marginal_latent0_kl_fn(Ri_mb)
             _out_log_sigmas, = out_log_sigmas_fn(Ri_mb)
@@ -755,7 +778,7 @@ def main():
             model.likelihood,
             model.regularizer_latent0_kl,
             model.transformation_term_obj,
-        ]+model.grads_params,
+        ]+model.grads_params+model.all_layers_outputs,
         updates=model.params_updates
     )
     #import ipdb; ipdb.set_trace()
