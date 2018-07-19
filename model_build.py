@@ -12,6 +12,11 @@ import utils
 import update_algorithms
 import config
 
+def tp(x):
+    ret = theano.printing.Print('print '+str(x.name))(x)
+    #ret = x
+    return ret
+
 class Abstract(object):
 
     @utils.cached_property
@@ -298,6 +303,37 @@ class ILTTLayer(lasagne.layers.base.MergeLayer):
 
     def get_output_for(self, inputs, **kwargs):
         input,w,b,u = inputs
+        wu,_updates = theano.scan(
+            fn=T.dot,
+            sequences=[w,u]
+        )
+        wu=wu.dimshuffle(0,'x')
+        wu.name="wu"
+        m = lambda x: -1 + T.log(1 + T.exp(x))
+        ww,_updates = theano.scan(
+            fn=T.dot,
+            sequences=[w,w]
+        )
+        ww = ww.dimshuffle(0,'x')
+        ww.name="ww"
+        epsilon = 1
+        ww_mask = T.gt(T.abs_(ww),epsilon)
+        ww_mask.name="ww_mask"
+        ww_mask = tp(ww_mask)
+        ww = ww_mask*ww + (1-ww_mask)*epsilon # avoid nan division by 0
+        ww.name="ww"
+        ww = tp(ww)
+        w_norm,_updates=theano.scan(
+            fn= lambda x,y: x/y,
+            sequences = [w,ww]
+        )
+        w_norm.name = "w_norm"
+        mwu = m(wu)
+        mwu.name= "mwu"
+        sub = mwu - wu
+        sub.name="sub"
+        u_hat = u + sub * w_norm
+        u_hat.name="u_hat"
         activation = T.dot(input, w.T)
         activation.name="activation_"+self.name
         if b is not None:
@@ -305,11 +341,11 @@ class ILTTLayer(lasagne.layers.base.MergeLayer):
             activation.name = "activation+b_"+self.name
         h = self.nonlinearity(activation)
         h.name = "h_"+self.name
-        dot = T.dot(h,u)
+        dot = T.dot(h,u_hat)
         dot.name = "dot_"+self.name
         ret = input + dot
         ret.name = "ret_"+self.name
-        ret = theano.printing.Print('print the ret')(ret)
+        ret = tp(ret)
         return ret
 
 def split_distr(in_var,dim):

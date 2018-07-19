@@ -7,6 +7,7 @@ import theano.sparse
 from theano import tensor as T
 from theano.compile.nanguardmode import NanGuardMode
 import lasagne
+print(lasagne.__file__)
 import lasagne_sparse
 
 import numpy as np
@@ -31,6 +32,7 @@ import kl
 import utils
 import regularization
 import persistency
+np.set_printoptions(edgeitems=200)
 
 #update = adam_masked = update_algorithms.adam_masked # FIXME: generalize like the 'update' placeholder
 #g = lambda x:x
@@ -39,6 +41,7 @@ g_latent = activation_functions.get(config.g_latent)
 g_hid = activation_functions.get(config.g_hid)
 g_log_sigma = lasagne.nonlinearities.linear
 g_transform = activation_functions.get(config.g_transform)
+g_planar = activation_functions.get(config.g_planar)
 weights_regularization = regularization.get(config.regularization_type)
 sigma = 1.
 sigma_u = 100.
@@ -162,8 +165,8 @@ class Model(model_build.Abstract):
                     self.l_transformations_u[k]
                 ],
                 dim=latent_dim,
-                name="ILLT{}".format(k+1), #1-based displaying
-                nonlinearity=g_transform,
+                name="ILTT{}".format(k+1), #1-based displaying
+                nonlinearity=g_planar
             )
             l_prev = l
             self.l_transformations.append(l)

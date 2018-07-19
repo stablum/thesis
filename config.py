@@ -8,9 +8,9 @@ import movielens
 seed=12345
 n_epochs=1000
 
-K=250
+K=5
 TK=1 #transformation's K (number of nested transformation steps)
-hid_dim=1000
+hid_dim=100
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
@@ -49,12 +49,13 @@ g_in = "elu"
 g_hid = "elu"
 g_latent = "linear"
 g_transform = "sigmoid"
+g_planar="tanh"
 
 preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 spherical_likelihood = True
 
 chunk_len =64*1024
-minibatch_size = 64 #1 #2 # 16 # 64
+minibatch_size = 8 #1 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
@@ -79,6 +80,8 @@ if optimizer == "debug":
     theano.config.on_unused_input='ignore'
     theano.config.floatX='float32'
     theano.config.warn_float64='raise'
+    theano.config.traceback.limit=30
+    theano.config.traceback.compile_limit=30
     theano.mode="DebugMode"
 
 elif optimizer == "cpu":
