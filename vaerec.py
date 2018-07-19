@@ -374,10 +374,15 @@ class Model(model_build.Abstract):
     @utils.cached_property
     def latentK_term_obj(self):
         term_constant= - 0.5 * self.mask_sum * np.array(2*np.pi).astype('float32')
-        term_l2 = - 0.5 * T.sum(self.latentK_lea ** 2)
+        term_constant.name="lK_term_constant"
+        lK_squared = self.latentK_lea ** 2
+        lK_squared.name = "lK_squared"
+        term_l2 = - 0.5 * T.sum(lK_squared)
+        term_l2.name="lK_term_l2"
         ret = term_constant + term_l2
-        ret.name = "latentK_term_obj"
+        ret.name = "lK_ret"
         ret = model_build.scalar(ret)
+        ret.name = "lK_ret_scalar"
         return ret
 
     @utils.cached_property
