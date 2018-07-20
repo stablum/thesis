@@ -39,7 +39,7 @@ np.set_printoptions(edgeitems=200)
 g_rij = activation_functions.get(config.g_rij)
 g_latent = activation_functions.get(config.g_latent)
 g_hid = activation_functions.get(config.g_hid)
-g_log_sigma = lasagne.nonlinearities.linear
+g_log_sigma = activation_functions.get("safe_log_output")
 g_transform = activation_functions.get(config.g_transform)
 g_planar = activation_functions.get(config.g_planar)
 weights_regularization = regularization.get(config.regularization_type)
@@ -292,17 +292,15 @@ class Model(model_build.Abstract):
         return ret
 
     @utils.cached_property
-    def likelihood(self):
-        # this is the expected reconstruction error
-        # the 1/2 coefficient is EXTERNAL to this term,
-        # being config.regression_error_coef
-        # a.k.a. likelihood!!!
-        term_constant = -self.mask_sum * np.array(2*np.pi).astype('float32')
-        term_constant.name="likelihood_term_constant"
+    def likelihood_term_logdetsigma(self):
         masked_log_sigma = self.out_log_sigma_lea * self.mask
         masked_log_sigma.name="likelihood_masked_log_sigma"
         term_logdetsigma = -T.sum(masked_log_sigma)
         term_logdetsigma.name = "likelihood_term_logdetsigma"
+        return term_logdetsigma
+
+    @utils.cached_property
+    def likelihood_term_scaled_error(self):
         sigma = T.exp(self.out_log_sigma_lea)
         sigma.name="likelihood_sigma"
         masked_loss_sq = self.loss_sq * self.mask
@@ -311,7 +309,17 @@ class Model(model_build.Abstract):
         inv_sigma.name = "likelihood_inv_sigma"
         term_scaled_error = - T.sum(masked_loss_sq * inv_sigma)
         term_scaled_error.name = "likelihood_term_scaled_error"
-        ret = term_constant + term_logdetsigma + term_scaled_error
+        return term_scaled_error
+
+    @utils.cached_property
+    def likelihood(self):
+        # this is the expected reconstruction error
+        # the 1/2 coefficient is EXTERNAL to this term,
+        # being config.regression_error_coef
+        # a.k.a. likelihood!!!
+        term_constant = -self.mask_sum * np.array(2*np.pi).astype('float32')
+        term_constant.name="likelihood_term_constant"
+        ret = term_constant + self.likelihood_term_logdetsigma + self.likelihood_term_scaled_error
         ret.name = "likelihood_ret"
         ret = model_build.scalar(ret)
         ret.name = "likelihood_scalar_ret"
@@ -363,11 +371,14 @@ class Model(model_build.Abstract):
         """
         # WARNING: regression_error_coef should be 0.5!!!
         ret = self.likelihood * config.regression_error_coef
-        if config.regularization_latent_kl > 0.:
+        if config.regularization_latent_kl > 0. and config.TK == 0:
             # WARNING: regularization_latent_kl should be ~ 1.0 usually
             ret -= self.regularizer_latent0_kl * config.regularization_latent_kl
-        ret += self.latentK_term_obj
-        ret += self.transformation_term_obj
+        if config.TK > 0:
+            nf_term = self.latentK_term_obj
+            nf_term += self.latent0_entropy_term_obj
+            nf_term += self.transformation_term_obj
+            ret += nf_term * config.regularization_latent_kl
         ret.name="elbo_ret"
         return ret
 
@@ -386,7 +397,7 @@ class Model(model_build.Abstract):
 
     @utils.cached_property
     def latentK_term_obj(self):
-        term_constant= - 0.5 * self.mask_sum * np.array(2*np.pi).astype('float32')
+        term_constant= - 0.5 * self.mask_sum * np.log(np.array(2*np.pi)).astype('float32')
         term_constant.name="lK_term_constant"
         lK_squared = self.latentK_lea ** 2
         lK_squared.name = "lK_squared"
@@ -396,6 +407,17 @@ class Model(model_build.Abstract):
         ret.name = "lK_ret"
         ret = model_build.scalar(ret)
         ret.name = "lK_ret_scalar"
+        return ret
+
+    @utils.cached_property
+    def latent0_entropy_term_obj(self):
+        term_constant = 0.5 * self.mask_sum * np.log(np.array(2*np.pi)).astype('float32')
+        term_dim = 0.5 * latent_dim
+        masked_log_sigma = self.latent0_log_sigma_lea
+        term_logdetsigma = 0.5 * T.sum(masked_log_sigma)
+        ret = term_constant + term_dim + term_logdetsigma
+        ret.name = "latent0_entropy_term_obj"
+        ret = model_build.scalar(ret)
         return ret
 
     @utils.cached_property
@@ -734,7 +756,13 @@ class Model(model_build.Abstract):
             grad.name = str(curr.name) + "_masked_grad"
         ret.append(grad)
         curr = d["hidden_dec_layer_mu.b"]
-        grad = T.grad(self.obj,curr,add_names=True)
+        #grad = T.grad(- model_build.scalar(self.likelihood_term_logdetsigma ) * config.regression_error_coef / config.minibatch_size,curr,add_names=True)
+        grad = T.grad(- model_build.scalar(self.likelihood_term_scaled_error )* config.regression_error_coef / config.minibatch_size,curr,add_names=True)
+        #grad +=T.grad(self.latentK_term_obj * config.regularization_latent_kl / config.minibatch_size, curr,add_names=True)
+        #grad +=T.grad(self.latent0_entropy_term_obj * config.regularization_latent_kl / config.minibatch_size, curr, add_names=True)
+        #grad +=T.grad(self.transformation_term_obj * config.regularization_latent_kl / config.minibatch_size, curr, add_names=True)
+        #grad +=T.grad(self.regularizer * config.regularization_lambda / self.n_datapoints, curr, add_names=True)
+        grad = theano.ifelse.ifelse(T.lt(grad.norm(2),100),grad, theano.printing.Print(message="ggg")(grad))
         grad.name = str(curr.name)+"_grad"
         print("grad.name",grad.name)
         # filtering first and last layer's gradients according

@@ -18,6 +18,14 @@ def tp(x):
     ret = x
     return ret
 
+def norm_clip_gradient(grad):
+    # http://nmarkou.blogspot.com/2017/07/deep-learning-why-you-should-use.html
+    norm = grad.norm(2)
+    threshold = getattr(config,"norm_clip_threshold",10)
+    coeff = theano.ifelse.ifelse(T.lt(norm,threshold), 1.0, threshold/norm)
+    ret = coeff * grad
+    return ret
+
 class Abstract(object):
 
     @utils.cached_property
@@ -49,7 +57,10 @@ class Abstract(object):
     def wrap(self,layer):
 
         if config.batch_normalization is True:
-            layer = lasagne.layers.BatchNormLayer(layer)
+            layer = lasagne.layers.BatchNormLayer(
+                layer,
+                name="batch_norm_"+layer.name
+            )
 
         if config.dropout_p > 0:
             layer = lasagne.layers.DropoutLayer(
@@ -109,8 +120,9 @@ class Abstract(object):
     def params_updates(self):
         if '_params_updates' not in dir(self):
             self.log("creating parameter updates...")
+            clipped_gradients = list(map(norm_clip_gradient,self.grads_params))
             self._params_updates = self.update (
-                self.grads_params,
+                clipped_gradients,
                 self.params,
                 self.all_masks,
                 learning_rate=config.lr_begin * config.minibatch_size
@@ -316,12 +328,8 @@ class ILTTEnforceInvertibilityLayer(lasagne.layers.base.MergeLayer):
         )
         ww = ww.dimshuffle(0,'x')
         ww.name="ww"
-        epsilon = 1
-        ww_mask = T.gt(T.abs_(ww),epsilon)
-        ww_mask.name="ww_mask"
-        ww_mask = tp(ww_mask)
-        ww = ww_mask*ww + (1-ww_mask)*epsilon # avoid nan division by 0
-        ww.name="ww_masked"
+        epsilon = 1e-7
+        ww = ww + epsilon
         ww = tp(ww)
         w_norm,_updates=theano.scan(
             fn= lambda x,y: x/y,
@@ -353,7 +361,7 @@ class ILTTLayer(lasagne.layers.base.MergeLayer):
         if b is not None:
             activation = activation +  b
             activation.name = "activation+b_"+self.name
-        h = 1 - self.nonlinearity(activation)
+        h = self.nonlinearity(activation)
         h.name = "h_"+self.name
         dot = T.dot(h,u_hat)
         dot.name = "dot_"+self.name

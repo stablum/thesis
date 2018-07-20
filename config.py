@@ -61,7 +61,7 @@ regression_type = "item" # in user/item/user+item
 
 nanguard=True
 verbose=False
-
+norm_clip_threshold=10
 if socket.gethostname() in ['playertrackingmobile']:
     # locally
     debug=True

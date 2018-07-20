@@ -12,7 +12,8 @@ possible_activations = {
     'elu': T.nnet.elu,
     'relu': T.nnet.relu,
     'linear': lasagne.nonlinearities.linear,
-    'tanh': lasagne.nonlinearities.tanh
+    'tanh': lasagne.nonlinearities.tanh,
+    'safe_log_output': lambda x : 7 * lasagne.nonlinearities.tanh(x/7)
 }
 
 def get(name):
