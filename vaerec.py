@@ -115,6 +115,7 @@ class Model(model_build.Abstract):
         self.l_transformations_w = []
         self.l_transformations_b = []
         self.l_transformations_u = []
+        self.l_transformations_u_hat = []
         for k in range(TK):
             w = latent0_layer_type(
                 self.l_hid_enc,
@@ -140,6 +141,15 @@ class Model(model_build.Abstract):
             self.l_transformations_w.append(w)
             self.l_transformations_b.append(b)
             self.l_transformations_u.append(u)
+            u_hat = model_build.ILTTEnforceInvertibilityLayer(
+                [
+                    self.l_transformations_w[k],
+                    self.l_transformations_u[k]
+                ],
+                dim=latent_dim,
+                name="ILTTEnforceInvertibilityLayer{}".format(k+1) #1-based displaying
+            )
+            self.l_transformations_u_hat.append(u_hat)
 
         self.l_latent0_merge = lasagne.layers.ConcatLayer(
             [
@@ -162,7 +172,7 @@ class Model(model_build.Abstract):
                     l_prev,
                     self.l_transformations_w[k],
                     self.l_transformations_b[k],
-                    self.l_transformations_u[k]
+                    self.l_transformations_u_hat[k]
                 ],
                 dim=latent_dim,
                 name="ILTT{}".format(k+1), #1-based displaying
@@ -266,16 +276,19 @@ class Model(model_build.Abstract):
     @utils.cached_property
     def mask_enc_W(self):
         ret = T.tile(self.mask_mb_sum.T, (1,hid_dim)) # notice the transpose
+        ret.name = "mask_enc_W_ret"
         return ret
 
     @utils.cached_property
     def mask_dec_W(self):
         ret = T.tile(self.mask_mb_sum, (hid_dim,1)) # notice absence of transpose
+        ret.name = "mask_dec_W_ret"
         return ret
 
     @utils.cached_property
     def loss_sq(self):
         ret = T.sqr(self.Ri_mb_sym - self.predict_to_1_lea)
+        ret.name = "loss_sq"
         return ret
 
     @utils.cached_property
@@ -354,7 +367,7 @@ class Model(model_build.Abstract):
             # WARNING: regularization_latent_kl should be ~ 1.0 usually
             ret -= self.regularizer_latent0_kl * config.regularization_latent_kl
         ret += self.latentK_term_obj
-        #ret += self.transformation_term_obj
+        ret += self.transformation_term_obj
         ret.name="elbo_ret"
         return ret
 
@@ -414,6 +427,15 @@ class Model(model_build.Abstract):
         return ret
 
     @utils.cached_property
+    def transformation_u_hats(self):
+        ret = []
+        for l in self.l_transformations_u_hat:
+            o = lasagne.layers.get_output(l,deterministic=False)
+            o.name="transformation_u_hat!!"
+            ret.append(o)
+        return ret
+
+    @utils.cached_property
     def transformation_zs(self):
         ret = []
         for l in self.l_transformations:
@@ -428,11 +450,11 @@ class Model(model_build.Abstract):
         zkminusone = self.latent0_sample_lea
         h = g_transform
         self.aa = []
-        for k,w,b,u,z in zip(
+        for k,w,b,u_hat,z in zip(
                 range(TK),
                 self.transformation_ws,
                 self.transformation_bs,
-                self.transformation_us,
+                self.transformation_u_hats,
                 self.transformation_zs
         ):
             b.name="transformation_b!"
@@ -473,7 +495,7 @@ class Model(model_build.Abstract):
             )
             d,_updates = theano.scan(
                 fn=T.dot,
-                sequences=[u,w]
+                sequences=[u_hat,w]
             )
             d.name="d!"
 
@@ -577,15 +599,184 @@ class Model(model_build.Abstract):
     @utils.cached_property
     def grads_params(self):
         ret = []
+        d = {}
         for curr in self.params:
-            grad = T.grad(self.obj,curr)
+            d[curr.name] = curr
+
+        curr = d["hidden_enc_layer_0.W"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["hidden_enc_layer_0.b"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["latent0_mu.W"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["latent0_mu.b"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["latent0_log_sigma.W"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["latent0_log_sigma.b"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["transformation_w.W"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["transformation_w.b"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["transformation_b.W"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["transformation_b.b"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["transformation_u.W"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["transformation_u.b"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["hidden_dec_layer_mu.W"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["hidden_dec_layer_mu.b"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["out_mu_layer.W"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        curr = d["out_mu_layer.b"]
+        grad = T.grad(self.obj,curr,add_names=True)
+        grad.name = str(curr.name)+"_grad"
+        print("grad.name",grad.name)
+        # filtering first and last layer's gradients according
+        # to which ratings were observed
+        if curr.name in self.all_masks.keys():
+            grad = grad * self.all_masks[curr.name]
+            grad.name = str(curr.name) + "_masked_grad"
+        ret.append(grad)
+        """
+        for curr in self.params:
+            grad = T.grad(self.obj,curr,add_names=True)
+            grad.name = str(curr.name)+"_grad"
+            print("grad.name",grad.name)
 
             # filtering first and last layer's gradients according
             # to which ratings were observed
             if curr.name in self.all_masks.keys():
                 grad = grad * self.all_masks[curr.name]
+                grad.name = str(curr.name) + "_masked_grad"
 
             ret.append(grad)
+            """
         return ret
 
     @utils.cached_property
@@ -738,15 +929,28 @@ def main():
             Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
             tmp = params_update_fn(Ri_mb)
             _loss,_lh,_regkl,_trans = tmp[0:4]
-            _grads = tmp[4:-len(model.all_layers)]
-            _layers_outputs = tmp[-len(model.all_layers):]
 
-            print("_grads")
-            for p,g in zip(model.params,_grads):
-                print(p.name,"g: min",g.min(),"max",g.max(), "val:",p.get_value().min(),p.get_value().max())
-            for l,o in zip(model.all_layers,_layers_outputs):
-                print("layer",l.name,"min",o.min(),"max",o.max())
-            print("_loss:",_loss,"_lh:",_lh,"_regkl:",_regkl,"_trans:",_trans)
+            if getattr(config, "verbose", False):
+                print("_grads")
+                _grads = tmp[4:-len(model.all_layers)]
+                _layers_outputs = tmp[-len(model.all_layers):]
+                do_exit = False
+                for p,g in zip(model.params,_grads):
+                    print(p.name,"g: min",g.min(),"max",g.max(), "val:",p.get_value().min(),p.get_value().max())
+                    if np.isnan(g).any():
+                        print("is nan.")
+                        do_exit = True
+                for l,o in zip(model.all_layers,_layers_outputs):
+                    print("layer",l.name,"min",o.min(),"max",o.max())
+                    if type(o) is scipy.sparse.csr.csr_matrix:
+                        o = o.toarray()
+                    if np.isnan(o).any():
+                        print("is nan.")
+                        do_exit = True
+                if do_exit:
+                    print('was nan')
+                    sys.exit(0)
+                print("_loss:",_loss,"_lh:",_lh,"_regkl:",_regkl,"_trans:",_trans)
             _kls, = marginal_latent0_kl_fn(Ri_mb)
             _out_log_sigmas, = out_log_sigmas_fn(Ri_mb)
             _obj, = obj_fn(Ri_mb)

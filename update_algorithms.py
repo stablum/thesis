@@ -8,9 +8,16 @@ import collections
 lr = config.lr_begin # can be replaced externally, for example by a theano variable
 
 def calculate_lr(t):
+    lr = config.lr_begin
+    warmup_epochs = getattr(config, "warmup_epochs", 3)
+    exp = warmup_epochs-t
+    if exp < 0:
+        exp = 0
+    lr = lr / (10 ** exp)
     # decaying learning rate with annealing
     # see: https://www.willamette.edu/~gorr/classes/cs449/momrate.html
-    ret = config.lr_begin / (
+
+    ret = lr / (
         1. + float(t)/config.lr_annealing_T
     )
     return ret

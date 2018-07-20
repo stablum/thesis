@@ -13,8 +13,9 @@ import update_algorithms
 import config
 
 def tp(x):
-    ret = theano.printing.Print('print '+str(x.name))(x)
-    #ret = x
+    if getattr(config, "verbose", False):
+        ret = theano.printing.Print('print '+str(x.name))(x)
+    ret = x
     return ret
 
 class Abstract(object):
@@ -122,7 +123,8 @@ class Abstract(object):
         self._params_updates = val
 
 def make_function( *args, **kwargs ):
-    kwargs['mode'] = NanGuardMode(nan_is_error=True, inf_is_error=False, big_is_error=False)
+    if config.nanguard == True:
+        kwargs['mode'] = NanGuardMode(nan_is_error=True, inf_is_error=False, big_is_error=False)
     fn = theano.function(*args,**kwargs)
     return fn
 
@@ -291,25 +293,23 @@ class SamplingLayer(lasagne.layers.Layer):
             output_shape = input_shape
         return output_shape
 
-class ILTTLayer(lasagne.layers.base.MergeLayer):
+class ILTTEnforceInvertibilityLayer(lasagne.layers.base.MergeLayer):
     def __init__(self,*args,**kwargs):
         self.dim = kwargs.pop('dim',None)
-        self.nonlinearity = kwargs.pop('nonlinearity',None)
-
-        super(ILTTLayer, self).__init__(*args, **kwargs)
+        super(ILTTEnforceInvertibilityLayer, self).__init__(*args, **kwargs)
 
     def get_output_shape_for(self, input_shape):
         return input_shape[0][:1] + (self.dim,)
 
     def get_output_for(self, inputs, **kwargs):
-        input,w,b,u = inputs
+        w,u = inputs
         wu,_updates = theano.scan(
             fn=T.dot,
             sequences=[w,u]
         )
         wu=wu.dimshuffle(0,'x')
         wu.name="wu"
-        m = lambda x: -1 + T.log(1 + T.exp(x))
+        m = lambda x: -1 + lasagne.nonlinearities.softplus(x)
         ww,_updates = theano.scan(
             fn=T.dot,
             sequences=[w,w]
@@ -321,7 +321,7 @@ class ILTTLayer(lasagne.layers.base.MergeLayer):
         ww_mask.name="ww_mask"
         ww_mask = tp(ww_mask)
         ww = ww_mask*ww + (1-ww_mask)*epsilon # avoid nan division by 0
-        ww.name="ww"
+        ww.name="ww_masked"
         ww = tp(ww)
         w_norm,_updates=theano.scan(
             fn= lambda x,y: x/y,
@@ -334,12 +334,26 @@ class ILTTLayer(lasagne.layers.base.MergeLayer):
         sub.name="sub"
         u_hat = u + sub * w_norm
         u_hat.name="u_hat"
+        return u_hat
+
+class ILTTLayer(lasagne.layers.base.MergeLayer):
+    def __init__(self,*args,**kwargs):
+        self.dim = kwargs.pop('dim',None)
+        self.nonlinearity = kwargs.pop('nonlinearity',None)
+
+        super(ILTTLayer, self).__init__(*args, **kwargs)
+
+    def get_output_shape_for(self, input_shape):
+        return input_shape[0][:1] + (self.dim,)
+
+    def get_output_for(self, inputs, **kwargs):
+        input,w,b,u_hat = inputs
         activation = T.dot(input, w.T)
         activation.name="activation_"+self.name
         if b is not None:
             activation = activation +  b
             activation.name = "activation+b_"+self.name
-        h = self.nonlinearity(activation)
+        h = 1 - self.nonlinearity(activation)
         h.name = "h_"+self.name
         dot = T.dot(h,u_hat)
         dot.name = "dot_"+self.name

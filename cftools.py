@@ -302,7 +302,7 @@ class Log(object):
                 return "{} {}".format(m,s)
         p_stats = meanstd(_predictions,axis=None)
         self("epoch %d"%epoch_nr)
-        self("learning rate: %f"%_lr)
+        self("learning rate: %12.12f"%_lr)
         if config.update_algorithm == 'adam':
             U_adam_m_stats = meanstd([ curr.m for curr in U])
             U_adam_v_stats = meanstd([ curr.v for curr in U])
