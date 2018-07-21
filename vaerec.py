@@ -371,14 +371,15 @@ class Model(model_build.Abstract):
         """
         # WARNING: regression_error_coef should be 0.5!!!
         ret = self.likelihood * config.regression_error_coef
-        if config.regularization_latent_kl > 0. and config.TK == 0:
-            # WARNING: regularization_latent_kl should be ~ 1.0 usually
-            ret -= self.regularizer_latent0_kl * config.regularization_latent_kl
-        if config.TK > 0:
-            nf_term = self.latentK_term_obj
-            nf_term += self.latent0_entropy_term_obj
-            nf_term += self.transformation_term_obj
-            ret += nf_term * config.regularization_latent_kl
+        if config.regularization_latent_kl > 0. :
+            if config.TK == 0:
+                # WARNING: regularization_latent_kl should be ~ 1.0 usually
+                ret -= self.regularizer_latent0_kl * config.regularization_latent_kl
+            else: # TK>0
+                nf_term = self.latentK_term_obj
+                nf_term += self.latent0_entropy_term_obj
+                nf_term += self.transformation_term_obj
+                ret += nf_term * config.regularization_latent_kl
         ret.name="elbo_ret"
         return ret
 
