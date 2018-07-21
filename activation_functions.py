@@ -2,7 +2,7 @@ import theano
 from theano import tensor as T
 import lasagne
 
-safe_log_output_K = 4 #1 #7
+safe_log_output_K = 5 #4 #1 #7
 pseudo_linear_K=20
 
 possible_activations = {
