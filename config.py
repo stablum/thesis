@@ -59,7 +59,7 @@ minibatch_size = 64 #1 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
-nanguard=True
+nanguard=False
 verbose=False
 norm_clip_threshold=10
 
