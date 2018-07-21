@@ -9,12 +9,12 @@ seed=12345
 n_epochs=1000
 
 K=250
-TK=1 #transformation's K (number of nested transformation steps)
+TK=1# transformation's K (number of nested transformation steps)
 hid_dim=1000
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
-regularization_lambda=0#2e+2
+regularization_lambda=0 #2e+2
 regularization_type="L2" # in L1/L2
 regularization_latent_kl=1.0#0#0.5
 input_dropout_p=0.0
@@ -55,13 +55,14 @@ preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 spherical_likelihood = True
 
 chunk_len =64*1024
-minibatch_size = 64 # 8 #1 #2 # 16 # 64
+minibatch_size = 64 #1 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
 nanguard=True
 verbose=False
 norm_clip_threshold=10
+
 if socket.gethostname() in ['playertrackingmobile']:
     # locally
     debug=True
@@ -83,8 +84,6 @@ if optimizer == "debug":
     theano.config.on_unused_input='ignore'
     theano.config.floatX='float32'
     theano.config.warn_float64='raise'
-    theano.config.traceback.limit=30
-    theano.config.traceback.compile_limit=30
     theano.mode="DebugMode"
 
 elif optimizer == "cpu":
