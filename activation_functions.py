@@ -2,6 +2,8 @@ import theano
 from theano import tensor as T
 import lasagne
 
+safe_log_output_K = 1 #7
+
 possible_activations = {
     'sigmoid': T.nnet.sigmoid,
 
@@ -13,7 +15,7 @@ possible_activations = {
     'relu': T.nnet.relu,
     'linear': lasagne.nonlinearities.linear,
     'tanh': lasagne.nonlinearities.tanh,
-    'safe_log_output': lambda x : 7 * lasagne.nonlinearities.tanh(x/7),
+    'safe_log_output': lambda x : safe_log_output_K * lasagne.nonlinearities.tanh(x/safe_log_output_K),
     'pseudo_linear': lambda x : 20 * lasagne.nonlinearities.tanh(x/20)
 }
 
