@@ -14,6 +14,7 @@ possible_activations = {
     'linear': lasagne.nonlinearities.linear,
     'tanh': lasagne.nonlinearities.tanh,
     'safe_log_output': lambda x : 7 * lasagne.nonlinearities.tanh(x/7)
+    'pseudo_linear': lambda x : 20 * lasagne.nonlinearities.tanh(x/20)
 }
 
 def get(name):

@@ -9,7 +9,7 @@ seed=12345
 n_epochs=1000
 
 K=250
-TK=10 # transformation's K (number of nested transformation steps)
+TK=1 # transformation's K (number of nested transformation steps)
 hid_dim=1000
 n_hid_layers=1
 chan_out_dim=K
@@ -44,10 +44,10 @@ validation_set_fraction=0.05
 
 initialization = initializations.normal
 
-g_rij = "linear"
+g_rij = "pseudo_linear"
 g_in = "elu"
 g_hid = "elu"
-g_latent = "linear"
+g_latent = "pseudo_linear"
 g_transform = "sigmoid"
 g_planar="tanh"
 
