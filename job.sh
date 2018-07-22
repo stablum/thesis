@@ -28,6 +28,6 @@ case "$EXTENSION" in
         exit
 esac
 echo INTERPRETER:$INTERPRETER
-#OMP_NUM_THREADS=8 THEANO_FLAGS=mode=FAST_RUN,device=cuda,init_gpu_device=cuda,floatX=float32,nvcc.flags=-D_FORCE_INLINES,print_active_device=True,enable_initial_driver_test=True,warn_float64=raise,force_device=True,assert_no_cpu_op=raise,allow_gc=False $INTERPRETER $@
-THEANO_FLAGS=floatX=float32,warn_float64=raise $INTERPRETER $@
+OMP_NUM_THREADS=8 THEANO_FLAGS=mode=FAST_RUN,device=cuda,init_gpu_device=cuda,floatX=float32,nvcc.flags=-D_FORCE_INLINES,print_active_device=True,enable_initial_driver_test=True,warn_float64=raise,force_device=True,assert_no_cpu_op=raise,allow_gc=False $INTERPRETER $@
+#THEANO_FLAGS=floatX=float32,warn_float64=raise $INTERPRETER $@
 
