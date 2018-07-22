@@ -32,4 +32,4 @@ echo "TIMESTAMP:$TIMESTAMP"
 echo "after submitting the job will sleep for $SLEEPTIME seconds before retrieving outputs"
 #$SSH "module load slurm ; quota -m; cd thesis; bash squeue_details.sh | grep fstablum ; sbatch -J '$@' -o $TIMESTAMP.out -e $TIMESTAMP.err -D . --constraint='$NODETYPE' --time='$AVAILABLEHOURS:00:00' job.sh $@ ; sleep $SLEEPTIME; tail -n 100 -f $TIMESTAMP.out & tail -n 100 -f $TIMESTAMP.err "
  
-$SSH "module load slurm ; quota -m; cd thesis; bash squeue_details.sh | grep fstablum ; sbatch -J '$@' -D . --time='$AVAILABLEHOURS:00:00' job.sh $@ ; sleep $SLEEPTIME "
+$SSH "quota -m; cd thesis; bash squeue_details.sh | grep fstablum ; sbatch -J '$@' -D . --time='$AVAILABLEHOURS:00:00' job.sh $@ ; sleep $SLEEPTIME "
