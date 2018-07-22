@@ -7,13 +7,7 @@
 #### other possibility: -l gpu=C2050
 #### other possibility: -l gpu=GTX480
 
-#module add python/3.3.2
 module add python/3.5.2
-#module add opencl-nvidia/9.0
-#module add cuda91/blas/9.1.85
-#module add cuda91/fft/9.1.85
-#module add cuda91/profiler/9.1.85
-#module add cuda91/toolkit/9.1.85
 source ~/venv5/bin/activate
 cd thesis
 nvidia-smi
@@ -35,5 +29,5 @@ case "$EXTENSION" in
 esac
 echo INTERPRETER:$INTERPRETER
 #OMP_NUM_THREADS=8 THEANO_FLAGS=mode=FAST_RUN,device=cuda,init_gpu_device=cuda,floatX=float32,nvcc.flags=-D_FORCE_INLINES,print_active_device=True,enable_initial_driver_test=True,warn_float64=raise,force_device=True,assert_no_cpu_op=raise,allow_gc=False $INTERPRETER $@
-THEANO_FLAGS=floatX=float32,print_active_device=True,enable_initial_driver_test=True,warn_float64=raise,force_device=True $INTERPRETER $@
+THEANO_FLAGS=floatX=float32,warn_float64=raise $INTERPRETER $@
 
