@@ -9,11 +9,11 @@
 
 #module add python/3.3.2
 module add python/3.5.2
-module add opencl-nvidia/9.0
-module add cuda91/blas/9.1.85
-module add cuda91/fft/9.1.85
-module add cuda91/profiler/9.1.85
-module add cuda91/toolkit/9.1.85
+#module add opencl-nvidia/9.0
+#module add cuda91/blas/9.1.85
+#module add cuda91/fft/9.1.85
+#module add cuda91/profiler/9.1.85
+#module add cuda91/toolkit/9.1.85
 source ~/venv5/bin/activate
 cd thesis
 nvidia-smi
