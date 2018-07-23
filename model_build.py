@@ -22,7 +22,8 @@ def norm_clip_gradient(grad):
     # http://nmarkou.blogspot.com/2017/07/deep-learning-why-you-should-use.html
     norm = grad.norm(2)
     threshold = getattr(config,"norm_clip_threshold",10)
-    coeff = theano.ifelse.ifelse(T.lt(norm,threshold), 1.0, threshold/norm)
+    if threshold not in (0,None):
+        coeff = theano.ifelse.ifelse(T.lt(norm,threshold), 1.0, threshold/norm)
     ret = coeff * grad
     return ret
 

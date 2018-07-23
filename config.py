@@ -44,10 +44,10 @@ validation_set_fraction=0.05
 
 initialization = initializations.normal
 
-g_rij = "pseudo_linear"
+g_rij = "linear"
 g_in = "elu"
 g_hid = "elu"
-g_latent = "pseudo_linear"
+g_latent = "linear"
 g_transform = "sigmoid"
 g_planar="tanh"
 
@@ -61,7 +61,7 @@ regression_type = "item" # in user/item/user+item
 
 nanguard=False
 verbose=False
-norm_clip_threshold=10
+norm_clip_threshold=None
 
 if socket.gethostname() in ['playertrackingmobile']:
     # locally
