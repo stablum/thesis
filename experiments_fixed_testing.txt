@@ -230,7 +230,7 @@
                                     [RUN] like ^^ but autorec (for comparison purposes)
                                     // harvest_autorec_20180625_122221/
                                     (rerun:pseudo_linear)
-                                    // 
+                                    // harvest_autorec_20180723_114300/
                                         [RUN] like ^^ but RProp (the correct learning rate)
                                         // harvest_autorec_20180626_170447/
                                     [RUN] like harvest_vaerec_20180608_231009/ but after speedup (debug)
