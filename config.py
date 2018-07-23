@@ -9,14 +9,14 @@ seed=12345
 n_epochs=1000
 
 K=250
-TK=5 # transformation's K (number of nested transformation steps)
+TK=0 # transformation's K (number of nested transformation steps)
 hid_dim=1000
 n_hid_layers=1
 chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=2e+2
 regularization_type="L2" # in L1/L2
-regularization_latent_kl=1.0#0#0.5
+regularization_latent_kl=0#0#0.5
 input_dropout_p=0.0
 dropout_p=0.0
 batch_normalization=False

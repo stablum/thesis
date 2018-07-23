@@ -225,6 +225,8 @@
                             // harvest_vaerec_20180530_220845/
                                 [RUN] like ^^ but mb=64 D
                                 // harvest_vaerec_20180608_231009/
+                                (rerun)
+                                // 
                                     [RUN] like ^^ but autorec (for comparison purposes)
                                     // harvest_autorec_20180625_122221/
                                         [RUN] like ^^ but RProp (the correct learning rate)
@@ -312,7 +314,7 @@
                                 [RUN] like harvest_vaerec_20180722_170046 but TK=4
                                 // harvest_vaerec_20180723_101311/
                                 [RUN] like harvest_vaerec_20180722_170046 but TK=5
-                                // TODO
+                                // harvest_vaerec_20180723_102959/
                                 [RUN] like harvest_vaerec_20180609_032309/ but lr=2e-5
                                 // harvest_vaerec_20180626_231647/
                                     [RUN] like ^^ but T=10
