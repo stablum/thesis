@@ -225,10 +225,12 @@
                             // harvest_vaerec_20180530_220845/
                                 [RUN] like ^^ but mb=64 D
                                 // harvest_vaerec_20180608_231009/
-                                (rerun)
-                                // 
+                                (rerun:pseudo_linear)
+                                // harvest_vaerec_20180723_110214/
                                     [RUN] like ^^ but autorec (for comparison purposes)
                                     // harvest_autorec_20180625_122221/
+                                    (rerun:pseudo_linear)
+                                    // 
                                         [RUN] like ^^ but RProp (the correct learning rate)
                                         // harvest_autorec_20180626_170447/
                                     [RUN] like harvest_vaerec_20180608_231009/ but after speedup (debug)
@@ -256,11 +258,11 @@
                                             // harvest_vaerec_20180705_135602/
                             [RUN] like harvest_vaerec_20180602_151546/ but mb=64 E
                             // harvest_vaerec_20180609_032309/
-                            (rerun)
+                            (rerun:pseudo_linear)
                             // harvest_vaerec_20180722_170046/
                                 [RUN] like ^^ but l2=0
                                 // harvest_vaerec_20180626_172942/
-                                (rerun)
+                                (rerun:pseudo_linear)
                                 // harvest_vaerec_20180722_171500/
                                     [RUN] like ^^ but lr=2e-5
                                     // harvest_vaerec_20180702_130420/
