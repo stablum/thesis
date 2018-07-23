@@ -211,6 +211,8 @@
                                     // harvest_vaerec_20180723_115919/
                                         [RUN] like ^^ (pseudo_linear) but autorec (comparison purposes)
                                         // harvest_autorec_20180723_120629/
+                                            [RUN] like ^^ but normal linear
+                                            // harvest_autorec_20180723_121327/
                                 [RUN] like harvest_vaerec_20180525_184951/ but mb=64 E
                                 // harvest_vaerec_20180608_224803/
                             [RUN] like harvest_vaerec_20180520_123413 but kl=0 F

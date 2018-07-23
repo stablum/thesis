@@ -24,7 +24,9 @@ def norm_clip_gradient(grad):
     threshold = getattr(config,"norm_clip_threshold",10)
     if threshold not in (0,None):
         coeff = theano.ifelse.ifelse(T.lt(norm,threshold), 1.0, threshold/norm)
-    ret = coeff * grad
+        ret = coeff * grad
+    else:
+        ret = grad
     return ret
 
 class Abstract(object):
