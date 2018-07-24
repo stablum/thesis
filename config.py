@@ -8,7 +8,7 @@ import movielens
 seed=12345
 n_epochs=1000
 
-K=250
+K=500
 TK=0 # transformation's K (number of nested transformation steps)
 hid_dim=1000
 n_hid_layers=1
@@ -16,7 +16,7 @@ chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=2e+2
 regularization_type="L2" # in L1/L2
-regularization_latent_kl=1.0#0#0.5
+regularization_latent_kl=0#0#0.5
 input_dropout_p=0.0
 dropout_p=0.0
 batch_normalization=False
@@ -44,10 +44,10 @@ validation_set_fraction=0.05
 
 initialization = initializations.normal
 
-g_rij = "linear"
+g_rij = "pseudo_linear"
 g_in = "elu"
 g_hid = "elu"
-g_latent = "linear"
+g_latent = "pseudo_linear"
 g_transform = "sigmoid"
 g_planar="tanh"
 
@@ -55,13 +55,13 @@ preprocessing_type = "vanilla" # in 0to1/vanilla/zscore
 spherical_likelihood = True
 
 chunk_len =64*1024
-minibatch_size = 1 # 64 #1 #2 # 16 # 64
+minibatch_size = 64 #1 #2 # 16 # 64
 
 regression_type = "item" # in user/item/user+item
 
 nanguard=False
 verbose=False
-norm_clip_threshold=None
+norm_clip_threshold=10
 
 if socket.gethostname() in ['playertrackingmobile']:
     # locally
