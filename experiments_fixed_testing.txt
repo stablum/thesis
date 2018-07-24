@@ -241,6 +241,10 @@
                                     // harvest_autorec_20180723_114300/
                                         [RUN] like ^^ but RProp (the correct learning rate)
                                         // harvest_autorec_20180626_170447/
+                                        [RUN] like harvest_autorec_20180723_114300 but K=500
+                                        // harvest_autorec_20180723_114300
+                                            [RUN] like ^^ but vaerec
+                                            // harvest_autorec_20180723_114300
                                     [RUN] like harvest_vaerec_20180608_231009/ but after speedup (debug)
                                     // harvest_vaerec_20180626_222758/
                                         [RUN] like ^^ but trying without the training set caching (debug)
