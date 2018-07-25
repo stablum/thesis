@@ -141,14 +141,17 @@ class Model(model_build.Abstract):
             self.l_transformations_w.append(w)
             self.l_transformations_b.append(b)
             self.l_transformations_u.append(u)
-            u_hat = model_build.ILTTEnforceInvertibilityLayer(
-                [
-                    self.l_transformations_w[k],
-                    self.l_transformations_u[k]
-                ],
-                dim=latent_dim,
-                name="ILTTEnforceInvertibilityLayer{}".format(k+1) #1-based displaying
-            )
+            if getattr(config, "enforce_invertibility",True):
+                u_hat = model_build.ILTTEnforceInvertibilityLayer(
+                    [
+                        self.l_transformations_w[k],
+                        self.l_transformations_u[k]
+                    ],
+                    dim=latent_dim,
+                    name="ILTTEnforceInvertibilityLayer{}".format(k+1) #1-based displaying
+                )
+            else:
+                u_hat = u
             self.l_transformations_u_hat.append(u_hat)
 
         self.l_latent0_merge = lasagne.layers.ConcatLayer(

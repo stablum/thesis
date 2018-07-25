@@ -9,7 +9,7 @@ seed=12345
 n_epochs=1000
 
 K=250
-TK=2 # transformation's K (number of nested transformation steps)
+TK=1 # transformation's K (number of nested transformation steps)
 hid_dim=1000
 n_hid_layers=1
 chan_out_dim=K
@@ -62,6 +62,8 @@ regression_type = "item" # in user/item/user+item
 nanguard=False
 verbose=False
 norm_clip_threshold=10
+
+enforce_invertibility=False
 
 if socket.gethostname() in ['playertrackingmobile']:
     # locally
