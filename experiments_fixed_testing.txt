@@ -241,10 +241,14 @@
                                     // harvest_autorec_20180723_114300/
                                         [RUN] like ^^ but RProp (the correct learning rate)
                                         // harvest_autorec_20180626_170447/
-                                        [RUN] like harvest_autorec_20180723_114300 but K=500
+                                        [RUN] like harvest_autorec_20180723_114300 but K=500 # messy tree for comparison autorec-vs-vaerec
                                         // harvest_autorec_20180723_114300
                                             [RUN] like ^^ but vaerec
-                                            // harvest_autorec_20180723_114300
+                                            // harvest_vaerec_20180725_004522
+                                                [RUN] like ^^ but n_hid=2
+                                                // harvest_vaerec_20180725_010335/
+                                                    [RUN] like ^^ but autorec
+                                                    // harvest_vaerec_20180725_004522
                                     [RUN] like harvest_vaerec_20180608_231009/ but after speedup (debug)
                                     // harvest_vaerec_20180626_222758/
                                         [RUN] like ^^ but trying without the training set caching (debug)
@@ -321,8 +325,9 @@
                                     // harvest_vaerec_20180721_195722/
                                 [RUN] like harvest_vaerec_20180722_170046 but TK=1
                                 // harvest_vaerec_20180723_095456/
-                                [RUN] like harvest_vaerec_20180722_170046 but TK=2
                                 // harvest_vaerec_20180723_095101/
+                                [RUN] like harvest_vaerec_20180722_170046 but TK=2
+                                // TODO
                                 [RUN] like harvest_vaerec_20180722_170046 but TK=3
                                 // harvest_vaerec_20180723_100330/
                                 [RUN] like harvest_vaerec_20180722_170046 but TK=4
