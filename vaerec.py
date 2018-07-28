@@ -320,8 +320,12 @@ class Model(model_build.Abstract):
         # the 1/2 coefficient is EXTERNAL to this term,
         # being config.regression_error_coef
         # a.k.a. likelihood!!!
-        term_constant = -self.mask_sum * np.array(2*np.pi).astype('float32')
-        term_constant.name="likelihood_term_constant"
+
+        if getattr(config, "add_constant_terms",True):
+            term_constant = -self.mask_sum * np.array(2*np.pi).astype('float32')
+            term_constant.name="likelihood_term_constant"
+        else:
+            term_constant = 0
         ret = term_constant + self.likelihood_term_logdetsigma + self.likelihood_term_scaled_error
         ret.name = "likelihood_ret"
         ret = model_build.scalar(ret)
@@ -401,8 +405,11 @@ class Model(model_build.Abstract):
 
     @utils.cached_property
     def latentK_term_obj(self):
-        term_constant= - 0.5 * self.mask_sum * np.log(np.array(2*np.pi)).astype('float32')
-        term_constant.name="lK_term_constant"
+        if getattr(config, "add_constant_terms",True):
+            term_constant= - 0.5 * self.mask_sum * np.log(np.array(2*np.pi)).astype('float32')
+            term_constant.name="lK_term_constant"
+        else:
+            term_constant = 0
         lK_squared = self.latentK_lea ** 2
         lK_squared.name = "lK_squared"
         term_l2 = - 0.5 * T.sum(lK_squared)
@@ -415,7 +422,10 @@ class Model(model_build.Abstract):
 
     @utils.cached_property
     def latent0_entropy_term_obj(self):
-        term_constant = 0.5 * self.mask_sum * np.log(np.array(2*np.pi)).astype('float32')
+        if getattr(config, "add_constant_terms",True):
+            term_constant = 0.5 * self.mask_sum * np.log(np.array(2*np.pi)).astype('float32')
+        else:
+            term_constant = 0
         term_dim = 0.5 * latent_dim
         masked_log_sigma = self.latent0_log_sigma_lea
         term_logdetsigma = 0.5 * T.sum(masked_log_sigma)

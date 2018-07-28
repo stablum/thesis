@@ -307,22 +307,32 @@
                                     // harvest_vaerec_20180722_220940/
                                         [RUN] like ^^ but enforce_invertibility=False
                                         // harvest_vaerec_20180725_123951/
+                                        [RUN] like harvest_vaerec_20180722_220940 but kl=0
+                                        // TODO
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=2
                                     // harvest_vaerec_20180721_192824/
                                         [RUN] like ^^ but enforce_invertibility=False
                                         // harvest_vaerec_20180725_124139/
+                                        [RUN] like harvest_vaerec_20180721_192824 but kl=0
+                                        // TODO
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=3
                                     // harvest_vaerec_20180721_193214/
                                         [RUN] like ^^ but enforce_invertibility=False
                                         // harvest_vaerec_20180725_124325/
+                                        [RUN] like harvest_vaerec_20180721_193214 but kl=0
+                                        // TODO
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=4
                                     // harvest_vaerec_20180721_193419/
                                         [RUN] like ^^ but enforce_invertibility=False
                                         // harvest_vaerec_20180725_124446/
+                                        [RUN] like harvest_vaerec_20180721_193419 but kl=0
+                                        // TODO
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=5
                                     // harvest_vaerec_20180721_193859/
                                         [RUN] like ^^ but enforce_invertibility=False
                                         // harvest_vaerec_20180725_124615/
+                                        [RUN] like harvest_vaerec_20180721_193859 but kl=0
+                                        // TODO
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=6
                                     // harvest_vaerec_20180721_195035/
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=7
@@ -338,13 +348,19 @@
                                 // harvest_vaerec_20180723_095101/
                                     [RUN] like ^^ but enforce_invertibility=False
                                     // harvest_vaerec_20180725_120922/
+                                    [RUN] like harvest_vaerec_20180723_095101 but kl=0
+                                    // TODO
                                 [RUN] like harvest_vaerec_20180722_170046 but TK=2
                                 // harvest_vaerec_20180725_115007/
                                     [RUN] like ^^ but enforce_invertibility=False
                                     // harvest_vaerec_20180725_145829/
+                                    [RUN] like harvest_vaerec_20180725_115007 but kl=0
+                                    // TODO
                                 [RUN] like harvest_vaerec_20180722_170046 but TK=3
                                 // harvest_vaerec_20180723_100330/
                                     [RUN] like ^^ but enforce_invertibility=False
+                                    // harvest_vaerec_20180725_151019/
+                                    [RUN] like harvest_vaerec_20180723_100330 but kl=0
                                     // TODO
                                 [RUN] like harvest_vaerec_20180722_170046 but TK=4
                                 // harvest_vaerec_20180723_101311/
@@ -352,10 +368,14 @@
                                     // harvest_vaerec_20180725_121351/
                                     // harvest_vaerec_20180725_121504/
                                     // harvest_vaerec_20180725_121629/
+                                    [RUN like harvest_vaerec_20180723_101311 but kl=0
+                                    // TODO
                                 [RUN] like harvest_vaerec_20180722_170046 but TK=5
                                 // harvest_vaerec_20180723_102959/
                                     [RUN] like ^^ but enforce_invertibility=False
                                     // harvest_vaerec_20180725_122004/
+                                    [RUN] like harvest_vaerec_20180723_102959 but kl=0
+                                    // TODO
                                 [RUN] like harvest_vaerec_20180609_032309/ but lr=2e-5
                                 // harvest_vaerec_20180626_231647/
                                     [RUN] like ^^ but T=10
@@ -467,6 +487,25 @@ TODOS 2/07/2018
     - and this could be combined with higher learning rate
 - T=10 with best model with lr=2e-7
 
+TODOS TEX
+T 27/07/2018
+---------------------
+
+-VAEREC in method section (1.4, 1.5 in section 2)
+- background section ( should be chapter 2): variational inference, VAE, flows
+- did I describe recommender systems properly in introduction?
+- variational inference in backround section
+- section 4 related work
+- section 5 experiments
+- section 6 conclusion/discussion/future work
+- norm gradient clipping: cite url
+- plots of obj functions/elbo
+- acknowledgments : Chris, Max, DAS4 (cite)
+
+IMPL:
+    - annealing of kl
+    - kl=0 flows
+    - real nvp
 
 FOR LATER:
 ----------
