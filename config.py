@@ -9,7 +9,7 @@ seed=12345
 n_epochs=1000
 
 K=250
-TK=4 # transformation's K (number of nested transformation steps)
+TK=5 # transformation's K (number of nested transformation steps)
 enforce_invertibility=True
 hid_dim=1000
 n_hid_layers=1
