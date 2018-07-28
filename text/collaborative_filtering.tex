@@ -1,4 +1,4 @@
-\section{Basic Collaborative Filtering techniques}
+\section{Collaborative Filtering}
 
 \emph{Collaborative Filtering}\cite{Bobadilla2013} is a recomendation system 
 technique apt to predict user-item ratings solely via the sparse 
@@ -9,73 +9,3 @@ by having similar ratings on the same items.
 Hence, it's possible to predict a missing rating of a user to an item
 by considering the ratings of the users that are similar to him.
 
-\subsection{Probabilistic Matrix Factorization}
-\emph{Probabilistic Matrix Factorization}\cite{salakhutdinov2008a}
-is dimensionality-reduction technique for the CF problem
-that learns a matrix factorization of \emph{R}
-into two low-dimensional factor matrices
-$U \in R^{D \times N}$ and $V \in R^{D\times M}$
-where $D$ is the size of the low dimensionality.
-Hence, $R = \transpose{U}V$.
-
-The learning algorithm is based on a probabilistic assumption:
-\begin{nalign}
-p(R|U,V,\sigma^2) =
-\prodiN
-\prodjM
-\left[
-\normal{\Rij}{\Uit \Vj}{\sigma^2}
-\right]^{\Iij}
-\end{nalign}
-
-Here $\Iij$ is $0$ if the $\Rij$ is not set and is $1$ if it is set.
-
-In PMF, the log-likelihood is a sum of terms, each dependent on 
-a specific user and item with $\Iij=1$.
-This allows for SGD-like updates of the vectors $\Ui$ and $\Vj$
-that are progressively refined trough the iterations.
-
-\subsection{AutoRec}
-
-\emph{AutoRec} \cite{Sedhain2015}, differently from
-PMF, does not store learned latent vectors,
-but is able to produce them on-the-fly via
-an encoder-decoder neural network architecture.
-
-This model is particularly interesting as a single query 
-with an entire sparse ratings vector
-results in all the missing ratings to be estimated at once.
-
-The missing ratings are not provided to the encoder
-but an estimation of those is nevertheless being provided
-by the decoder, making use of the ``lossy compression''
-capabilities of an autoencoder with low dimensional bottleneck layer.
-
-The loss function is hence the error
-between the user (or item) vector $\boldr$ and its reconstruction, 
-but considering, via element-wise 
-multiplication $\odot$ with the vector mask $\mask$,
-only the existing ratings, otherwise the learning would be incorrectly
-taking account of the 0 placeholders for the missing ratings in the sparse matrix:
-
-\begin{nalign}
-\min \sum_{k} 
-    \ltwonorm{
-    \left[\boldrk - \Dec{\Enc{\boldrk}} \right]
-    \odot
-    \maskk
-}
-\end{nalign}
-
-Even with this model, the sum allows for SGD-like updates.
-
-\subsection{Matrix Factorizing Variational Autoencoder}
-\emph{MFVA} \cite{vanBaalen2016} makes use of the findings in \cite{1312.6114}:
-variational autoencoders are being used in order to yield
-posterior distributions approximations as diagonal Gaussians 
-$\qui$ and $\qvj$.
-
-The decoder/recognition functions that have been used, differently from AutoRec,
-output the single $\rij$ rating. A dot-product between $\boldui$ and $\boldvj$
-as well as MLP have been employed for the task, with $\rij$ being
-either expressed with a Gaussian distribution or with a multinomial distribution.

@@ -24,3 +24,7 @@
 \end{nalign}
 
 $s(\cdot)$ can be any dimensionality-preserving nonlinear function, such as a neural network with nonlinear activations. $a(\cdot)$ is an affine transformation.
+
+The main advantage of using such transformations is that the Jacobian matrix is triangular,
+and its determinant ends up being $\exp\left(\sum_j s(\boldz_{1:d})_j \right)$ 
+

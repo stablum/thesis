@@ -487,19 +487,19 @@ TODOS 2/07/2018
     - and this could be combined with higher learning rate
 - T=10 with best model with lr=2e-7
 
-TODOS TEX T 27/07/2018
+TODOS TEXT 27/07/2018
 ---------------------
 
--VAEREC in method section (1.4, 1.5 in section 2)
+V VAEREC in method section (1.4, 1.5 in section 2)
 - background section ( should be chapter 2): variational inference, VAE, flows
 - did I describe recommender systems properly in introduction?
 - variational inference in backround section
-- section 4 related work
-- section 5 experiments
-- section 6 conclusion/discussion/future work
+V section 4 related work
+V section 5 experiments
+V section 6 conclusion/discussion/future work
 V norm gradient clipping: cite url
 - plots of obj functions/elbo
-- acknowledgments : Chris, Max, DAS4 (cite)
+V acknowledgements : Chris, Max, DAS4 (cite), Defense Committee
 - write about kl annealing and find cite
 
 IMPL:
