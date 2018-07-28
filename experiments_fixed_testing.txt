@@ -42,7 +42,7 @@
                         [RUN] 08/01/2017 like ^^ but with lr=2e-5
                         // harvest_vaerec_20180108_172722/
                 [RUN] 25/04/2018 like harvest_vaerec_20171229_142617/ but with free_nats=2
-                // harvest_vaerec_20180425_021628/harvest_vaerec_20171231_092357
+                // harvest_vaerec_20180425_021628/
                 [RUN] 25/04/2018 like harvest_vaerec_20171229_142617/ but with free_nats=4
                 // harvest_vaerec_20180425_022215/
                 [RUN] 25/04/2018 like harvest_vaerec_20171229_142617/ but with free_nats=10000
@@ -504,8 +504,9 @@ V acknowledgements : Chris, Max, DAS4 (cite), Defense Committee
 
 IMPL:
     - annealing of kl
-    - kl=0 flows
+    V kl=0 flows
     - real nvp
+    - since flows are underfitting, try larger learning rate
 
 FOR LATER:
 ----------
