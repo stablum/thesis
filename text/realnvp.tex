@@ -1,0 +1,26 @@
+\section{RealNVP invertible transformations}
+
+\cite{RealNVP} introduced a very simple invertible function of the form:
+
+\begin{nalign}
+\left\{ 
+    \begin{array}{ll}
+    t(\boldz)_{1:d} &= \boldz_{1:d}
+    \\
+    t(\boldz)_{d+1:D} &= \boldz_{d+1:D}\odot \exp\left(s(\boldz_{1:d})\right) + a(\boldz_{1:d})
+    \end{array}
+\right.
+\end{nalign}
+
+    The inverse can be trivially obtained as:
+
+\begin{nalign}
+\left\{
+    \begin{array}{ll}
+    \boldz_{1:d} & = t(\boldz)_{1:d}\\
+    \boldz_{d+1:D} &= \left( t(\boldz)_{1:d} - a(\boldz_{1:d}) \right) \underbrace{\oslash \exp(s(t(\boldz_{1:d})))}_{\odot \exp(-s(t(\boldz_{1:d})))}
+    \end{array}
+\right.
+\end{nalign}
+
+$s(\cdot)$ can be any dimensionality-preserving nonlinear function, such as a neural network with nonlinear activations. $a(\cdot)$ is an affine transformation.
