@@ -308,7 +308,7 @@
                                         [RUN] like ^^ but enforce_invertibility=False
                                         // harvest_vaerec_20180725_123951/
                                         [RUN] like harvest_vaerec_20180722_220940 but kl=0
-                                        // TODO
+                                        // harvest_vaerec_20180728_150656/
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=2
                                     // harvest_vaerec_20180721_192824/
                                         [RUN] like ^^ but enforce_invertibility=False
@@ -498,7 +498,7 @@ T 27/07/2018
 - section 4 related work
 - section 5 experiments
 - section 6 conclusion/discussion/future work
-- norm gradient clipping: cite url
+V norm gradient clipping: cite url
 - plots of obj functions/elbo
 - acknowledgments : Chris, Max, DAS4 (cite)
 
