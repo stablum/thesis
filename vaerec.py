@@ -653,7 +653,7 @@ class Model(model_build.Abstract):
     def transformation_term_obj_realnvp(self):
         logdetJ = 0
         for k in range(TK):
-            logdetJ += T.sum(self.l_transformations_s_masked_lea[k],axis=1)
+            logdetJ += T.sum(self.l_transformations_s_masked_lea[k])
         return logdetJ
 
     @utils.cached_property
