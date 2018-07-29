@@ -281,6 +281,58 @@ class MaskedDenseLayer(lasagne.layers.dense.DenseLayer):
         ret.name = "ret_"+self.name
         return ret
 
+class MaskLayer(lasagne.layers.Layer):
+    def __init__(self,*args,**kwargs):
+        self.dim = kwargs.pop('dim')
+        self.mask = kwargs.pop('mask') # should be 0/1 numpy array
+        super(MaskLayer,self).__init__(*args, **kwargs)
+
+    def get_output_for(self,input, **kwargs):
+        ret,_ = theano.scan(
+            fn=lambda z: T.mul(z, self.mask),
+            sequences=[input]
+        )
+        ret.name = "ret_"+self.name
+        return ret
+
+    def get_output_shape_for(self, input_shape):
+        if self.dim is not None:
+            output_shape = (input_shape[0], self.dim)
+        else:
+            output_shape = input_shape
+        return output_shape
+
+class ProducedDenseLayer(lasagne.layers.MergeLayer):
+    def __init__(self, *args,**kwargs):
+        self.dim = kwargs.pop('dim')
+        self.nonlinearity = kwargs.pop('nonlinearity')
+
+        super(ProducedDenseLayer,self).__init__(*args,**kwargs)
+
+    def get_output_for(self, inputs, **kwargs):
+        input,ws,bs = inputs
+        ws_reshaped,_ = theano.scan(
+            fn = lambda curr : curr.reshape((self.dim,self.dim),ndim=2),
+            sequences = [ws]
+        )
+        dots,_ = theano.scan(
+            fn = lambda z,w : T.dot(z,w),
+            sequences = [input, ws_reshaped]
+        )
+        activations,_ = theano.scan(
+            fn = lambda d,b : d+b,
+            sequences = [dots,bs]
+        )
+        ret = self.nonlinearity(activations)
+        return ret
+
+    def get_output_shape_for(self, input_shape):
+        if self.dim is not None:
+            output_shape = (input_shape[0][0], self.dim)
+        else:
+            output_shape = input_shape
+        return output_shape
+
 class SamplingLayer(lasagne.layers.Layer):
 
     def __init__(self, *args, **kwargs):

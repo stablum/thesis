@@ -411,6 +411,18 @@
     [RUN] 05/05/2018 like ^^ but TK=10
     // harvest_vaerec_20180505_225149/
 
+[RUN] 29/07/2018 VaeREC lr=2e-6, K=5, l2=0
+// TODO
+    [RUN] like ^^ but elu-RealMVP TK=1
+    // TODO 
+    [RUN] like ^^ but elu-RealMVP TK=2
+    // TODO 
+    [RUN] like ^^ but elu-RealMVP TK=3
+    // TODO 
+    [RUN] like ^^ but elu-RealMVP TK=4
+    // TODO 
+    [RUN] like ^^ but elu-RealMVP TK=5
+    // TODO 
 DONES
 -----
 V report nan results in the summarizer

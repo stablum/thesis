@@ -247,6 +247,7 @@ class Log(object):
         self("g_rij:",config.g_rij)
         self("g_hid:",config.g_hid)
         self("g_transform:",config.g_transform)
+        self("g_flow",config.g_flow)
         self("regularization_lambda:",config.regularization_lambda)
         self("dropout_p:",config.dropout_p)
         self("input_dropout_p:",config.input_dropout_p)
@@ -258,6 +259,8 @@ class Log(object):
         self("preprocessing_type:",config.preprocessing_type)
         self("regularization_type:",config.regularization_type)
         self("free_nats:",config.free_nats)
+        self("flow_type:",config.flow_type)
+        self("enforce_invertibility",config.enforce_invertibility)
         for k,v in log_params.items():
             self(k+":",v)
 

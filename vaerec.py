@@ -41,7 +41,7 @@ g_latent = activation_functions.get(config.g_latent)
 g_hid = activation_functions.get(config.g_hid)
 g_log_sigma = activation_functions.get("safe_log_output")
 g_transform = activation_functions.get(config.g_transform)
-g_planar = activation_functions.get(config.g_planar)
+g_flow = activation_functions.get(config.g_flow)
 weights_regularization = regularization.get(config.regularization_type)
 sigma = 1.
 sigma_u = 100.
@@ -52,7 +52,8 @@ chan_out_dim = config.chan_out_dim
 hid_dim = config.hid_dim
 latent_dim = config.K
 TK=config.TK
-
+flow_type = getattr(config,"flow_type","planar")
+enforce_invertibility = getattr(config, "enforce_invertibility",True)
 log = lambda *args,**kwargs : print(*args,**kwargs)
 
 class Model(model_build.Abstract):
@@ -64,6 +65,15 @@ class Model(model_build.Abstract):
 
         self.Ri_mb_sym = theano.sparse.csr_matrix(name='Ri_mb',dtype='float32')
         self.make_net()
+
+    def create_new_realnvp_mask(self):
+        cutpoint=float(latent_dim)/2
+        ones = np.ones((np.floor(cutpoint).astype('int'),))
+        zeros = np.zeros((np.ceil(cutpoint).astype('int'),))
+        m = np.concatenate([ones,zeros])
+        np.random.shuffle(m)
+        m = m.astype('float32')
+        return m
 
     def input_dropout(self, layer):
         if config.input_dropout_p > 0:
@@ -116,10 +126,16 @@ class Model(model_build.Abstract):
         self.l_transformations_b = []
         self.l_transformations_u = []
         self.l_transformations_u_hat = []
+        self.l_transformations_masks = []
         for k in range(TK):
+            if flow_type == "planar":
+                w_output_dim = latent_dim
+            elif flow_type =="realnvp":
+                w_output_dim = latent_dim**2
+
             w = latent0_layer_type(
                 self.l_hid_enc,
-                num_units=latent_dim,
+                num_units=w_output_dim,
                 num_leading_axes=num_leading_axes,
                 nonlinearity=g_latent,
                 name="transformation_w"
@@ -140,20 +156,24 @@ class Model(model_build.Abstract):
             )
             self.l_transformations_w.append(w)
             self.l_transformations_b.append(b)
-            self.l_transformations_u.append(u)
-            if getattr(config, "enforce_invertibility",True):
-                u_hat = model_build.ILTTEnforceInvertibilityLayer(
-                    [
-                        self.l_transformations_w[k],
-                        self.l_transformations_u[k]
-                    ],
-                    dim=latent_dim,
-                    name="ILTTEnforceInvertibilityLayer{}".format(k+1) #1-based displaying
-                )
+            if flow_type == "planar":
+                self.l_transformations_u.append(u)
+                if enforce_invertibility == True:
+                    u_hat = model_build.ILTTEnforceInvertibilityLayer(
+                        [
+                            self.l_transformations_w[k],
+                            self.l_transformations_u[k]
+                        ],
+                        dim=latent_dim,
+                        name="ILTTEnforceInvertibilityLayer{}".format(k+1) #1-based displaying
+                    )
+                else:
+                    u_hat = u
+                self.l_transformations_u_hat.append(u_hat)
+            elif flow_type == "realnvp":
+                pass
             else:
-                u_hat = u
-            self.l_transformations_u_hat.append(u_hat)
-
+                raise Exception("don't understand flow_type="+flow_type)
         self.l_latent0_merge = lasagne.layers.ConcatLayer(
             [
                 self.l_latent0_mu,
@@ -168,21 +188,53 @@ class Model(model_build.Abstract):
         )
 
         self.l_transformations = []
+        self.l_transformations_s_masked = []
         l_prev = self.l_latent0_sampling
         for k in range(TK):
-            l = model_build.ILTTLayer(
-                [
-                    l_prev,
-                    self.l_transformations_w[k],
-                    self.l_transformations_b[k],
-                    self.l_transformations_u_hat[k]
-                ],
-                dim=latent_dim,
-                name="ILTT{}".format(k+1), #1-based displaying
-                nonlinearity=g_planar
-            )
-            l_prev = l
+            if flow_type == "planar":
+                l = model_build.ILTTLayer(
+                    [
+                        l_prev,
+                        self.l_transformations_w[k],
+                        self.l_transformations_b[k],
+                        self.l_transformations_u_hat[k]
+                    ],
+                    dim=latent_dim,
+                    name="ILTT{}".format(k+1), #1-based displaying
+                    nonlinearity=g_flow
+                )
+                l_prev = l
+            elif flow_type == "realnvp":
+                m = self.create_new_realnvp_mask()
+                self.l_transformations_masks.append(m)
+                m1 = m # first half
+                m2 = 1-m # second half
+                l_z_first_half = model_build.MaskLayer(l_prev,mask=m1,dim=latent_dim,name="MaskLayer_first_half_{}".format(k))
+                l_z_second_half = model_build.MaskLayer(l_prev,mask=m2,dim=latent_dim,name="MaskLayer_second_half_{}".format(k))
+                l_s = model_build.ProducedDenseLayer(
+                    [
+                        l_z_first_half,
+                        self.l_transformations_w[k],
+                        self.l_transformations_b[k]
+                    ],
+                    dim=latent_dim,
+                    name="ProducedDenseLayer{}".format(k),
+                    nonlinearity=g_flow
+                )
+                l_s_masked = model_build.MaskLayer(l_s,mask=m2,dim=latent_dim,name="s_masked_{}".format(k))
+                self.l_transformations_s_masked.append(l_s_masked)
+                l_s_exp = lasagne.layers.ExpressionLayer(l_s_masked, T.exp,name="s_exp_{}".format(k))
+                l = lasagne.layers.ElemwiseMergeLayer(
+                    [
+                        l_z_second_half,
+                        l_s_exp
+                    ],
+                    T.mul,
+                    name = "realnvp_{}".format(k)
+                )
+
             self.l_transformations.append(l)
+
 
         if len(self.l_transformations) == 0:
             self.l_transformation_last = self.l_latent0_sampling
@@ -482,6 +534,16 @@ class Model(model_build.Abstract):
 
     @utils.cached_property
     def transformation_term_obj(self):
+        global flow_type
+        if flow_type == 'planar':
+            return self.transformation_term_obj_planar
+        elif flow_type == 'realnvp':
+            return self.transformation_term_obj_realnvp
+        else:
+            raise Exception("don't understand flow_type="+flow_type)
+
+    @utils.cached_property
+    def transformation_term_obj_planar(self):
         ret = T.constant(0).astype('float32')
         zkminusone = self.latent0_sample_lea
         h = g_transform
@@ -545,6 +607,20 @@ class Model(model_build.Abstract):
         ret.name = "transformation_term_obj"
         ret = model_build.scalar(T.sum(ret))
         return ret
+
+    @utils.cached_property
+    def transformation_term_obj_realnvp(self):
+        logdetJ = 0
+        for k in range(TK):
+            logdetJ += T.sum(self.l_transformations_s_masked_lea[k],axis=1)
+        return logdetJ
+
+    @utils.cached_property
+    def l_transformations_s_masked_lea(self):
+        ret = []
+        for curr in self.l_transformations_s_masked:
+            ret.append(lasagne.layers.get_output(curr,deterministic=False))
+            return ret
 
     @utils.cached_property
     def out_mu_lea(self):
