@@ -507,6 +507,8 @@ IMPL:
     V kl=0 flows
     - real nvp
     - since flows are underfitting, try larger learning rate
+    - since flows are underfitting, increase number of hidden layers
+    - difficulty in learning? maybe K is too high
 
 FOR LATER:
 ----------
