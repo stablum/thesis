@@ -7,7 +7,7 @@
     \begin{array}{ll}
     t(\boldz)_{1:d} &= \boldz_{1:d}
     \\
-    t(\boldz)_{d+1:D} &= \boldz_{d+1:D}\odot \exp\left(s(\boldz_{1:d})\right) + a(\boldz_{1:d})
+    t(\boldz)_{d+1:K} &= \boldz_{d+1:K}\odot \exp\left(s(\boldz_{1:d})\right) + a(\boldz_{1:d})
     \end{array}
 \right.
 \end{nalign}
@@ -18,13 +18,45 @@
 \left\{
     \begin{array}{ll}
     \boldz_{1:d} & = t(\boldz)_{1:d}\\
-    \boldz_{d+1:D} &= \left( t(\boldz)_{1:d} - a(\boldz_{1:d}) \right) \underbrace{\oslash \exp(s(t(\boldz_{1:d})))}_{\odot \exp(-s(t(\boldz_{1:d})))}
+    \boldz_{d+1:K} &= \left( t(\boldz)_{1:d} - a(\boldz_{1:d}) \right) \underbrace{\oslash \exp(s(t(\boldz_{1:d})))}_{\odot \exp(-s(t(\boldz_{1:d})))}
     \end{array}
 \right.
 \end{nalign}
 
 $s(\cdot)$ can be any dimensionality-preserving nonlinear function, such as a neural network with nonlinear activations. $a(\cdot)$ is an affine transformation.
+In this work's implementation $d$ is set $d = K/2$. 
 
 The main advantage of using such transformations is that the Jacobian matrix is triangular,
 and its determinant ends up being $\exp\left(\sum_j s(\boldz_{1:d})_j \right)$ 
 
+
+\subsection{Masking}
+
+To ease the implementation, the selection of the first and second parts of $\boldz$
+have been implemented with random masks. These masks are unique for each transformation
+step, and are computed as follows:
+
+\begin{algorithm}[H]
+\caption{Half-full random masks for RealNVP transformations}
+\begin{algorithmic}[1]
+
+\REQUIRE ~~\\
+(1) Latent dimensionality $K$ \\
+(2) Number of transformation steps $k$
+\ENSURE~~\\
+(1) Random masks $\boldm_1 \ldots \boldm_k$ which have half of their elements set at $1$
+`
+\item[]
+\FOR{$i \in \{1 \ldots k\}$}
+\STATE $(\mathbf{a})_j \leftarrow \left\{\begin{array}{ll} 1 & j < K/2 \\ 0 & K/2 \leq i < K\end{array}\right.$
+\STATE $\boldm_i = \mathrm{shuffle}(\mathbf{a})$
+\ENDFOR
+\RETURN $\boldm_1 \ldots \boldm_k$
+\end{algorithmic}
+\end{algorithm}
+                                         
+The invertible function, for a transformation step $i$, is hence implemented as:
+
+\begin{nalign}
+    \boldz_{i+1} &= \boldz_i\odot\boldm_i + (1-\boldm_i)\odot\left[\boldz_i \odot \exp\left(s(\boldm_i\odot\boldz)\right) + a(\boldm_i\odot\boldz)\right]
+\end{nalign}
