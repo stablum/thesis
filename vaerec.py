@@ -275,8 +275,7 @@ class Model(model_build.Abstract):
                     name="realnvp_{}".format(k)
                 )
 
-            self.l_transformations.append(l_zt_second_half)
-
+            self.l_transformations.append(l)
 
         if len(self.l_transformations) == 0:
             self.l_transformation_last = self.l_latent0_sampling
