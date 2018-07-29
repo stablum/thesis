@@ -16,7 +16,7 @@ elif test $(date +%u) -eq 6 ; then
 else
     PLUS=0
 fi
-$BONUS=240
+BONUS=240
 # kill the job before 9 AM
 AVAILABLEHOURS=$(expr \( 24 + 8 - $(date +%H) \) % 24 + $PLUS + $BONUS)
 echo "AVAILABLEHOURS:$AVAILABLEHOURS"
