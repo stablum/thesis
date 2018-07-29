@@ -9,9 +9,9 @@ seed=12345
 n_epochs=1000
 
 K=5
-TK=5 # transformation's K (number of nested transformation steps)
+TK=1 # transformation's K (number of nested transformation steps)
 enforce_invertibility=True
-flow_type="realnvp"
+flow_type="planar"
 g_flow="tanh"
 hid_dim=1000
 n_hid_layers=1
