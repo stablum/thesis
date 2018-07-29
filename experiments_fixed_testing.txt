@@ -426,9 +426,9 @@
     [RUN] like ^^ but PlanarNF TK=1
     // harvest_vaerec_20180730_010256/
     [RUN] like ^^ but PlanarNF TK=2
-    // TODO
+    // harvest_vaerec_20180730_011107/
     [RUN] like ^^ but PlanarNF TK=3
-    // TODO
+    // harvest_vaerec_20180730_011713/
     [RUN] like ^^ but PlanarNF TK=4
     // TODO
     [RUN] like ^^ but PlanarNF TK=5
