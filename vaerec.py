@@ -124,6 +124,8 @@ class Model(model_build.Abstract):
 
         self.l_transformations_w = []
         self.l_transformations_b = []
+        self.l_transformations_aw = []
+        self.l_transformations_ab = []
         self.l_transformations_u = []
         self.l_transformations_u_hat = []
         self.l_transformations_masks = []
@@ -171,7 +173,22 @@ class Model(model_build.Abstract):
                     u_hat = u
                 self.l_transformations_u_hat.append(u_hat)
             elif flow_type == "realnvp":
-                pass
+                aw = latent0_layer_type(
+                    self.l_hid_enc,
+                    num_units=w_output_dim,
+                    num_leading_axes=num_leading_axes,
+                    nonlinearity=g_latent,
+                    name="transformation_w"
+                )
+                ab = latent0_layer_type(
+                    self.l_hid_enc,
+                    num_units=latent_dim,
+                    num_leading_axes=num_leading_axes,
+                    nonlinearity=g_latent,
+                    name="transformation_b"
+                )
+                self.l_transformations_aw.append(aw)
+                self.l_transformations_ab.append(ab)
             else:
                 raise Exception("don't understand flow_type="+flow_type)
         self.l_latent0_merge = lasagne.layers.ConcatLayer(
@@ -224,16 +241,41 @@ class Model(model_build.Abstract):
                 l_s_masked = model_build.MaskLayer(l_s,mask=m2,dim=latent_dim,name="s_masked_{}".format(k))
                 self.l_transformations_s_masked.append(l_s_masked)
                 l_s_exp = lasagne.layers.ExpressionLayer(l_s_masked, T.exp,name="s_exp_{}".format(k))
-                l = lasagne.layers.ElemwiseMergeLayer(
+                l_zt_second_half = lasagne.layers.ElemwiseMergeLayer(
                     [
                         l_z_second_half,
                         l_s_exp
                     ],
                     T.mul,
-                    name = "realnvp_{}".format(k)
+                    name = "zt_second_half_{}".format(k)
+                )
+                l_a = model_build.ProducedDenseLayer(
+                    [
+                        l_z_first_half,
+                        self.l_transformations_aw[k],
+                        self.l_transformations_ab[k]
+                    ],
+                    dim=latent_dim,
+                    name="Affine{}".format(k),
+                    nonlinearity=lasagne.nonlinearities.linear
+                )
+                l_a_mask = model_build.MaskLayer(
+                    l_a,
+                    mask=m2,
+                    dim=latent_dim,
+                    name="l_a_mask_{}".format(k)
+                )
+                l = lasagne.layers.ElemwiseMergeLayer(
+                    [
+                        l_z_first_half,
+                        l_zt_second_half,
+                        l_a_mask
+                    ],
+                    T.add,
+                    name="realnvp_{}".format(k)
                 )
 
-            self.l_transformations.append(l)
+            self.l_transformations.append(l_zt_second_half)
 
 
         if len(self.l_transformations) == 0:

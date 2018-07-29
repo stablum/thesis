@@ -413,16 +413,17 @@
 
 [RUN] 29/07/2018 VaeREC lr=2e-6, K=5, l2=0
 // TODO
-    [RUN] like ^^ but elu-RealMVP TK=1
+    [RUN] like ^^ but RealNVP-sa TK=1
     // TODO 
-    [RUN] like ^^ but elu-RealMVP TK=2
+    [RUN] like ^^ but RealNVP-sa TK=2
     // TODO 
-    [RUN] like ^^ but elu-RealMVP TK=3
+    [RUN] like ^^ but RealNVP-sa TK=3
     // TODO 
-    [RUN] like ^^ but elu-RealMVP TK=4
+    [RUN] like ^^ but RealNVP-sa TK=4
     // TODO 
-    [RUN] like ^^ but elu-RealMVP TK=5
+    [RUN] like ^^ but RealNVP-sa TK=5
     // TODO 
+
 DONES
 -----
 V report nan results in the summarizer
