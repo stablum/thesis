@@ -662,7 +662,7 @@ class Model(model_build.Abstract):
         ret = []
         for curr in self.l_transformations_s_masked:
             ret.append(lasagne.layers.get_output(curr,deterministic=False))
-            return ret
+        return ret
 
     @utils.cached_property
     def out_mu_lea(self):
