@@ -309,6 +309,10 @@
                                         // harvest_vaerec_20180725_123951/
                                         [RUN] like harvest_vaerec_20180722_220940 but kl=0
                                         // harvest_vaerec_20180728_150656/
+                                            [RUN] like ^^ but lr=2e-6
+                                            // harvest_vaerec_20180729_102227/
+                                            [RUN] like harvest_vaerec_20180728_150656 but K=5
+                                            // 
                                     [RUN] like harvest_vaerec_20180626_172942 but TK=2
                                     // harvest_vaerec_20180721_192824/
                                         [RUN] like ^^ but enforce_invertibility=False
@@ -506,7 +510,7 @@ IMPL:
     - annealing of kl
     V kl=0 flows
     - real nvp
-    - since flows are underfitting, try larger learning rate
+    V since flows are underfitting, try larger learning rate
     - since flows are underfitting, increase number of hidden layers
     - difficulty in learning? maybe K is too high
 
