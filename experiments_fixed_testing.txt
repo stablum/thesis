@@ -414,7 +414,7 @@
 [RUN] 29/07/2018 VaeREC lr=2e-6, K=5, l2=0, kl=0
 // harvest_vaerec_20180730_092307/
     [RUN] like ^^ but kl=1
-    // TODO
+    // harvest_vaerec_20180730_123007/
     [RUN] like ^^ but kl_annealing=100
     // TODO 
     [RUN] like ^^ but RealNVP TK=1
