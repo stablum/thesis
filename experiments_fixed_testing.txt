@@ -420,7 +420,7 @@
     [RUN] like ^^ but RealNVP TK=1
     // harvest_vaerec_20180730_000324/
         [RUN] like ^^ but kl=1
-        // TODO
+        // harvest_vaerec_20180730_123629/
         [RUN] like ^^ but kl_annealing=100
         // TODO 
     [RUN] like ^^ but RealNVP TK=2
