@@ -272,7 +272,7 @@ class Log(object):
         self._file.write(msg+"\n")
         self._file.flush()
 
-    def statistics(self, _lr, epoch_nr, splitter, U, V, prediction_function):
+    def statistics(self, epoch_nr, splitter, U, V, prediction_function):
         if None not in (U,V):
             training_rmse = rmse(splitter.training_set,U,V,prediction_function)
             testing_rmse = rmse(splitter.validation_set,U,V,prediction_function)
@@ -305,6 +305,7 @@ class Log(object):
                 return "{} {}".format(m,s)
         p_stats = meanstd(_predictions,axis=None)
         self("epoch %d"%epoch_nr)
+        _lr = update_algorithms.calculate_lr(epoch_nr)
         self("learning rate: %12.12f"%_lr)
         if config.update_algorithm == 'adam':
             U_adam_m_stats = meanstd([ curr.m for curr in U])
@@ -418,8 +419,6 @@ class Epochsloop(object):
         self.splitter.prepare_new_training_set()
         self.epoch_nr = next(self._iter) # will raise StopIteration when done
 
-        _lr = update_algorithms.calculate_lr(self.epoch_nr)
-
         if type(self.U) is T.sharedvar.TensorSharedVariable:
             _U = self.U.get_value()
             _V = self.V.get_value()
@@ -427,14 +426,13 @@ class Epochsloop(object):
             _U = self.U
             _V = self.V
         self._log.statistics(
-            _lr,
             self.epoch_nr,
             self.splitter,
             _U,
             _V,
             self.prediction_function
         )
-        return self.splitter.training_set,_lr
+        return self.splitter.training_set,self.epoch_nr
 
 class Looper(object):
     @property
@@ -457,7 +455,7 @@ def LooperRij(Looper):
         self._epochsloop = Epochsloop(dataset,U,V,prediction_function,log_params,model)
 
     def start(self):
-        for training_set,_lr in self._epochsloop:
+        for training_set, in self._epochsloop:
             # WARNING: _lr is not updated in theano expressions
             for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
                 (i,j),Rij = curr
@@ -481,8 +479,7 @@ class LooperRrows(Looper):
         self._epoch_hook = epoch_hook
 
     def start(self):
-        for training_set,_lr in self._epochsloop:
-            # WARNING: _lr is not updated in theano expressions
+        for training_set,_epoch_nr in self._epochsloop:
             for curr in tqdm(training_set,desc="training",mininterval=tqdm_mininterval):
                 i,Ri = curr
 
@@ -490,12 +487,12 @@ class LooperRrows(Looper):
                     # nope
                     continue
 
-                self._process_rrow(i,Ri,_lr)
+                self._process_rrow(i,Ri,_epoch_nr)
 
             self._epoch_hook(
                 log=self._log,
                 epochsloop=self._epochsloop,
-                lr=_lr
+                epoch_nr=_epoch_nr
             )
 
 def preprocess(data,dataset):

@@ -462,6 +462,16 @@ class Model(model_build.Abstract):
         return ret
 
     @utils.cached_property
+    def kl_annealing(self):
+        t = self.epoch_nr
+        aT = config.kl_annealing_T
+        d = T.minimum(t,aT)
+        d = T.maximum(d,1)
+        ret = d/aT
+        ret.name = "kl_annealing"
+        return ret
+
+    @utils.cached_property
     def elbo(self):
         """
         the ELBO is expressed as two terms: likelihood, which is positive
@@ -474,12 +484,12 @@ class Model(model_build.Abstract):
         if config.regularization_latent_kl > 0. :
             if config.TK == 0:
                 # WARNING: regularization_latent_kl should be ~ 1.0 usually
-                ret -= self.regularizer_latent0_kl * config.regularization_latent_kl
+                ret -= self.regularizer_latent0_kl * self.kl_annealing * config.regularization_latent_kl
             else: # TK>0
                 nf_term = self.latentK_term_obj
                 nf_term += self.latent0_entropy_term_obj
                 nf_term += self.transformation_term_obj
-                ret += nf_term * config.regularization_latent_kl
+                ret += nf_term * config.regularization_latent_kl * self.kl_annealing
         ret.name="elbo_ret"
         return ret
 
@@ -851,6 +861,7 @@ def main():
     def epoch_hook(*args,**kwargs):
         _log = kwargs.pop('log',log)
         _epochsloop = kwargs['epochsloop']
+        _epoch_nr = kwargs.pop('epoch_nr')
         def meanstd(quantity):
             v = quantity.get_value()
             m = np.mean(v,axis=None)
@@ -882,7 +893,7 @@ def main():
 
         validation_objs = []
         for curr in tqdm(validation_splits(),desc="objs validation set"):
-            _obj = obj_fn(curr)
+            _obj = obj_fn(curr,_epoch_nr)
             validation_objs.append(_obj)
         log_percentiles(validation_objs,"objs validation set",_log)
         validation_likelihoods = []
@@ -899,9 +910,11 @@ def main():
         total_likelihoods = []
         total_out_log_sigmas = []
 
-        persistency.save(model,kwargs['lr'],kwargs['epochsloop'].epoch_nr)
+        epoch_nr = kwargs['epochsloop'].epoch_nr
+        _lr = update_algorithms.calculate_lr(epoch_nr)
+        persistency.save(model,_lr,epoch_nr)
 
-    def train_with_rrow(i,Ri,lr): # Ri is an entire sparse row of ratings from a user
+    def train_with_rrow(i,Ri,epoch_nr): # Ri is an entire sparse row of ratings from a user
         nonlocal indices_mb_l
         nonlocal Ri_mb_l
         nonlocal total_loss
@@ -914,13 +927,16 @@ def main():
         if len(Ri_mb_l) >= config.minibatch_size:
             Ri_mb = scipy.sparse.vstack(Ri_mb_l)
             Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
-            tmp = params_update_fn(Ri_mb)
+            tmp = params_update_fn(Ri_mb,epoch_nr)
             _loss,_lh,_regkl,_trans = tmp[0:4]
+            _lr = tmp[-2]
+            _kl_annealing = tmp[-1]
+            #print("_kl_annealing:",_kl_annealing)
 
             if getattr(config, "verbose", False):
                 print("_grads")
-                _grads = tmp[4:-len(model.all_layers)]
-                _layers_outputs = tmp[-len(model.all_layers):]
+                _grads = tmp[4:-(2+len(model.all_layers))]
+                _layers_outputs = tmp[-(2+len(model.all_layers)):]
                 do_exit = False
                 for p,g in zip(model.params,_grads):
                     print(p.name,"g: min",g.min(),"max",g.max(), "val:",p.get_value().min(),p.get_value().max())
@@ -940,7 +956,7 @@ def main():
                 print("_loss:",_loss,"_lh:",_lh,"_regkl:",_regkl,"_trans:",_trans)
             _kls, = marginal_latent0_kl_fn(Ri_mb)
             _out_log_sigmas, = out_log_sigmas_fn(Ri_mb)
-            _obj, = obj_fn(Ri_mb)
+            _obj, = obj_fn(Ri_mb, epoch_nr)
             _likelihood, = likelihood_fn(Ri_mb)
             total_kls.append(_kls)
             total_loss += _loss
@@ -971,20 +987,26 @@ def main():
     """
 
     params_update_fn = model_build.make_function(
-        [model.Ri_mb_sym],
+        [
+            model.Ri_mb_sym,
+            model.epoch_nr
+        ],
         [
             model.obj,
             model.likelihood,
             model.regularizer_latent0_kl,
             model.transformation_term_obj,
-        ]+model.grads_params+model.all_layers_outputs,
+        ]+model.grads_params+model.all_layers_outputs+[model.lr,model.kl_annealing],
         updates=model.params_updates
     )
     #import ipdb; ipdb.set_trace()
     params_update_fn.name = "params_update_fn"
 
     obj_fn = model_build.make_function(
-        [model.Ri_mb_sym],
+        [
+            model.Ri_mb_sym,
+            model.epoch_nr
+         ],
         [model.obj]
     )
     obj_fn.name = "obj_fn"

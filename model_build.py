@@ -32,6 +32,18 @@ def norm_clip_gradient(grad):
 class Abstract(object):
 
     @utils.cached_property
+    def epoch_nr(self):
+        ret = T.fscalar()
+        ret.name="epoch_nr"
+        return ret
+
+    @utils.cached_property
+    def lr(self):
+        ret = update_algorithms.calculate_lr_symbol(self.epoch_nr)
+        ret.name="lr"
+        return ret
+
+    @utils.cached_property
     def update(self):
         ret = update_algorithms.get_func()
         return ret
@@ -128,7 +140,7 @@ class Abstract(object):
                 clipped_gradients,
                 self.params,
                 self.all_masks,
-                learning_rate=config.lr_begin * config.minibatch_size
+                learning_rate=self.lr * config.minibatch_size
             )
         return self._params_updates
 

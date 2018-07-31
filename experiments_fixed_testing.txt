@@ -415,66 +415,68 @@
 // harvest_vaerec_20180730_092307/
     [RUN] like ^^ but kl=1
     // harvest_vaerec_20180730_123007/
-    [RUN] like ^^ but kl_annealing=100
-    // TODO 
+        [RUN] like ^^ but kl_annealing=100
+        // TODO 
     [RUN] like ^^ but RealNVP TK=1
     // harvest_vaerec_20180730_000324/
         [RUN] like ^^ but kl=1
         // harvest_vaerec_20180730_123629/
-        [RUN] like ^^ but kl_annealing=100
-        // TODO 
+            [RUN] like ^^ but kl_annealing=100
+            // TODO 
     [RUN] like ^^ but RealNVP TK=2
     // harvest_vaerec_20180730_001148/
         [RUN] like ^^ but kl=1
         // TODO
-        [RUN] like ^^ but kl_annealing=100
-        // TODO 
+            [RUN] like ^^ but kl_annealing=100
+            // TODO 
     [RUN] like ^^ but RealNVP TK=3
     // harvest_vaerec_20180730_002052/
         [RUN] like ^^ but kl=1
         // TODO
-        [RUN] like ^^ but kl_annealing=100
-        // TODO 
+            [RUN] like ^^ but kl_annealing=100
+            // TODO 
     [RUN] like ^^ but RealNVP TK=4
     // harvest_vaerec_20180730_003648/
         [RUN] like ^^ but kl=1
         // TODO
-        [RUN] like ^^ but kl_annealing=100
-        // TODO 
+            [RUN] like ^^ but kl_annealing=100
+            // TODO 
     [RUN] like ^^ but RealNVP TK=5
     // harvest_vaerec_20180730_005647/
         [RUN] like ^^ but kl=1
         // TODO
-        [RUN] like ^^ but kl_annealing=100
-        // TODO 
+            [RUN] like ^^ but kl_annealing=100
+            // TODO 
     [RUN] like ^^ but PlanarNF TK=1
     // harvest_vaerec_20180730_010256/
         [RUN] like ^^ but kl=1
-        // TODO
-        [RUN] like ^^ but kl_annealing=100
-        // TODO 
+        // harvest_vaerec_20180730_124144/
+            [RUN] like ^^ but kl_annealing=100
+            // TODO 
     [RUN] like ^^ but PlanarNF TK=2
     // harvest_vaerec_20180730_011107/
         [RUN] like ^^ but kl=1
         // TODO
+            [RUN] like ^^ but kl_annealing=100
+            // TODO 
     [RUN] like ^^ but PlanarNF TK=3
     // harvest_vaerec_20180730_011713/
         [RUN] like ^^ but kl=1
         // TODO
-        [RUN] like ^^ but kl_annealing=100
-        // TODO 
+            [RUN] like ^^ but kl_annealing=100
+            // TODO 
     [RUN] like ^^ but PlanarNF TK=4
     // harvest_vaerec_20180730_012347/
         [RUN] like ^^ but kl=1
         // TODO
-        [RUN] like ^^ but kl_annealing=100
-        // TODO 
+            [RUN] like ^^ but kl_annealing=100
+            // TODO 
     [RUN] like ^^ but PlanarNF TK=5
     // harvest_vaerec_20180730_013005/
         [RUN] like ^^ but kl=1
         // TODO
-        [RUN] like ^^ but kl_annealing=100
-        // TODO 
+            [RUN] like ^^ but kl_annealing=100
+            // TODO 
 
 DONES
 -----
@@ -580,6 +582,30 @@ IMPL:
     V since flows are underfitting, try larger learning rate
     - since flows are underfitting, increase number of hidden layers
     - difficulty in learning? maybe K is too high
+
+TODO TEXT 30/07/2018
+--------------------
+
+- explain generated RealNVP (difference from paper)
+- free bits are NOT using max anymore. Check Variational Lossy Autoencoder paper.
+
+TEXT:
+    - repr. learning in introduction
+    - collaborative filtering in introduction
+    - background: start with "what is variational inference" and VAE and NF
+    - rename NF to planar flow
+    - reread thoroughly RealNVP paper and describe in the text
+    - make sure that the "original" algorithms are iin background and
+      my modifications are in method.
+    - technologies used -> experiments
+    - remove use of u invertibility constraint
+    - some sections seem a bit short
+    - expand collaborative filtering with some images (sparse rating matrix)
+    - describe bounds in U-VaeRec vs I-Vaerec vs UI-VaeRec
+    - did I explain the theory behind VaeRec/AutoRec equivalence?
+    - expand MFVA with its bound, compared to mine
+    - put equivalence VaeRec/AutoRec into related work
+    - make sure that the related work explains how it's related
 
 FOR LATER:
 ----------

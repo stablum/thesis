@@ -22,6 +22,21 @@ def calculate_lr(t):
     )
     return ret
 
+def calculate_lr_symbol(t):
+    lr = config.lr_begin
+    warmup_epochs = getattr(config, "warmup_epochs", 3)
+    exp = warmup_epochs-t
+    zero = T.constant(0).astype('float32')
+    exp = T.maximum(exp,zero)
+    lr = lr / T.pow(10, exp)
+    # decaying learning rate with annealing
+    # see: https://www.willamette.edu/~gorr/classes/cs449/momrate.html
+
+    ret = lr / (
+        1. + t/config.lr_annealing_T
+    )
+    return ret
+
 def check_grad(grad):
     for curr in grad.tolist():
         if np.abs(curr) > 10000:
