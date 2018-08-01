@@ -573,15 +573,15 @@ V section 6 conclusion/discussion/future work
 V norm gradient clipping: cite url
 - plots of obj functions/elbo
 V acknowledgements : Chris, Max, DAS4 (cite), Defense Committee
-- write about kl annealing and find cite
+V write about kl annealing and find cite
 
 IMPL:
-    - annealing of kl
+    V annealing of kl
     V kl=0 flows
-    - real nvp
+    V real nvp
     V since flows are underfitting, try larger learning rate
     - since flows are underfitting, increase number of hidden layers
-    - difficulty in learning? maybe K is too high
+    V difficulty in learning? maybe K is too high
 
 TODO TEXT 30/07/2018
 --------------------
@@ -595,10 +595,10 @@ TEXT:
     - background: start with "what is variational inference" and VAE and NF
     - rename NF to planar flow
     - reread thoroughly RealNVP paper and describe in the text
-    - make sure that the "original" algorithms are iin background and
+    - make sure that the "original" algorithms are in background and
       my modifications are in method.
-    - technologies used -> experiments
-    - remove use of u invertibility constraint
+    V technologies used -> experiments
+    V remove use of u invertibility constraint
     - some sections seem a bit short
     - expand collaborative filtering with some images (sparse rating matrix)
     - describe bounds in U-VaeRec vs I-Vaerec vs UI-VaeRec
@@ -609,6 +609,7 @@ TEXT:
 
 IMPL:
     - experiment with free bits
+    - compare plots with obj functions
 FOR LATER:
 ----------
 - play with KL coefficient
