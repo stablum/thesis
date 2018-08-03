@@ -57,8 +57,6 @@ flow_type = getattr(config,"flow_type","planar")
 enforce_invertibility = getattr(config, "enforce_invertibility",True)
 log = lambda *args,**kwargs : print(*args,**kwargs)
 
-f_kl = open("kl_average.log","w+")
-f_an = open("kl_annealing.log","w+")
 
 class Model(model_build.Abstract):
 
@@ -875,6 +873,8 @@ def main():
     total_likelihoods = []
     total_out_log_sigmas = []
     kl_annealing_soft_free_nats=1.0 # used only when config.soft_free_nats=True
+    f_an = None
+    f_kl = None
 
     def epoch_hook(*args,**kwargs):
         _log = kwargs.pop('log',log)
@@ -940,6 +940,12 @@ def main():
         nonlocal total_likelihoods
         nonlocal total_out_log_sigmas
         nonlocal kl_annealing_soft_free_nats
+        nonlocal f_kl
+        nonlocal f_an
+        if f_kl is None:
+            f_kl = open("kl_average.log","w+")
+        if f_an is None:
+            f_an = open("kl_annealing.log","w+")
 
         indices_mb_l.append((i,))
         Ri_mb_l.append(Ri)
@@ -962,6 +968,7 @@ def main():
                     kl_annealing_soft_free_nats *= (1.0 + kl_annealing_epsilon)
                 else:
                     kl_annealing_soft_free_nats *= (1.0 -  kl_annealing_epsilon)
+
             f_kl.write(_latent_kl_average+"\n")
             f_an.write(_kl_annealing+"\n")
             if getattr(config, "verbose", False):
