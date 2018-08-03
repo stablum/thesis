@@ -1,4 +1,5 @@
 \section{Variational Expectation Lower Bound}
+\label{elbo}
 
 Given a 
 dataset $\boldX = \{\boldxone \ldots \boldxN \}$
@@ -19,7 +20,7 @@ is a constant w.r.t. $\boldZ$, then $\expectqphiZ{\log \pX}=\log \pX$. Hence, th
 previous expression can be rewritten as:
 
 \begin{nalign}
-\log \pX &= \kl{\qphiZ}{\pXcond}
+\log \pX &= \kl{\qphiZ}{\pZcond}
 + \elboX
 \end{nalign}
 

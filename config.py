@@ -20,6 +20,7 @@ stochastic_prediction=False#True
 regularization_lambda=0#2e+2
 regularization_type="L2" # in L1/L2
 regularization_latent_kl=1.0#1.0#0#0.5
+kl_annealing_epsilon=0.05
 kl_annealing_T=100
 input_dropout_p=0.0
 dropout_p=0.0
@@ -29,6 +30,7 @@ lr_annealing_T=n_epochs
 max_rating=5.
 
 free_nats=0
+soft_free_nats=True
 
 ratings_training_set_subsample_size = 5000
 

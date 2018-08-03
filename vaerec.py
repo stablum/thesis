@@ -47,6 +47,7 @@ sigma = 1.
 sigma_u = 100.
 sigma_v = 1000.
 num_leading_axes = 1
+kl_annealing_epsilon = getattr(config,"kl_annealing_epsilon",0.05)
 
 chan_out_dim = config.chan_out_dim
 hid_dim = config.hid_dim
@@ -55,6 +56,7 @@ TK=config.TK
 flow_type = getattr(config,"flow_type","planar")
 enforce_invertibility = getattr(config, "enforce_invertibility",True)
 log = lambda *args,**kwargs : print(*args,**kwargs)
+
 
 class Model(model_build.Abstract):
 
@@ -472,6 +474,17 @@ class Model(model_build.Abstract):
         return ret
 
     @utils.cached_property
+    def latent_kl(self):
+        if config.TK == 0:
+            ret = -self.regularizer_latent0_kl
+        else: # TK>0
+            ret = self.latentK_term_obj
+            ret += self.latent0_entropy_term_obj
+            ret += self.transformation_term_obj
+        ret.name="latent_kl"
+        return ret
+
+    @utils.cached_property
     def elbo(self):
         """
         the ELBO is expressed as two terms: likelihood, which is positive
@@ -482,14 +495,7 @@ class Model(model_build.Abstract):
         # WARNING: regression_error_coef should be 0.5!!!
         ret = self.likelihood * config.regression_error_coef
         if config.regularization_latent_kl > 0. :
-            if config.TK == 0:
-                # WARNING: regularization_latent_kl should be ~ 1.0 usually
-                ret -= self.regularizer_latent0_kl * self.kl_annealing * config.regularization_latent_kl
-            else: # TK>0
-                nf_term = self.latentK_term_obj
-                nf_term += self.latent0_entropy_term_obj
-                nf_term += self.transformation_term_obj
-                ret += nf_term * config.regularization_latent_kl * self.kl_annealing
+            ret += self.latent_kl * self.kl_annealing * config.regularization_latent_kl
         ret.name="elbo_ret"
         return ret
 
@@ -857,6 +863,7 @@ def main():
     total_objs = []
     total_likelihoods = []
     total_out_log_sigmas = []
+    kl_annealing_soft_free_nats=1.0 # used only when config.soft_free_nats=True
 
     def epoch_hook(*args,**kwargs):
         _log = kwargs.pop('log',log)
@@ -921,22 +928,37 @@ def main():
         nonlocal total_kls
         nonlocal total_likelihoods
         nonlocal total_out_log_sigmas
+        nonlocal kl_annealing_soft_free_nats
 
         indices_mb_l.append((i,))
         Ri_mb_l.append(Ri)
         if len(Ri_mb_l) >= config.minibatch_size:
             Ri_mb = scipy.sparse.vstack(Ri_mb_l)
             Ri_mb.data = cftools.preprocess(Ri_mb.data,dataset) # FIXME: method of Dataset?
-            tmp = params_update_fn(Ri_mb,epoch_nr)
+            params_update_args = [
+                Ri_mb,
+                epoch_nr
+            ]
+            if getattr(config,"soft_free_nats",False):
+                params_update_args.append(kl_annealing_soft_free_nats)
+            tmp = params_update_fn(*params_update_args)
             _loss,_lh,_regkl,_trans = tmp[0:4]
-            _lr = tmp[-2]
-            _kl_annealing = tmp[-1]
-            #print("_kl_annealing:",_kl_annealing)
+            _lr = tmp[-3]
+            _kl_annealing = tmp[-2]
+            _latent_kl = tmp[-1]
+            if getattr(config,"soft_free_nats",False):
+                if _latent_kl > config.free_nats * 1.05:
+                    kl_annealing_soft_free_nats *= (1.0 + kl_annealing_epsilon)
+                else:
+                    kl_annealing_soft_free_nats *= (1.0 -  kl_annealing_epsilon)
+
+            print("_kl_annealing:",_kl_annealing)
+            print("_latent_kl:",_latent_kl)
 
             if getattr(config, "verbose", False):
                 print("_grads")
-                _grads = tmp[4:-(2+len(model.all_layers))]
-                _layers_outputs = tmp[-(2+len(model.all_layers)):]
+                _grads = tmp[4:-(3+len(model.all_layers))]
+                _layers_outputs = tmp[-(3+len(model.all_layers)):]
                 do_exit = False
                 for p,g in zip(model.params,_grads):
                     print(p.name,"g: min",g.min(),"max",g.max(), "val:",p.get_value().min(),p.get_value().max())
@@ -985,18 +1007,29 @@ def main():
     )
     a_fn.name="a_fn"
     """
+    params_update_inputs = [
+        model.Ri_mb_sym,
+        model.epoch_nr
+    ]
+
+    if getattr(config,"soft_free_nats",False):
+        params_update_inputs.append(model.kl_annealing)
+
+    params_update_outputs = [
+        model.obj,
+        model.likelihood,
+        model.regularizer_latent0_kl,
+        model.transformation_term_obj,
+    ]+model.grads_params+model.all_layers_outputs
+    params_update_outputs+=[
+        model.lr,
+        model.kl_annealing,
+        model.latent_kl
+    ]
 
     params_update_fn = model_build.make_function(
-        [
-            model.Ri_mb_sym,
-            model.epoch_nr
-        ],
-        [
-            model.obj,
-            model.likelihood,
-            model.regularizer_latent0_kl,
-            model.transformation_term_obj,
-        ]+model.grads_params+model.all_layers_outputs+[model.lr,model.kl_annealing],
+        params_update_inputs,
+        params_update_outputs,
         updates=model.params_updates
     )
     #import ipdb; ipdb.set_trace()

@@ -587,13 +587,13 @@ TODO TEXT 30/07/2018
 --------------------
 
 - explain generated RealNVP (difference from paper)
-- free bits are NOT using max anymore. Check Variational Lossy Autoencoder paper.
+V free bits are NOT using max anymore. Check Variational Lossy Autoencoder paper.
 
 TEXT:
     V repr. learning in introduction
     V collaborative filtering in introduction
     - background: start with "what is variational inference" and VAE and NF
-    - rename NF to planar flow
+    V rename NF to planar flow
     - reread thoroughly RealNVP paper and describe in the text
     - make sure that the "original" algorithms are in background and
       my modifications are in method.
@@ -608,7 +608,7 @@ TEXT:
     - make sure that the related work explains how it's related
 
 IMPL:
-    - experiment with free bits
+    - experiment with soft free bits
     - compare plots with obj functions
 FOR LATER:
 ----------

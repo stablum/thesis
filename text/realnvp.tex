@@ -1,4 +1,4 @@
-\section{RealNVP invertible transformations}
+\section{RealNVP Transformations}
 
 \cite{RealNVP} introduced a very simple invertible function of the form:
 
@@ -33,7 +33,7 @@ and its determinant ends up being $\exp\left(\sum_j s(\boldz_{1:d})_j \right)$
 \subsection{Masking}
 
 To ease the implementation, the selection of the first and second parts of $\boldz$
-have been implemented with random masks. These masks are unique for each transformation
+have been implemented with random hyperparameter masks. These masks are unique for each transformation
 step, and are computed as follows:
 
 \begin{algorithm}[H]
@@ -60,3 +60,6 @@ The invertible function, for a transformation step $i$, is hence implemented as:
 \begin{nalign}
     \boldz_{i+1} &= \boldz_i\odot\boldm_i + (1-\boldm_i)\odot\left[\boldz_i \odot \exp\left(s(\boldm_i\odot\boldz)\right) + a(\boldm_i\odot\boldz)\right]
 \end{nalign}
+
+The masks are computed before training and are left unchanged, as they
+should be considered as hyperparameters.

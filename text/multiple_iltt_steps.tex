@@ -1,7 +1,7 @@
 \section{Multiple nested transformation steps}\label{multiple_iltt_steps}
 
 \begin{figure}
-\caption{Average squared error of a VAE with Normalizing Flows trained
+\caption{Average squared error of a VAE with Planar Flows trained
          on the MNIST dataset. Parameters are: learning rate $5*10^{-7}$,
          activation functon sigmoid, latent dimensionality 16,
          size of the hidden layer 64. The three experiments are differentiated
@@ -40,9 +40,9 @@ a single Monte Carlo sample:
 \\
 &=\sumk{ \log \abs{\derivtk{\boldzkminusone}}}
 \end{nalign}
-\subsection{Implementation with Invertible Linear-time Transformations}
+\subsection{Implementation with Planar Transformations}
 
-With invertible Linear-time Transformations, the derivative becomes:
+With planar transformations, the derivative becomes:
 
 \begin{nalign}
 \Dtr{\boldzzero}
