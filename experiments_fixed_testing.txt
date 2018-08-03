@@ -446,7 +446,7 @@
     [RUN] like ^^ but RealNVP TK=5
     // harvest_vaerec_20180730_005647/
         [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
-        // TODO
+        // harvest_vaerec_20180804_001051/
     [RUN] like ^^ but PlanarNF TK=1
     // harvest_vaerec_20180730_010256/
         [RUN] like ^^ but kl=1
