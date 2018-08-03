@@ -961,8 +961,8 @@ def main():
             tmp = params_update_fn(*params_update_args)
             _loss,_lh,_regkl,_trans = tmp[0:4]
             _lr = tmp[-3]
-            _kl_annealing = tmp[-2]
-            _latent_kl_average = tmp[-1]
+            _kl_annealing = float(tmp[-2])
+            _latent_kl_average = float(tmp[-1])
             if getattr(config,"soft_free_nats",False):
                 if _latent_kl_average > config.free_nats * 1.05:
                     kl_annealing_soft_free_nats *= (1.0 + kl_annealing_epsilon)
