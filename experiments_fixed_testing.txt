@@ -430,7 +430,7 @@
             [RUN] like ^^ but SOFTFREEBITS
             // harvest_vaerec_20180803_220224/
                [RUN] like ^^ but free_nats=1
-               // TODO 
+               // harvest_vaerec_20180803_230841/
     [RUN] like ^^ but RealNVP TK=2
     // harvest_vaerec_20180730_001148/
         [RUN] like ^^ but kl=1
