@@ -1,0 +1,27 @@
+\section{Dealing with underfitting}
+
+It's very common, when working on new models, to have difficulties
+in getting the model to even learn from the training data.
+In other words, the model may be configured in such a way that,
+even before overfitting arises, underfitting is still an issue.
+
+This might be caused by many factors: limited width or depth of the networks,
+over-regularization, low quality datasets, learning rate too small.
+
+In our models attempts to tackle underfitting have been widening the network
+and adding more hidden layers, as well as KL annealing, described in the following section.
+
+\subsection{KL annealing}
+
+In VAERec models, one source of regularization is the KL divergence in the ELBO.
+
+In our models, a linear slowly annealing coefficient on the KL
+has been implemented. With the following rule:
+
+\begin{nalign}
+a = \frac{\max(t,T)}{T}
+\end{nalign}
+
+Where $a$ is the value of the annealing coefficient to the KL, $t$ is the current
+epoch and $T$ is the epoch number from which the coefficient will be $1.0$.
+

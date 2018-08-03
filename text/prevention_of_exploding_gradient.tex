@@ -1,0 +1,81 @@
+\section{Prevention of exploding gradients}
+It is possible, under specific circumstances, that the gradients may become unstable and
+compromise the model.
+
+In order to prevent this phenomenon, a few "tricks" have been implemented:
+
+\paragraph{Gradient clipping}\cite{norm_clip} has been implemented with the
+following norm-based scaling algorithm:
+
+\begin{algorithm}
+\caption{Norm-based gradient clipping}
+\begin{algorithmic}[1]
+
+\REQUIRE ~~\\
+(1) Gradient tensor $\mathbf{g}$   \\
+(2) Threshold $\theta$ (defaulted to value 10)
+\ENSURE~~\\
+(1) Scaled gradients $\hat{\mathbf{g}}$ whenever their L2 norm surpasses a threshold $\theta$.
+`
+\item[]
+\IF{$||\mathbf{g}||_2 > \theta$}
+    \STATE $\hat{\mathbf{g}} \leftarrow \frac{\theta}{||\mathbf{g}||_2}\mathbf{g}$
+\ELSE
+    \STATE $\hat{\mathbf{g}} \leftarrow \mathbf{g}$
+\ENDIF
+\RETURN $\hat{\mathbf{g}}$
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Scaled $\tanh$ activation function}. Some layers have 
+"$\log\sigma$" outputs. As the output of these layers needs to be processed to
+exponentiation in the likelihood function, if the activation is kept linear
+there is a great risk of instability and value explosion.
+For these reason a "pseudo-linear" soft-bounded activation function has been implemented
+by re-scaling a $\tanh$ activation function.
+A $\tanh$ activation function has the co-domain of the function bounded between -1 and +1.
+Moreover, its derivative is approximately $1$ near the origin. It follows that $\tanh$
+perfectly suits the role of pseudo-linear bounded activation function if it's rescaled as
+follows:
+
+\begin{nalign}
+f(\mathbf{x}) = K * \tanh(\mathbf{x}/K)
+\end{nalign}
+
+Where $K$ is a small integer which is greater than 1. In this way this activation function
+will be bounded between $-K$ and $+K$. A good value for $K$ might be 5, in order to obtain
+$\sigma$-values properly bounded between $0.0067$ and $148.4$.
+
+For layers that are supposedly linear in their outputs, such as Planar Flow's 
+$\mathbf{w}$, $b$, and $\mathbf{u}$ quantities, as well as the $\boldsymbol\mu$ outputs,
+a "pseudo-linear" function
+on the same guise has been implemented with $K=20$. 
+
+\paragraph{Learning rate "warm-up"} has been implemented to prevent immediate divergence
+in the first epochs due to steep gradients. 
+Hence, the learning rate has been raised from a very small value
+to regimen value during the course of the very first epochs.
+
+\begin{algorithm}
+\caption{Learning rate warm-up}
+\begin{algorithmic}[1]
+
+\REQUIRE ~~\\
+(1) Initial learning rate $\gamma$   \\
+(2) Current epoch number $t$ \\
+(3) Number of initial warm-up epochs $K$ \\
+(4) Base value of the warm up coefficient $B$  which has to be less than $1$
+\ENSURE~~\\
+(1) Adjusted and progressively increasing learning rate $\hat{\gamma}$ during the first $K$ epochs
+\item[]
+\IF{$t >= K$}
+    \STATE $\hat{\gamma} = \gamma$
+\ELSE
+    \STATE $\hat{\gamma} = B^{K-t} \gamma$
+\ENDIF
+\RETURN $\hat{\gamma}$
+\end{algorithmic}
+\end{algorithm}
+
+Appropriate parameter settings have been found as $K=3$ and $B=0.1$.
+

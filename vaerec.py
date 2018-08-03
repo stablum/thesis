@@ -57,6 +57,8 @@ flow_type = getattr(config,"flow_type","planar")
 enforce_invertibility = getattr(config, "enforce_invertibility",True)
 log = lambda *args,**kwargs : print(*args,**kwargs)
 
+f_kl = open("kl_average.log","w+")
+f_an = open("kl_annealing.log","w+")
 
 class Model(model_build.Abstract):
 
@@ -960,10 +962,8 @@ def main():
                     kl_annealing_soft_free_nats *= (1.0 + kl_annealing_epsilon)
                 else:
                     kl_annealing_soft_free_nats *= (1.0 -  kl_annealing_epsilon)
-
-            print("_kl_annealing:",_kl_annealing)
-            print("_latent_kl_average:",_latent_kl_average)
-
+            f_kl.write(_latent_kl_average+"\n")
+            f_an.write(_kl_annealing+"\n")
             if getattr(config, "verbose", False):
                 print("_grads")
                 _grads = tmp[4:-(3+len(model.all_layers))]
