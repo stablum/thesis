@@ -969,8 +969,8 @@ def main():
                 else:
                     kl_annealing_soft_free_nats *= (1.0 -  kl_annealing_epsilon)
 
-            f_kl.write(_latent_kl_average+"\n")
-            f_an.write(_kl_annealing+"\n")
+            f_kl.write(str(_latent_kl_average)+"\n")
+            f_an.write(str(_kl_annealing)+"\n")
             if getattr(config, "verbose", False):
                 print("_grads")
                 _grads = tmp[4:-(3+len(model.all_layers))]
