@@ -417,7 +417,7 @@
     // harvest_vaerec_20180730_123007/
         [RUN] like ^^ but kl_annealing=100
         // harvest_vaerec_20180731_122341/
-        [RUN] like ^^ but SOFTFREEBITS
+        [RUN] like ^^ but SOFTFREEBITS=2*K
         // harvest_vaerec_20180803_202829/
            [RUN] like ^^ but free_nats=1
            // harvest_vaerec_20180803_224453/
@@ -427,68 +427,52 @@
         // harvest_vaerec_20180730_123629/
             [RUN] like ^^ but kl_annealing=100
             // harvest_vaerec_20180731_123115/
-            [RUN] like ^^ but SOFTFREEBITS
+            [RUN] like ^^ but SOFTFREEBITS=2*K
             // harvest_vaerec_20180803_220224/
                [RUN] like ^^ but free_nats=1
                // harvest_vaerec_20180803_230841/
     [RUN] like ^^ but RealNVP TK=2
     // harvest_vaerec_20180730_001148/
-        [RUN] like ^^ but kl=1
+        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
         // TODO
-            [RUN] like ^^ but kl_annealing=100
-            // TODO 
     [RUN] like ^^ but RealNVP TK=3
     // harvest_vaerec_20180730_002052/
-        [RUN] like ^^ but kl=1
+        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
         // TODO
-            [RUN] like ^^ but kl_annealing=100
-            // TODO 
     [RUN] like ^^ but RealNVP TK=4
     // harvest_vaerec_20180730_003648/
-        [RUN] like ^^ but kl=1
+        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
         // TODO
-            [RUN] like ^^ but kl_annealing=100
-            // TODO 
     [RUN] like ^^ but RealNVP TK=5
     // harvest_vaerec_20180730_005647/
-        [RUN] like ^^ but kl=1
+        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
         // TODO
-            [RUN] like ^^ but kl_annealing=100
-            // TODO 
     [RUN] like ^^ but PlanarNF TK=1
     // harvest_vaerec_20180730_010256/
         [RUN] like ^^ but kl=1
         // harvest_vaerec_20180730_124144/
             [RUN] like ^^ but kl_annealing=100
             // harvest_vaerec_20180731_123727/
-            [RUN] like ^^ but SOFTFREEBITS
+            [RUN] like ^^ but SOFTFREEBITS=2*K
             // harvest_vaerec_20180803_221654/
                [RUN] like ^^ but free_nats=1
-               // TODO 
+               // harvest_vaerec_20180803_232005/
     [RUN] like ^^ but PlanarNF TK=2
     // harvest_vaerec_20180730_011107/
-        [RUN] like ^^ but kl=1
+        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
         // TODO
-            [RUN] like ^^ but kl_annealing=100
-            // TODO 
     [RUN] like ^^ but PlanarNF TK=3
     // harvest_vaerec_20180730_011713/
-        [RUN] like ^^ but kl=1
+        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
         // TODO
-            [RUN] like ^^ but kl_annealing=100
-            // TODO 
     [RUN] like ^^ but PlanarNF TK=4
     // harvest_vaerec_20180730_012347/
-        [RUN] like ^^ but kl=1
+        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
         // TODO
-            [RUN] like ^^ but kl_annealing=100
-            // TODO 
     [RUN] like ^^ but PlanarNF TK=5
     // harvest_vaerec_20180730_013005/
-        [RUN] like ^^ but kl=1
+        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
         // TODO
-            [RUN] like ^^ but kl_annealing=100
-            // TODO 
 
 DONES
 -----

@@ -4,9 +4,12 @@ Variational Bayes with more recent posterior distribution approximation improvem
 such as Planar and RealNVP Normalizing Flows.
 A model based on the AutoRec collaborative filtering autoencoder model is being
 used as baseline in order to compare it to out Variational-Autoencoder-based, named VaeRec and
-its variant NF-VaeRec which makes use of Normalizing Flows.
-Modifications to gradient-based parameter update algorithms are intruduced
+its variant VaeRec-NF which makes use of Normalizing Flows.
+Modifications to gradient-based parameter update algorithms are introduced
 in order to take into account the sparsity of the data tensors.
-Extensive hyperparameter search is performed and regularizing techniques have been investigated.
+Extensive hyperparameter search is performed and regularizing techniques have been investigated, such as soft free bits, which employs an adaptive
+coefficient to the Kullback-Leibler divergence of the variational lower bound.
+Methods to prevent gradient explosion are also utilized.
 A novel collaborative filtering input schema that makes use of the concatenation of user 
-and item vectors has been tried, alongside inputs that make use of solely the item or user vectors.
+and item vectors has been tried, 
+alongside inputs that make use of solely the item or user vectors.
