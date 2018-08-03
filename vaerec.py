@@ -971,6 +971,8 @@ def main():
 
             f_kl.write(str(_latent_kl_average)+"\n")
             f_an.write(str(_kl_annealing)+"\n")
+            f_kl.flush()
+            f_an.flush()
             if getattr(config, "verbose", False):
                 print("_grads")
                 _grads = tmp[4:-(3+len(model.all_layers))]
