@@ -8,8 +8,8 @@ import movielens
 seed=12345
 n_epochs=1000
 
-K=5
-TK=1 # transformation's K (number of nested transformation steps)
+K=1
+TK=0 # transformation's K (number of nested transformation steps)
 enforce_invertibility=True
 flow_type="planar"
 g_flow="tanh"
@@ -19,8 +19,8 @@ chan_out_dim=K
 stochastic_prediction=False#True
 regularization_lambda=0#2e+2
 regularization_type="L2" # in L1/L2
-regularization_latent_kl=1.0#1.0#0#0.5
-kl_annealing_epsilon=0.05
+regularization_latent_kl=10.0#1.0#1.0#0#0.5
+kl_annealing_epsilon=0.01#0.45# 0.05
 kl_annealing_T=100
 input_dropout_p=0.0
 dropout_p=0.0
@@ -29,7 +29,7 @@ lr_begin=2e-6#2e-7#2e-2 #2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
 max_rating=5.
 
-free_nats=0
+free_nats=2
 soft_free_nats=True
 
 ratings_training_set_subsample_size = 5000

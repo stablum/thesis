@@ -433,11 +433,14 @@ class Model(model_build.Abstract):
         sigma.name = "rl0kl_sigma"
         vanilla_kl = kl.kl_normal_diagonal_vs_unit(self.latent0_mu_lea,sigma,latent_dim)
         vanilla_kl.name="rl0kl_vanilla_kl"
+        """ DEACTIVATING original max-free nats
         m = config.free_nats * theano.tensor.ones_like(vanilla_kl)
         m.name = "rl0kl_m"
         ret = theano.tensor.maximum(vanilla_kl,m)
         ret.name = "rl0kl_ret"
         return ret
+        """
+        return vanilla_kl
 
     @utils.cached_property
     def marginal_latent0_kl(self):
@@ -476,11 +479,17 @@ class Model(model_build.Abstract):
     @utils.cached_property
     def latent_kl(self):
         if config.TK == 0:
-            ret = -self.regularizer_latent0_kl
+            ret = self.regularizer_latent0_kl
         else: # TK>0
-            ret = self.latentK_term_obj
-            ret += self.latent0_entropy_term_obj
-            ret += self.transformation_term_obj
+            ret = -self.latentK_term_obj
+            ret -= self.latent0_entropy_term_obj
+            ret -= self.transformation_term_obj
+        ret.name="latent_kl"
+        return ret
+
+    @utils.cached_property
+    def latent_kl_average(self):
+        ret = self.latent_kl / config.minibatch_size
         ret.name="latent_kl"
         return ret
 
@@ -495,7 +504,7 @@ class Model(model_build.Abstract):
         # WARNING: regression_error_coef should be 0.5!!!
         ret = self.likelihood * config.regression_error_coef
         if config.regularization_latent_kl > 0. :
-            ret += self.latent_kl * self.kl_annealing * config.regularization_latent_kl
+            ret -= self.latent_kl * self.kl_annealing * config.regularization_latent_kl
         ret.name="elbo_ret"
         return ret
 
@@ -945,15 +954,15 @@ def main():
             _loss,_lh,_regkl,_trans = tmp[0:4]
             _lr = tmp[-3]
             _kl_annealing = tmp[-2]
-            _latent_kl = tmp[-1]
+            _latent_kl_average = tmp[-1]
             if getattr(config,"soft_free_nats",False):
-                if _latent_kl > config.free_nats * 1.05:
+                if _latent_kl_average > config.free_nats * 1.05:
                     kl_annealing_soft_free_nats *= (1.0 + kl_annealing_epsilon)
                 else:
                     kl_annealing_soft_free_nats *= (1.0 -  kl_annealing_epsilon)
 
             print("_kl_annealing:",_kl_annealing)
-            print("_latent_kl:",_latent_kl)
+            print("_latent_kl_average:",_latent_kl_average)
 
             if getattr(config, "verbose", False):
                 print("_grads")
@@ -1024,7 +1033,7 @@ def main():
     params_update_outputs+=[
         model.lr,
         model.kl_annealing,
-        model.latent_kl
+        model.latent_kl_average
     ]
 
     params_update_fn = model_build.make_function(
