@@ -943,8 +943,10 @@ def main():
         nonlocal f_kl
         nonlocal f_an
         if f_kl is None:
+            print("open f_kl")
             f_kl = open("kl_average.log","w+")
         if f_an is None:
+            print("open f_an")
             f_an = open("kl_annealing.log","w+")
 
         indices_mb_l.append((i,))

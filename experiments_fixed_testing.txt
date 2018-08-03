@@ -418,7 +418,7 @@
         [RUN] like ^^ but kl_annealing=100
         // harvest_vaerec_20180731_122341/
         [RUN] like ^^ but SOFTFREEBITS
-        // TODO 
+        // harvest_vaerec_20180803_202829/
     [RUN] like ^^ but RealNVP TK=1
     // harvest_vaerec_20180730_000324/
         [RUN] like ^^ but kl=1
