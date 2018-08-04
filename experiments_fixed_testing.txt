@@ -422,7 +422,7 @@
            [RUN] like ^^ but free_nats=1
            // harvest_vaerec_20180803_224453/
                [RUN] like ^^ but UI
-               // TODO
+               // harvest_vaerec_20180804_173844/
            [RUN] like ^^ but UI
            // TODO                          
     [RUN] like ^^ but RealNVP TK=1
