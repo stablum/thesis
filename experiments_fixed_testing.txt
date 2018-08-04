@@ -447,6 +447,8 @@
     // harvest_vaerec_20180730_005647/
         [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
         // harvest_vaerec_20180804_001051/
+        [RUN] like ^^ but kl=1 and SOFTFREEBITS=2*K
+        // TODO
     [RUN] like ^^ but PlanarNF TK=1
     // harvest_vaerec_20180730_010256/
         [RUN] like ^^ but kl=1
@@ -472,7 +474,7 @@
     [RUN] like ^^ but PlanarNF TK=5
     // harvest_vaerec_20180730_013005/
         [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
-        // TODO
+        // harvest_vaerec_20180804_001819/
 
 DONES
 -----
@@ -588,7 +590,7 @@ V free bits are NOT using max anymore. Check Variational Lossy Autoencoder paper
 TEXT:
     V repr. learning in introduction
     V collaborative filtering in introduction
-    - background: start with "what is variational inference" and VAE and NF
+    V background: start with "what is variational inference" and VAE and NF
     V rename NF to planar flow
     - reread thoroughly RealNVP paper and describe in the text
     - make sure that the "original" algorithms are in background and
