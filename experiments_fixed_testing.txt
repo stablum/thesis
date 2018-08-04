@@ -421,6 +421,10 @@
         // harvest_vaerec_20180803_202829/
            [RUN] like ^^ but free_nats=1
            // harvest_vaerec_20180803_224453/
+               [RUN] like ^^ but UI
+               // TODO
+           [RUN] like ^^ but UI
+           // TODO                          
     [RUN] like ^^ but RealNVP TK=1
     // harvest_vaerec_20180730_000324/
         [RUN] like ^^ but kl=1
@@ -431,6 +435,10 @@
             // harvest_vaerec_20180803_220224/
                [RUN] like ^^ but free_nats=1
                // harvest_vaerec_20180803_230841/
+                   [RUN] like ^^ but UI
+                   // TODO
+               [RUN] like ^^ but UI
+               // TODO                          
     [RUN] like ^^ but RealNVP TK=2
     // harvest_vaerec_20180730_001148/
         [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
@@ -447,8 +455,12 @@
     // harvest_vaerec_20180730_005647/
         [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
         // harvest_vaerec_20180804_001051/
+           [RUN] like ^^ but UI
+           // TODO                          
         [RUN] like ^^ but kl=1 and SOFTFREEBITS=2*K
-        // TODO
+        // harvest_vaerec_20180804_165205/
+           [RUN] like ^^ but UI
+           // TODO                          
     [RUN] like ^^ but PlanarNF TK=1
     // harvest_vaerec_20180730_010256/
         [RUN] like ^^ but kl=1
