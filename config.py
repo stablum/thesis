@@ -9,7 +9,7 @@ seed=12345
 n_epochs=1000
 
 K=5
-TK=1 # transformation's K (number of nested transformation steps)
+TK=5 # transformation's K (number of nested transformation steps)
 enforce_invertibility=True
 flow_type="realnvp"
 g_flow="tanh"
@@ -29,7 +29,7 @@ lr_begin=2e-6#2e-7#2e-2 #2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=n_epochs
 max_rating=5.
 
-free_nats=2*K
+free_nats=1
 soft_free_nats=True
 
 ratings_training_set_subsample_size = 5000
