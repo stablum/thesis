@@ -9,9 +9,9 @@ seed=12345
 n_epochs=1000
 
 K=5
-TK=0 # transformation's K (number of nested transformation steps)
+TK=1 # transformation's K (number of nested transformation steps)
 enforce_invertibility=True
-flow_type="planar"
+flow_type="realnvp"
 g_flow="tanh"
 hid_dim=1000
 n_hid_layers=1
@@ -62,7 +62,7 @@ spherical_likelihood = True
 chunk_len =64*1024
 minibatch_size = 64 #1 #2 # 16 # 64
 
-regression_type = "user" # in user/item/user+item
+regression_type = "user+item" # in user/item/user+item
 
 nanguard=False
 verbose=False
