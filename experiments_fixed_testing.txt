@@ -446,7 +446,7 @@
                [RUN] like ^^ but UI
                // harvest_vaerec_20180804_184202
                    [RUN] like ^^ but T=10 and L2=100
-                   // TODO
+                   // harvest_vaerec_20180805_174608/
                [RUN] like ^^ but T=10 and L2=100 (item)
                // TODO
                [RUN] like ^^ but T=10 and L2=100 AND USER
