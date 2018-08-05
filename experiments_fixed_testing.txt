@@ -448,7 +448,7 @@
                    [RUN] like ^^ but T=10 and L2=100
                    // harvest_vaerec_20180805_174608/
                [RUN] like ^^ but T=10 and L2=100 (item)
-               // TODO
+               // harvest_vaerec_20180805_175835/
                [RUN] like ^^ but T=10 and L2=100 AND USER
                // TODO
     [RUN] like ^^ but RealNVP TK=2
