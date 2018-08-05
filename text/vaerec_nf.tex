@@ -2,8 +2,58 @@
 
 The \emph{VAERec-NF} model
 extends the VAERec by improving the posterior approximation
-with Normalizing Flows \cite{1505.05770}
+with Planar Normalizing Flows \cite{1505.05770}
 as explained in section \ref{iltt}, 
 \ref{energy_of_1step_illt}
 and \ref{multiple_iltt_steps}.
 
+\subsection{Normalizing Flow using RealNVP's invertible transformation}
+
+In this \emph{VAERec-NF} variant, a transformation of the type previously described
+in section \ref{realnvp} is introduced.
+Specifically, the function $s$ is implemented as
+a single perceptron layer with nonlinear activation function 
+$\tanh$. The function $a$ which is required to be an affine transform,
+is implemented as a single perceptron layer with \emph{linear}
+activation function.
+
+All the parameters of the transformation are being produced as output of the
+encoder network, exactly as happens with the parameters of $\pzcond$ in a Variational
+Auto-Encoder.
+The weights of the $a$ and $s$ layers are implemented as vectors of size $K^2$, then
+reshaped into a $(K,K)$ dimension. This limits the model into
+very low latent dimensionalities.
+
+\subsection{Masking}
+
+To ease the implementation, the selection of the first and second parts of $\boldz$
+have been implemented with random hyperparameter masks. These masks are unique for each transformation
+step, and are computed as follows:
+
+\begin{algorithm}[H]
+\caption{Half-full random masks for RealNVP transformations}
+\begin{algorithmic}[1]
+
+\REQUIRE ~~\\
+(1) Latent dimensionality $K$ \\
+(2) Number of transformation steps $k$
+\ENSURE~~\\
+(1) Random masks $\boldm_1 \ldots \boldm_k$ which have half of their elements set at $1$
+`
+\item[]
+\FOR{$i \in \{1 \ldots k\}$}
+\STATE $(\mathbf{a})_j \leftarrow \left\{\begin{array}{ll} 1 & j < K/2 \\ 0 & K/2 \leq i < K\end{array}\right.$
+\STATE $\boldm_i = \mathrm{shuffle}(\mathbf{a})$
+\ENDFOR
+\RETURN $\boldm_1 \ldots \boldm_k$
+\end{algorithmic}
+\end{algorithm}
+                                         
+The invertible function, for a transformation step $i$, is hence implemented as:
+
+\begin{nalign}
+    \boldz_{i+1} &= \boldz_i\odot\boldm_i + (1-\boldm_i)\odot\left[\boldz_i \odot \exp\left(s(\boldm_i\odot\boldz)\right) + a(\boldm_i\odot\boldz)\right]
+\end{nalign}
+
+The masks are computed before training and are left unchanged, as they
+should be considered as hyperparameters.
