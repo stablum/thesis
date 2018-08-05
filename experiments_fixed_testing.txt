@@ -426,8 +426,10 @@
            [RUN] like ^^ but UI
            // harvest_vaerec_20180804_181554/
                [RUN] like ^^ but T=10 and L2=100
-               // TODO
-           [RUN] like ^^ but T=10 and L2=100
+               // harvest_vaerec_20180805_171337/
+           [RUN] like ^^ but T=10 and L2=100 (item)
+           // TODO
+           [RUN] like ^^ but T=10 and L2=100 AND USER
            // TODO
     [RUN] like ^^ but RealNVP TK=1
     // harvest_vaerec_20180730_000324/
@@ -445,20 +447,16 @@
                // harvest_vaerec_20180804_184202
                    [RUN] like ^^ but T=10 and L2=100
                    // TODO
-               [RUN] like ^^ but T=10 and L2=100
+               [RUN] like ^^ but T=10 and L2=100 (item)
+               // TODO
+               [RUN] like ^^ but T=10 and L2=100 AND USER
                // TODO
     [RUN] like ^^ but RealNVP TK=2
     // harvest_vaerec_20180730_001148/
-        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
-        // TODO
     [RUN] like ^^ but RealNVP TK=3
     // harvest_vaerec_20180730_002052/
-        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
-        // TODO
     [RUN] like ^^ but RealNVP TK=4
     // harvest_vaerec_20180730_003648/
-        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
-        // TODO
     [RUN] like ^^ but RealNVP TK=5
     // harvest_vaerec_20180730_005647/
         [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
@@ -469,6 +467,12 @@
         // harvest_vaerec_20180804_165205/
            [RUN] like ^^ but UI
            // harvest_vaerec_20180804_185957/
+               [RUN] like ^^ but T=10 and L2=100
+               // TODO
+           [RUN] like ^^ but T=10 and L2=100 (item)
+           // TODO
+           [RUN] like ^^ but T=10 and L2=100 AND USER
+           // TODO
     [RUN] like ^^ but PlanarNF TK=1
     // harvest_vaerec_20180730_010256/
         [RUN] like ^^ but kl=1
@@ -479,22 +483,21 @@
             // harvest_vaerec_20180803_221654/
                [RUN] like ^^ but free_nats=1
                // harvest_vaerec_20180803_232005/
+               [RUN] like ^^ but T=10 and L2=100
+               // TODO
     [RUN] like ^^ but PlanarNF TK=2
     // harvest_vaerec_20180730_011107/
-        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
-        // TODO
     [RUN] like ^^ but PlanarNF TK=3
     // harvest_vaerec_20180730_011713/
-        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
-        // TODO
     [RUN] like ^^ but PlanarNF TK=4
     // harvest_vaerec_20180730_012347/
-        [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
-        // TODO
     [RUN] like ^^ but PlanarNF TK=5
     // harvest_vaerec_20180730_013005/
         [RUN] like ^^ but kl=1 and SOFTFREEBITS=1
         // harvest_vaerec_20180804_001819/
+       [RUN] like ^^ but T=10 and L2=100 (item)
+       // TODO
+
 
 DONES
 -----
