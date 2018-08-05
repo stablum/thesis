@@ -197,7 +197,7 @@ def process_single_harvest(harvest_dir):
     a harvest_dir will contain a *.log file and an optional notes.txt file
     """
 
-    log_filenames = glob.glob(os.path.join(harvest_dir,"*.log"))
+    log_filenames = glob.glob(os.path.join(harvest_dir,"*rec*.log"))
     if len(log_filenames) == 0:
         return None
     elif len(log_filenames) != 1:
