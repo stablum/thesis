@@ -8,10 +8,10 @@ import movielens
 seed=12345
 n_epochs=1000
 
-K=500
+K=5
 TK=0 # transformation's K (number of nested transformation steps)
 enforce_invertibility=True
-flow_type="realnvp"
+flow_type="planar"
 g_flow="tanh"
 hid_dim=1000
 n_hid_layers=1
@@ -22,7 +22,7 @@ regularization_type="L2" # in L1/L2
 regularization_latent_kl=1.0#1.0#1.0#0#0.5
 kl_annealing_epsilon=0.05
 kl_annealing_T=100
-input_dropout_p=0.0
+input_dropout_p=0.8
 dropout_p=0.0
 batch_normalization=False
 lr_begin=2e-6#2e-7#2e-2 #2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
@@ -62,7 +62,7 @@ spherical_likelihood = True
 chunk_len =64*1024
 minibatch_size = 64 #1 #2 # 16 # 64
 
-regression_type = "item" # in user/item/user+item
+regression_type = "user+item" # in user/item/user+item
 
 nanguard=False
 verbose=False

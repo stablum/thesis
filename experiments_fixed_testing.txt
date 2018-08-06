@@ -427,10 +427,12 @@
            // harvest_vaerec_20180804_181554/
                [RUN] like ^^ but T=10 and L2=100
                // harvest_vaerec_20180805_171337/
+                   [RUN] like ^^ but input_dropout=0.8
+                   // TODO
            [RUN] like ^^ but T=10 and L2=100 (item)
            // harvest_vaerec_20180805_172533/
                [RUN] like ^^ but K=500
-               // TODO
+               // harvest_vaerec_20180805_192232/
            [RUN] like ^^ but T=10 and L2=100 AND USER
            // harvest_vaerec_20180805_173309/
     [RUN] like ^^ but RealNVP TK=1
@@ -449,6 +451,8 @@
                // harvest_vaerec_20180804_184202
                    [RUN] like ^^ but T=10 and L2=100
                    // harvest_vaerec_20180805_174608/
+                       [RUN] like ^^ but input_dropout=0.8
+                       // TODO
                [RUN] like ^^ but T=10 and L2=100 (item)
                // harvest_vaerec_20180805_175835/
                [RUN] like ^^ but T=10 and L2=100 AND USER
@@ -471,6 +475,8 @@
            // harvest_vaerec_20180804_185957/
                [RUN] like ^^ but T=10 and L2=100
                // harvest_vaerec_20180805_181808/
+                   [RUN] like ^^ but input_dropout=0.8
+                   // TODO
            [RUN] like ^^ but T=10 and L2=100 (item)
            // harvest_vaerec_20180805_182909/
            [RUN] like ^^ but T=10 and L2=100 AND USER
@@ -599,13 +605,13 @@ IMPL:
     V kl=0 flows
     V real nvp
     V since flows are underfitting, try larger learning rate
-    - since flows are underfitting, increase number of hidden layers
+    N since flows are underfitting, increase number of hidden layers
     V difficulty in learning? maybe K is too high
 
 TODO TEXT 30/07/2018
 --------------------
 
-- explain generated RealNVP (difference from paper)
+V explain generated RealNVP (difference from paper)
 V free bits are NOT using max anymore. Check Variational Lossy Autoencoder paper.
 
 TEXT:
@@ -613,7 +619,7 @@ TEXT:
     V collaborative filtering in introduction
     V background: start with "what is variational inference" and VAE and NF
     V rename NF to planar flow
-    - reread thoroughly RealNVP paper and describe in the text
+    V reread thoroughly RealNVP paper and describe in the text
     - make sure that the "original" algorithms are in background and
       my modifications are in method.
     V technologies used -> experiments
@@ -627,9 +633,9 @@ TEXT:
     - make sure that the related work explains how it's related
 
 IMPL:
-    - experiment with soft free bits
+    V experiment with soft free bits
     - compare plots with obj functions
 FOR LATER:
 ----------
-- play with KL coefficient
-- try adamax? Maybe it works good to replace rprop
+V play with KL coefficient
+N try adamax? Maybe it works good to replace rprop
