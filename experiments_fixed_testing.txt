@@ -477,7 +477,7 @@
            [RUN] like ^^ but UI
            // harvest_vaerec_20180804_185957/
                [RUN] like ^^ but T=10 and L2=100
-               // TODO
+               // harvest_vaerec_20180807_084935/
                    [RUN] like ^^ but input_dropout=0.8
                    // TODO
            [RUN] like ^^ but T=10 and L2=100 (item)
