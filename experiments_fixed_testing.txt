@@ -459,7 +459,7 @@
                // harvest_vaerec_20180805_184119/
                // harvest_vaerec_20180805_192232/
                [RUN] like ^^ but T=10 and L2=100 AND USER
-               // TODO
+               // harvest_vaerec_20180807_084049/
     [RUN] like ^^ but RealNVP TK=2
     // harvest_vaerec_20180730_001148/
     [RUN] like ^^ but RealNVP TK=3
