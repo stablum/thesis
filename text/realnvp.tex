@@ -1,23 +1,6 @@
-\section{RealNVP}
-\label{realnvp}
-\cite{RealNVP} introduced a generative model which makes use of the
-relationship between the probability distribution of a multivariate random
-variable and a distribution of
-its transformation, by the change of variable formula,
-as explained in section \cite{density_transformed}.
+\section{RealNVP Transformations}
 
-This relationship is used to ease inference as in:
-\begin{nalign}
-p(\boldx) = p(\boldz|\boldx)\abs{\detDtr{\boldz}}^{-1}
-\end{nalign}
-
-In this case the transformation $\tr$ \emph{is}
-the generator network.
-
-\subsection{Transformation}
-
-With the work of \cite{RealNVP} a very simple invertible function is presented
-which has the following form:
+\cite{RealNVP} introduced a very simple invertible function of the form:
 
 \begin{nalign}
 \left\{ 
@@ -48,3 +31,36 @@ hence its determinant is obtained
 from the diagonal, culminating with the form
     $\exp\left(\sum_j s(\boldz_{1:d})_j \right)$ 
 
+\subsection{Masking}
+
+To ease the implementation, the selection of the first and second parts of $\boldz$
+have been implemented with random hyperparameter masks. These masks are unique for each transformation
+step, and are computed as follows:
+
+\begin{algorithm}[H]
+\caption{Half-full random masks for RealNVP transformations}
+\begin{algorithmic}[1]
+
+\REQUIRE ~~\\
+(1) Latent dimensionality $K$ \\
+(2) Number of transformation steps $k$
+\ENSURE~~\\
+(1) Random masks $\boldm_1 \ldots \boldm_k$ which have half of their elements set at $1$
+`
+\item[]
+\FOR{$i \in \{1 \ldots k\}$}
+\STATE $(\mathbf{a})_j \leftarrow \left\{\begin{array}{ll} 1 & j < K/2 \\ 0 & K/2 \leq i < K\end{array}\right.$
+\STATE $\boldm_i = \mathrm{shuffle}(\mathbf{a})$
+\ENDFOR
+\RETURN $\boldm_1 \ldots \boldm_k$
+\end{algorithmic}
+\end{algorithm}
+                                         
+The invertible function, for a transformation step $i$, is hence implemented as:
+
+\begin{nalign}
+    \boldz_{i+1} &= \boldz_i\odot\boldm_i + (1-\boldm_i)\odot\left[\boldz_i \odot \exp\left(s(\boldm_i\odot\boldz)\right) + a(\boldm_i\odot\boldz)\right]
+\end{nalign}
+
+The masks are computed before training and are left unchanged, as they
+should be considered as hyperparameters.
