@@ -643,6 +643,12 @@ TEXT:
 IMPL:
     V experiment with soft free bits
     - compare plots with obj functions
+
+TODO:
+    - " this was a good choice for hyperparameters blabla"
+    - MFVAE baseline
+    - tables!!
+    - gfx for UI
 FOR LATER:
 ----------
 V play with KL coefficient
