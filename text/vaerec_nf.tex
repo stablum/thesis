@@ -22,7 +22,9 @@ activation function.
 
 All the parameters of the transformation are being produced as output of the
 encoder network, exactly as happens with the parameters of $\pzcond$ in a Variational
-Auto-Encoder.
+Auto-Encoder. This differs from the model of \ref{realnvp} as their network
+parameters are not given as a function of the inputs, but is rather a
+globally initialized global network which is the same for every input.
 The weights of the $a$ and $s$ layers are implemented as vectors of size $K^2$, then
 reshaped into a $(K,K)$ dimension. This limits the model into
 very low latent dimensionalities.

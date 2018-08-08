@@ -483,7 +483,7 @@
            [RUN] like ^^ but T=10 and L2=100 (item)
            // harvest_vaerec_20180807_090728/
            [RUN] like ^^ but T=10 and L2=100 AND USER
-           // TODO
+           // harvest_vaerec_20180807_091357/
     [RUN] like ^^ but PlanarNF TK=1
     // harvest_vaerec_20180730_010256/
         [RUN] like ^^ but kl=1

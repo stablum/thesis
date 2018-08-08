@@ -10,10 +10,28 @@ Hence, it's possible to predict a missing rating of a user to an item
 by considering the ratings of the users that are similar to him.
 
 \begin{nalign}
+\begin{array}{ccc}
+R = & 
 \left[
-    \begin{array}{lll}
-     & \ldots & \\
-     & \ldots &
+    \begin{array}{cc>{\columncolor{cyan!20}}ccc}
+    r_{1,1} & & \ldots & & r_{1,M} \\
+     & \ddots & & \iddots & \\
+    \cellcolor{red!20}
+     \vdots&\cellcolor{red!20}& \cellcolor{red!20} r_{i,j} &\cellcolor{red!20}&\cellcolor{red!20} \vdots \\
+     & \iddots &  & \ddots & \\
+    r_{N,1}&  & \ldots & & r_{N,M}
     \end{array}
 \right]
+&
+    \begin{array}{cc}
+    \\
+    \\
+    \leftarrow &\cellcolor{red!20}\textrm{sparse user row } r_{i,\cdot}\\
+    \\
+    \\
+    \end{array}
+\\
+    &\uparrow&\\
+    &\textrm{\colorbox{cyan!20}{sparse item column $r_{\cdot,j}$}} & \\
+\end{array}
 \end{nalign}
