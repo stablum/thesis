@@ -8,10 +8,31 @@ and its performance.
 
 Luckily such a model can be found in the VaeRec by setting the KL coefficient to 0.
 This way that extra regularization term is absent and the VaeRec model becomes analogous
-to the AutoRec model. An hypothesis can be formulated that in such similar models
-the performances will be similar as well.
+to the AutoRec model.
 
-Experimental results confirm the hypothesis:
+The ELBO function per-datapoint of a VAE 
+with posterior distribution being diagonal-covariance gaussians,
+without the KL divergence becomes:
+
+\begin{nalign}
+\elboxi
+&= \expectqphi{\log \pxicond}\\
+\end{nalign}
+
+If $\pxicond$ has a spherical gaussian ($I$ covariance matrix) form,
+then this objective, which comprises only the likelihood term,
+becomes very similar to the reconstruction error
+of a regular autoencoder, but differs for the fact that $\boldzi$
+is stochastic and drawn from a distribution determined by the encoder.
+Since the KL term is absent, $\qphizcondi$, unregolarized,
+will tend to collapse to distributions that are centered in specific $\boldmu$'s in latent
+space but have $\boldsigma$'s that tend to 0, hence with
+random sample from $\qphizcondi$ being always $\boldmu$.
+
+Hence, an hypothesis can be formulated about the similarity of VaeRec without KL
+and AutoRec:
+
+Experimental results confirm the hypothesis by showing similarity of testing error:
 
 \begin{table}[H]
 \centering

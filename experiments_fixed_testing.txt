@@ -634,9 +634,9 @@ TEXT:
     - some sections seem a bit short
     V expand collaborative filtering with some images (sparse rating matrix)
     - describe bounds in U-VaeRec vs I-Vaerec vs UI-VaeRec
-    - did I explain the theory behind VaeRec/AutoRec equivalence?
+    V did I explain the theory behind VaeRec/AutoRec equivalence?
     V expand MFVA with its bound, compared to mine
-    - put equivalence VaeRec/AutoRec into related work
+    V put equivalence VaeRec/AutoRec into related work
     - make sure that the related work explains how it's related
     - clear FIXMEs and TODOs (print the thing)
 

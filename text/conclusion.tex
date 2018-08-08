@@ -12,3 +12,9 @@ Moreover, \emph{Generative Adversarial Networks} \cite{GAN} seem to be well suit
 for collaborative filtering. The Generator-Discriminator networks might help
 obtaining predicted ratings that are as "real" as they could possibly be.
 
+Hyperparameter search for VaeRec models needs to be further
+investigated. Specifically, computation-intensive improvements
+such as increase in depth and width of the networks should be looked into.
+Different libraries than \emph{Theano}\cite{theano} should also be tried, as Theano's
+development is currently discontinued, in favor of \emph{TensorFlow}\cite{tensorflow}
+or \emph{PyTorch}\cite{pytorch}, which might have better support for sparse tensors.

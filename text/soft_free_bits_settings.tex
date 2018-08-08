@@ -1,0 +1,45 @@
+\section{Soft Free Bits settings}
+
+During experiments with VaeRec, it was noted how the $\justkl$ values differ greatly from
+the marginals to the $\justkl$.
+This is because as the latent dimensionality increases, it gets harder to match
+the prior and the posterior.
+For this reason, for larger latent dimensionalities,
+it can be observed a posterior collapse trough the $\justkl$ marginals,
+even if the $\justkl$ still returns values that are reasonably high.
+
+Within our \emph{Soft Free Bits} (see section \ref{posterior_collapse}) implementation
+our solution was just to set the $\lambda$ linearly proportional to $K$, as in $\lambda=2*K$.
+
+The annealing $\epsilon$ was set, as suggested in \cite{1611.02731}, to the value $0.05$.
+The value of $\gamma$ was updated at every minibatch learning iteration.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{kl_annealing1.png}
+\caption{Free Soft Bits: evolution of kl annealing coefficient vs. kl divergence. The values are sampled after evey minibatch update. This plot has been obtained with about 50 epochs of VaeRec, without Normalizing Flows and with latent dimensionality K=1}
+\label{kl_annealing1}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{kl_annealing2.png}
+\caption{Zoom-in of the last part of the previous figure \ref{kl_annealing1} . It is noticeable how the KL divergence measure succesfully converges towards the desired amount of 2. The annealing coefficient keeps oscillating, reflecting the dynamic nature of the annealing-vs-kl system.}
+\label{kl_annealing2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{kl_annealing_K=5_1bis.png}
+\caption{Similar plot to \ref{kl_annealing1}, but with the more interesting case of K=5. The KL divergence also succesfully converge to the target value 10.}
+\label{kl_annealing_K5_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{kl_annealing_K=5_2bis.png}
+\caption{Zoom-in of the last part of the previous figure \ref{kl_annealing_K5_1}.  The annealing coefficient converges, with oscillations, towards small values such as the case with K=1.}
+\label{kl_annealing2}
+\end{figure}
+
