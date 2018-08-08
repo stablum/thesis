@@ -632,12 +632,13 @@ TEXT:
     V technologies used -> experiments
     V remove use of u invertibility constraint
     - some sections seem a bit short
-    - expand collaborative filtering with some images (sparse rating matrix)
+    V expand collaborative filtering with some images (sparse rating matrix)
     - describe bounds in U-VaeRec vs I-Vaerec vs UI-VaeRec
     - did I explain the theory behind VaeRec/AutoRec equivalence?
-    - expand MFVA with its bound, compared to mine
+    V expand MFVA with its bound, compared to mine
     - put equivalence VaeRec/AutoRec into related work
     - make sure that the related work explains how it's related
+    - clear FIXMEs and TODOs (print the thing)
 
 IMPL:
     V experiment with soft free bits

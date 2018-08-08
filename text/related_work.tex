@@ -70,3 +70,12 @@ The decoder/recognition functions that have been used, differently from AutoRec,
 output the single $\rij$ rating. A dot-product between $\boldui$ and $\boldvj$
 as well as MLP have been employed for the task, with $\rij$ being
 either expressed with a Gaussian distribution or with a multinomial distribution.
+
+The lower bound assumes this form:
+
+\begin{nalign}
+\mathcal{L} &= -\sum_i\kl{Q_u(\boldui|r_{i,\cdot})}{p(\boldui)}\\
+&-\sum_j\kl{Q_v(\boldvj|r_{\cdot,j})}{p(\boldvj)}\\
+&+ \sum_{i,j}\expect{Q_u,Q_v}{\log p(r_{ij}|\boldui,\boldvj)}
+\end{nalign}
+
