@@ -62,7 +62,7 @@ spherical_likelihood = True
 chunk_len =64*1024
 minibatch_size = 64 #1 #2 # 16 # 64
 
-regression_type = "user" # in user/item/user+item
+regression_type = "user+item" # in user/item/user+item
 
 nanguard=False
 verbose=False
