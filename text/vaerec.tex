@@ -38,24 +38,3 @@ its user vector $\ric$ and item vector $\rcj$,
 epochs have been implemented as random samplings 
 of a fixed amount of the ratings.
 The same sampling is performed in the test set.
-\subsection{Masking the Adam optimizer}
-
-Given its properties, Adam \cite{KingmaB14} has been choosen
-as optimization algorithm.
-
-The VAERec, similarly to the AutoRec, needs to be selective on
-which parameters needs to be updated: both in the first
-layer of the encoder
-and the last layer of the decoder, only the weights
-that are connected to existing ratings can be updated.
-
-Provided a binary mask $\mask$ of a parameters tensor $\boldsymbol\theta$
-then Adam has the two assignments of $\widehat{\boldm}_t$
-and $\widehat{\boldv}_t$ modified from the original algorithm as follows:
-
-\begin{nalign}
-\widehat{\boldm}_t &\leftarrow \frac{\boldm_t}{1 - \beta^t_1} \odot \mask
-+ \boldm_{t-1}\odot (1-\mask)\\
-\widehat{\boldv}_t &\leftarrow \frac{\boldv_t}{1-\beta^t_2}\odot\mask
-+ \boldv_{t-1}\odot (1-\mask)
-\end{nalign}

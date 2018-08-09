@@ -1,4 +1,4 @@
-\section{Dealing with underfitting}
+\section{Tackling underfitting}
 
 It's very common, when working on new models, to have difficulties
 in getting the model to even learn from the training data.
@@ -16,7 +16,7 @@ and adding more hidden layers, as well as KL annealing, described in the followi
 In VAERec models, one source of regularization is the KL divergence in the ELBO.
 
 In our models, a linear slowly annealing coefficient on the KL
-has been implemented. With the following rule:
+has been tried. With the following rule:
 
 \begin{nalign}
 a = \frac{\max(t,T)}{T}
