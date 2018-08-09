@@ -1,9 +1,9 @@
 \section{Representation Learning}
 Representation Learning (RL) is a developing branch of Machine Learning that has one of its
-focuses on extracting representations codes $\mathbf{Z} = \{\mathbf{z}_i\}_{i=1}^N$ from the datapoints in a dataset $\mathbf{X} = \{\mathrm{x}_i\}_{i=1}^N$.
+focuses on extracting representation codes $\mathbf{Z} = \{\mathbf{z}_i\}_{i=1}^N$ from the datapoints in a dataset $\mathbf{X} = \{\mathrm{x}_i\}_{i=1}^N$.
 It is usually desirable for these representations to be characterized by properties such as low-dimensionality, clusterability, increased linear separability (especially when used for further classification tasks) and intuitive "semantic" explainability of the dimensions of the learned manifold.
 
-One common attempt to achieve such properties is the use of Principal Component Analysis (PCA) , which transforms the original features of the raw input into a set of uncorrelated variables.
+One common attempt to achieve such properties is the use of Principal Component Analysis (PCA) which transforms the original features of the raw input into a set of linearly uncorrelated variables.
 The main drawback of PCA is the assumption that the explaining dimensions are linearly related to the directions of maximum variance in the data.
 This assumption is not true for most complex datasets, in which the original features of a dataset might actually be the result of arbitrarly complicated nonlinear unknown functions.
 
