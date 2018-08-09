@@ -509,6 +509,8 @@
        [RUN] like ^^ but T=10 and L2=100 (item)
        // TODO
 
+[RUN] "the amazing" (similar to harvest_vaerec_20180512_110634/ )
+// 
 
 DONES
 -----

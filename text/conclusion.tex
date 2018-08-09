@@ -1,5 +1,13 @@
 \chapter{Conclusion}
 
+The novel use of datapoint comprised of a concatenation of user and item vector indicated
+some promising prospects for AutoRec-like models. This input variant
+leads to a better fitting than item or user-based models under identical circumstances.
+The drawback of overfitting seems to be overcome by 
+regularization techniques, in the case of the VaeRec, by careful handling of the
+coefficients of the $\justkl$ divergence, with techniques such as \emph{soft free bits}.
+
+
 \section{Future work}
 
 The field of representation learning and autoencoders is currently object of
@@ -15,6 +23,8 @@ obtaining predicted ratings that are as "real" as they could possibly be.
 Hyperparameter search for VaeRec models needs to be further
 investigated. Specifically, computation-intensive improvements
 such as increase in depth and width of the networks should be looked into.
+Alternative settings to the $\lambda$ parameter for \emph{soft free bits}
+need to be tested in order to find a proper optimum.
 Different libraries than \emph{Theano}\cite{theano} should also be tried, as Theano's
 development is currently discontinued, in favor of \emph{TensorFlow}\cite{tensorflow}
 or \emph{PyTorch}\cite{pytorch}, which might have better support for sparse tensors.
