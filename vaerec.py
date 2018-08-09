@@ -676,7 +676,7 @@ class Model(model_build.Abstract):
 
     @utils.cached_property
     def transformation_term_obj_realnvp(self):
-        logdetJ = 0
+        logdetJ = T.constant(0).astype('float32')
         for k in range(TK):
             logdetJ += T.sum(self.l_transformations_s_masked_lea[k])
         return logdetJ
@@ -1046,7 +1046,6 @@ def main():
         model.kl_annealing,
         model.latent_kl_average
     ]
-
     params_update_fn = model_build.make_function(
         params_update_inputs,
         params_update_outputs,
