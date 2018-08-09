@@ -1,0 +1,21 @@
+\section{Experiments with regularization techniques}
+
+\subsection{Dropout layer on the input}
+
+Denosing autoencoders\cite{denoising} improve the quality of the representations
+by forcing resiliance of the neural network by adding noise on the input
+and using the original datapoint in the objective function.
+
+We tried a similar mechanism on our AutoRec re-implementation
+by adding a Dropout \cite{Srivastava2014} layer with parameter $p=0.1$ on the input. 
+
+The following plot shows that an improvement in generalization is indeed obtained:
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{autorec_input_dropout.png}
+\caption{Dropout layer on the input of an AutoRec model}
+% python3 plot_2.py  harvest_autorec_20180108_154116 harvest_autorec_20180120_124230 'without input dropout'  'input dropout p=0.1' --save text/autorec_input_dropout.png --epochs 627 --minerr 0.7 --maxerr 1.0
+\label{input_dropout_fig}
+\end{figure}

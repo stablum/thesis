@@ -25,36 +25,8 @@ $\boldu$ is a parameter that acts as a coefficient vector
 representing the amount of the transformation $h(\wt \boldz + b)$
 applied to the input $\boldz$ vector.
 
-The previous derivations showed how just the 
+The derivations in Appendix \ref{density_transformed} show how just the 
 determinant of Jacobian of the transformation
 is used in order to express the probability of the transformed variable
 as a function of the probability of the original variable $\boldzzero$.
-
-The Jacobian $\partialboldz{t(\boldz)}$ of the transformation can be found as follows:
-
-\begin{nalign}
-\partialboldz{\boldz} &= \identity \\
-\partialboldz{\wt \boldz + b} &= \wt && \text{The Jacobian of a scalar is a row vector} \\
-\partialboldz{h(\wt \boldz + b)} &= h^\prime (\wt \boldz + b)\wt && \text{Chain rule}
-\end{nalign}
-
-Hence:
-\begin{nalign}
-\partialboldz{t(\boldz)} &= \identity + \boldu h^\prime(\wt \boldz + b)\wt
-\end{nalign}
-
-In order to derive the determinant of the Jacobian, it's possible to make use of the
-\emph{matrix determinant lemma} which states:
-\begin{nalign}
-    \det ( \boldA + \bolda \boldbt ) = (1 + \boldbt \boldAinv \bolda)(\det \boldA)
-\end{nalign}
-
-Considering $\boldA = \identity$, $\bolda = \boldu$ and $\boldbt = h^\prime(\wt \boldz + b)\wt$,
-this leads to:
-
-\begin{nalign} \label{detjacobian_iltt}
-\det \partialboldz{t(\boldz)} &= \det(\identity + \boldu h^\prime(\wt \boldz + b) \wt)\\ 
-&= (1 + h^\prime(\wt \boldz + b)\wt \identity^{-1} \boldu)(\det \identity)\\
- &=1 + h^\prime(\wt \boldz + b)\wt \boldu
-\end{nalign}
-
+For the derivation of the Jacobian please refer to Appendix \ref{jacobian_illt}

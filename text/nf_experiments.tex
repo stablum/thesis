@@ -1,0 +1,15 @@
+\section{Normalizing Flows}
+
+Experiments with planar and RealNVP normalizing flows have been performed.
+A base VaeRec model has been chosen with 1 hidden layer with dimensionality 1000, latent dimensionality 5, learning rate annealing T=10, and soft free bits' $\lambda=2*K=10$.
+
+To this base model Normalizing Flows have been applied with 1 or 5 transformation steps.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{realnvp_nf.png}
+\caption{VaeRec with RealNVP Normalizing flows}
+% python3 plot_3.py  harvest_vaerec_20180805_172533 harvest_vaerec_20180805_175835 harvest_vaerec_20180807_090728 '0 steps'  '1 step' '5 steps' --save text/realnvp_nf.png
+\label{realnvp_nf_fig}
+\end{figure}
+

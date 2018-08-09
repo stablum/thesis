@@ -1,0 +1,67 @@
+\section{User+Item concatenation vs traditional Item or User datapoints }
+\subsection{User+Item concatenation on AutoRec}
+
+For this experiment the base model AutoRec was used, with the purpose to
+observe difference in learning outcomes between using just item vectors
+versus the concatenation of user and item vectors.
+
+For this experiment, a latent dimensionality of 250 and
+with hidden layer dimensionality set at 500. These hyperparameters
+reflect typical settings from the original AutoRec paper \cite{Sedhain2015}.
+L2 regularization was set at 200.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{autorec_ui.png}
+\caption{AutoRec: comparing item learning vs user+item learning}
+% python3 plot_2.py harvest_autorec_20180102_181908 harvest_autorec_20180104_111755 'item' 'user+item' --maxerr 3 --minerr 0 --epochs 800 --save text/autorec_ui.png
+\label{autorec_ui_fig}
+\end{figure}
+
+Unfortunately the user+item version is not able to generalize well on the dataset,
+Nevertheless it's interesting to see how the user+item version overfits more than 
+the item version.
+This indicates that using user+item concatenation datapoints might lead to better
+performance on the test set if a suitable regularization method is found.
+
+One disadvantage of using user+item was the much longer times for training, likely
+because of the datapoint dimensionality increase.
+
+\subsection{User+Item concatenation on VaeRec}
+
+Similar comparison experiments have been performed on VaeRec,
+with different model hyperparameters.
+Specifically, these experiments differ by having used a much lower dimensionality
+(5), which might have regularizing effects, as well as L2 regularization set at 100
+and hidden layer dimensionality set at 1000. Moreover, learning rate annealing $T$
+parameter has been
+set to 10 and \emph{soft free bits} have been employed with $\lambda=2*K=10$.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{vaerec_ui.png}
+\caption{VaeRec: comparing item learning vs user+item and user learning}
+% python3 plot_4.py harvest_vaerec_20180805_172533  harvest_vaerec_20180805_173309 harvest_vaerec_20180805_171337 harvest_vaerec_20180804_173844 'item lambda=10'  'user lambda=10' 'user+item lambda=10' 'user+item lambda=1' --epochs 120 --save text/vaerec_ui.png --maxerr 2 --minerr 0.75
+\label{vaerec_ui_fig}
+\end{figure}
+
+Similarly as the previous AutoRec experiment, it can be observed how user+item overfits and performs poorly on the testing
+set.
+
+Interestingly, the 'user' version of VaeRec performs better than the baseline 'user' variant
+of AutoRec as reported in their paper.
+
+\begin{table}[H]
+\centering
+\caption{VaeRec: performance on the test set of item learning vs user+item and user learning, compared to the reported AutoRec outcomes \cite{Sedhain2015}}
+ \begin{tabular}{||l | c c |c||} 
+ \hline
+ & \multicolumn{2}{c}{VaeRec} & AutoRec \\ \hline
+ & training & testing & testing \\ \hline
+item $\lambda=10$& 0.8240&0.8599 & 0.831 \\
+user $\lambda=10$ & 0.8262&0.8598 & 0.874 \\
+user+item $\lambda=10$ & 0.8241 & 1.0893 & N/A\\
+user+item $\lambda=1$ &0.9813 & 0.9930 &\\
+\hline
+\end{tabular}
+\end{table}

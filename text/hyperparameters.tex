@@ -1,0 +1,43 @@
+\section{Choice of hyperparameters}
+
+The search for an acceptable model via hyperparameter search was a very long process.
+Since most experiments took about 8 days to complete, choosing the right hyperparameter
+settings took many months.
+
+At the end of this process it was understood that most hyperparameters were located
+on a specific trade-off minimum in a convex curve of validation error.
+For example, using minibatch of size 1 gave
+often unsatisfactory resuls. Better results were obtained with a minibatch of size 64,
+but increasing that value, for example to 128 or 256 gave worse results.
+
+Other hyperparameters that were problematic to set were those dedicated to 
+L2 regularization of the network weights. A good balance was found by using 100 or 200 
+as L2 regularization coefficient.
+
+The learning rate was also located as a minimum in a convex curve.
+High learning rates might initially progress faster but may "jump over" good minima,
+while lower learning rates might converge to a better minima but take a larger amount of
+epochs. These effects might be mitigated by the use of moment-based descent algorithm,
+such as
+Adam \cite{KingmaB14} and by the use of 
+the learning rate annealing described in section \cite{annealing}, with
+parameter $T$ set at $10$, meaning that the initial halving of the learning rate
+happens after the first $10$ epochs (further decay is much slower)
+. A good initial learning rate was found being $2e-6$.
+
+The ideal number of epochs would have been $1000$ but unfortunately reaching
+this target was highly inpractical by the sheer amount of time that the learning
+required. This fact was aggravated by the limit on the number of concurrent
+jobs that was imposed by the distributed supercomputer DAS4 administration,
+which was about 10-20 long-running jobs at the same time.
+For these reasons many reported experiments have been trained for a lower number of
+epochs.
+
+The depth of the network was finally chosen to be 1 hidden layer,
+as it eases the creation of useful intermediate-level
+representation values, as opposed to not using hidden layers at all.
+
+Latent dimensionalities explored were 5, 250 and 500. 
+
+
+
