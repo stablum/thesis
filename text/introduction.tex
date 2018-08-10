@@ -1,3 +1,21 @@
 \chapter{Introduction}
-\input{representation_learning}
-\input{collaborative_filtering}
+
+This work presents an exploration on the use of Variational Autoencoders for collaborative
+filtering. The baseline model has been chosen to be \emph{AutoRec}\cite{Sedhain2015},
+which uses latent representation to reconstruct missing ratings.
+The natural evolution of this model has been considered to be similar
+model based on a Variational-AutoEncoder, which we called \emph{VaeRec}.
+Various extensions to this model have been examined.
+Specifically, \emph{Normalizing Flows} transformations of the posterior approximation 
+have been investigated, as well as regularization techniques.
+
+The structure of this thesis represents the progressive nature of the research:
+Chapter 2 offers a highlight of the notions required to delve into the 
+actual contributions of the model ;
+Chapter 3 presents similar models that have been used as inspiration ;
+Chapter 4 presents our models with their variants ;
+Chapter 5 illustrates the experiments that have been performed on our models ;
+Chapter 6 summarizes the contributions of the models with insights that emerged from all the experiments ;
+Most detailed derivations and proofs, very useful for a beginner that is trying to figure
+out mathematical details of the models, have been left to the Appendix.
+
