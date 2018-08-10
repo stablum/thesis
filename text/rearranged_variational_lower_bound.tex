@@ -7,7 +7,7 @@ whence it's not subject to Monte-Carlo sampling.
 Unfortunately, by using Normalizing Flows, the $\mathbb{KL}$ cannot be determined
 analytically, so it has to be subject to Monte-Carlo sampling.
 The negative lower bound $\mathcal{L}(x)$ can be interpreted as
-a negative Free-energy (FIXME: look what is "free energy) $-\mathcal{F}(x)$
+a negative Free-energy $-\mathcal{F}(x)$
 that has to be minimized.
 
 It's useful to reduce the free energy into it's "atomic" probability components:
@@ -23,7 +23,7 @@ of a transformation $\boldz = \tr(\boldzzero)$ of an initial random multivariate
 which happens to have a simple distribution, such as multivariate gaussian 
 with diagonal covariance matrix.
 
-For the \emph{law of the unconscious statistician} (LOTUS) \cite{lotus} (FIXME: expand)
+For the \emph{law of the unconscious statistician} (LOTUS) \cite{lotus} 
 the energy can have a form with expectations over the simpler distribution of
 $\boldzzero$:
 

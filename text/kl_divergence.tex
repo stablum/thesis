@@ -1,4 +1,4 @@
-\section{Derivation of Kullback-Leibler divergence between diagonal-covariance Gaussian posterior approximation and spherical Gaussian prior}
+\section{$\justkl$ between diagonal-covariance Gaussian $\qzcond$ and spherical Gaussian prior}
 
 The Variational-Autoencoder introduced by \cite{1312.6114} makes use of a posterior approximation that takes the form of a diagonal-covariance Normal distribution
 $\qzcond = \normal{\boldz}{\boldmu}{\boldsigma}$;
@@ -63,7 +63,7 @@ This fact can be used to get to a simpler way to calculate the KL divergence:
 
 Where $\boldz_{-j}$ are the latent variables excluding $z_j$.
 
-\subsection{KL of a one-dimensional Gaussian vs unit circle (FIXME: name??) Gaussian}
+\subsection{KL of a one-dimensional Gaussian vs unit circle Gaussian}
 
 The Kullback-Leibler divergence of an arbitrary one-dimensional Gaussian $q(z) = \normal{z}{\mu}{\sigma^2}$
 versus

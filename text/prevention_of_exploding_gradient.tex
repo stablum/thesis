@@ -1,6 +1,6 @@
 \section{Prevention of exploding gradients}
 It is possible, under specific circumstances, that the gradients may become unstable and
-compromise the model.
+compromise the parameters of the model with infinities or "not a number" values.
 
 In order to prevent this phenomenon, a few "tricks" have been implemented:
 
@@ -47,7 +47,8 @@ will be bounded between $-K$ and $+K$. A good value for $K$ might be 5, in order
 $\sigma$-values properly bounded between $0.0067$ and $148.4$.
 
 For layers that are supposedly linear in their outputs, such as Planar Flow's 
-$\mathbf{w}$, $b$, and $\mathbf{u}$ quantities, as well as the $\boldsymbol\mu$ outputs,
+$\mathbf{w}$, $b$, and $\mathbf{u}$ quantities, as well as the means $\boldsymbol\mu$ of 
+the gaussian distributions,
 a "pseudo-linear" function
 on the same guise has been implemented with $K=20$. 
 

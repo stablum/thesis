@@ -23,12 +23,20 @@
 \usepackage{xcolor}
 % \newcommand{\sectionbreak}{\clearpage} %page break on new section
 
+\usepackage{pdfpages}
+
+% FOR TITLE PAGE:
+%\usepackage[a4paper,margin=2cm]{geometry}
+%\usepackage{graphicx, color}
+%\newcommand{\red}[1]{{\color{red}{#1}}}
+
 %\newcommand{\refeq}[1]{\textit{Equation \ref{#1}}}
 \author{Francesco Stablum}
 \title{Collaborative Filtering with Variational Autoencoders and Normalizing Flows}
 \begin{document}
-\maketitle
-Compiled on \today\ at \currenttime
+\includepdf[pages={1}]{title-page-ai.pdf}
+%\maketitle
+%%Compiled on \today\ at \currenttime
 \tableofcontents
 % using \input instead of \include prevents page breaks after the include
 \input{newcommands}

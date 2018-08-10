@@ -1,12 +1,22 @@
 \chapter{Experiments}
+This chapter presents experiments on our models.
+At first some contextual information is given, such as details on technologies that have
+been employed, dataset used, technicalities about scaling of learning rate and regularization coefficients and hyperparameter settings.
+
+Follow results on the experiments runs.
+Interesting information on how the model determines learning progress
+can be obtained by observation of the RMSE progress over the epochs , both for the
+training set and validation set. 
+Analysis of the charts provides insight on issues such as hyperparameter choice,
+overfitting and underfitting.
 \input{technologies}
 \input{movielens}
 \input{scaling_issues}
 \input{prevention_of_exploding_gradient}
 \input{soft_free_bits_settings}
-\input{autorec_vaerec_equivalences}
 \input{hyperparameters}
-\input{ui_experiments}
 \input{nf_experiments}
+\input{autorec_vaerec_equivalences}
+\input{ui_experiments}
 \input{regularization_experiments}
-\input{progress_curves}
+\input{kl_reg_tradeoff}

@@ -23,10 +23,10 @@ Adam \cite{KingmaB14} and by the use of
 the learning rate annealing described in section \cite{annealing}, with
 parameter $T$ set at $10$, meaning that the initial halving of the learning rate
 happens after the first $10$ epochs (further decay is much slower)
-. A good initial learning rate was found being $2e-6$.
+. A good initial learning rate was found being 2e-6.
 
 The ideal number of epochs would have been $1000$ but unfortunately reaching
-this target was highly inpractical by the sheer amount of time that the learning
+this target was highly inpractical by the sheer amount of time that the training
 required. This fact was aggravated by the limit on the number of concurrent
 jobs that was imposed by the distributed supercomputer DAS4 administration,
 which was about 10-20 long-running jobs at the same time.
@@ -35,9 +35,7 @@ epochs.
 
 The depth of the network was finally chosen to be 1 hidden layer,
 as it eases the creation of useful intermediate-level
-representation values, as opposed to not using hidden layers at all.
-
-Latent dimensionalities explored were 5, 250 and 500. 
+representation values, as opposed to not using hidden layers at all. Latent dimensionalities explored were 5, 250 and 500. 
 
 
 

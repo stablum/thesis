@@ -1,5 +1,30 @@
 \chapter{Conclusion}
 
+VAERec models introduce a straightforward extension to the AutoRec models.
+Probabilistic information on latent variables representing
+users or items was exhamined by \cite{vanBaalen2016}.
+
+AutoRec has been chosen as the base model 
+for its capability to reconstruct an entire sparse
+vector of ratings
+belonging to a user, or to an item by estimating all its missing values during 
+a single query. 
+
+Our work introduces additional explorations trough the use of variational autoencoders
+specifically made to handle sparse input, implemented via parameter masking.
+
+Moreover, posterior approximation improvements have been
+added, in the form of \emph{planar flows}\cite{1505.05770} and novel use of 
+the more powerful invertible transformation introduced by \emph{RealNVP}\cite{RealNVP}.
+Comparisons between different hyperparameter settings have been illustrated.
+
+Overfitting and underfitting were some of the major obstacles in the attempt to 
+obtain models with good generization capabilities. In VAE models
+these phenomenon can be tackled by altering the coefficient to the $\justkl$
+regularizer term. An adaptive method, named \emph{Soft Free Bits} \cite{1611.02731}
+has been employed in order to dynamically alter the $\justkl$ coefficient according to
+the value of the $\justkl$ term.
+
 The novel use of datapoint comprised of a concatenation of user and item vector indicated
 some promising prospects for AutoRec-like models. This input variant
 leads to a better fitting than item or user-based models under identical circumstances.
@@ -18,6 +43,12 @@ VAERec. For instance, of particular interest is \emph{Autoregressive Flow}
 Specifically to this work, the \emph{RealNVP} transformation 
 could be further improved by changing the function $a(\cdot)$ into
 a nonlinear function instead of being an affine transformation.
+
+The decoder, or \emph{generator network}, has been chosen as having a spherical
+gaussian form with identity covariance matrix $\mathbf{I}$ on $\pxcond$. 
+A more informative model
+with an arbitrarly-valued diagonal covariance matrix could be employed
+in order to give a measure of uncertainty on the estimated ratings.
 
 With an eye on different models, 
 \emph{Generative Adversarial Networks} \cite{GAN} seem to be well suited 
