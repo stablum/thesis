@@ -653,6 +653,12 @@ TODO:
     - MFVAE baseline
     - tables!!
     - gfx for UI
+
+PREPARATION FOR DEFENSE:
+------------------------
+
+- KL and mutual information (posterior collapse section)
+
 FOR LATER:
 ----------
 V play with KL coefficient

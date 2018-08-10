@@ -1,4 +1,4 @@
-\section{RealNVP Transformations}
+\subsection{RealNVP Transformations}
 \label{realnvp}
 
 \cite{RealNVP} introduced a very simple invertible function of the form:
@@ -32,3 +32,6 @@ hence its determinant is obtained
 from the diagonal, culminating with the form
     $\exp\left(\sum_j s(\boldz_{1:d})_j \right)$ 
 
+Another great advantage over planar flows is that, while planar flows force the transformation
+    to be channeled to a scalar value, RealNVP do not have this restriction, as
+    the nonlinearity is applied to a dimensionality which is the same as the latent variable's.

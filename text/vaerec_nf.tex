@@ -14,18 +14,18 @@ in section \ref{realnvp} is introduced.
 This transformation was considered interesting 
 because of its implementation
 ease and very simple determinant of the Jacobian.
-Specifically, the function $s$ is implemented as
+Specifically, the function $s(\cdot)$ is implemented as
 a single perceptron layer with nonlinear activation function 
-\emph{tanh}. The function $a$ which is required to be an affine transform,
+\emph{tanh}. The function $a(\cdot)$ which is required to be an affine transform,
 is implemented as a single perceptron layer with \emph{linear}
 activation function.
 
 All the parameters of the transformation are being produced as output of the
-encoder network, exactly as happens with the parameters of $\pzcond$ in a Variational
+encoder network, exactly as happens with the parameters of $\qphizcond$ in a Variational
 Auto-Encoder. This differs from the model of \ref{realnvp} as their network
 parameters are not given as a function of the inputs, but is rather a
 globally initialized global network which is the same for every input.
-The weights of the $a$ and $s$ layers are implemented as vectors of size $K^2$, then
+The weights of the $a(\cdot)$ and $s(\cdot)$ layers are implemented as vectors of size $K^2$, then
 reshaped into $(K,K)$ dimensions. This limits the model into
 very low latent dimensionalities.
 

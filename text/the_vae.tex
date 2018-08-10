@@ -24,7 +24,10 @@ Since values of $\boldz$ are being sampled, this would prevent gradients from fl
 in a backpropagation-like way. To circumvent this problem, a \emph{reparameterization trick}
 has been employed by using a sample $\epsilon$ which is always drawn from
 a $\mathcal{N}(\mathbf{0},\mathbf{I})$ Normal distribution.
-By using the transformation $\cap{\boldz} = \boldmu_{\phi} + \boldsigma_{\phi} \cdot \epsilon$
+By using the transformation:
+\begin{nalign}
+\hat{\boldz} = \boldmu_{\phi} + \boldsigma_{\phi} \cdot \epsilon
+\end{nalign}
 a sample is obtained from the distribution $\mathcal{N}(\boldmu_{\phi},\boldsigma_{\phi})$.
 
 The sum-based form that allows for SGD-like updates described in section

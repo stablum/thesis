@@ -1,7 +1,12 @@
 \section{Dealing with overfitting}
 
-One of the major issues with AutoRec/VaeRec models
-is overfitting. The system performs very well on the training
+One of the major issues in some AutoRec/VaeRec models
+is overfitting. 
+Notwithstanding the fact that VAE models are plagued by
+over-regularization caused by the posterior approximation collapse described in section
+\ref{posterior_collapse}, under specific circumstances overfitting is prominent,
+as in using \emph{UI} (user+item) datapoint schemas.
+In these cases, the model performs very well on the training
 set but unsatisfactory on the test set.
 
 \paragraph{Dropout on the input layer}
@@ -23,9 +28,14 @@ possibly by a similar way of action as denoising autoencoders.
 \cite{Vincent2010}.
 
 \paragraph{Narrowing the bottleneck}
+This is a common technique, typically used with regular autoencoders.
+Information is being channeled trough a limited number of nodes,
+forcing the neural network to lose hopefully unrelevant information
+which might be dataset noise.
 \paragraph{Regularization}
 Regularization has been tested with either L1 or L2 norms,
 without significant improvements.
-\paragraph{Batch Normalization}
 \paragraph{Increasing the depth}
-FIXME:explain paper \cite{MhaskarLP17} but also \cite{Poggio2015}
+Depth has been studied in \cite{MhaskarLP17},\cite{Poggio2015}
+as a method to improve representations. Better representations usually lead
+to a better identification and disposition of overfitting noise. 

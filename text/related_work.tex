@@ -3,7 +3,8 @@
 \section{Probabilistic Matrix Factorization}
 \emph{Probabilistic Matrix Factorization}\cite{salakhutdinov2008a}
 is dimensionality-reduction technique for the CF problem
-that learns a matrix factorization of \emph{R}
+that learns a matrix factorization of the sparse matrix of
+observed ratings \emph{R}
 into two low-dimensional factor matrices
 $U \in R^{D \times N}$ and $V \in R^{D\times M}$
 where $D$ is the size of the low dimensionality.
@@ -39,8 +40,8 @@ results in all the missing ratings to be estimated at once.
 
 The missing ratings are not provided to the encoder
 but an estimation of those is nevertheless being provided
-by the decoder, making use of the ``lossy compression''
-capabilities of an autoencoder with low dimensional bottleneck layer.
+by the decoder, making use of the representation learning and denoising
+intrinsic capabilities of an autoencoder with low dimensional bottleneck layer.
 
 The loss function is hence the error
 between the user (or item) vector $\boldr$ and its reconstruction, 

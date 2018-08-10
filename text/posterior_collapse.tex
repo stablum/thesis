@@ -1,8 +1,8 @@
-\section{Posterior collapse}
+\section{Variational posterior approximation collapse}
 \label{posterior_collapse}
 
-It was observed\cite{Kingma2017}\cite{1611.02731} that in the initial phases of training, due to weakness of the term $\pxcond$ the term $\kl{\pzonly}{\qzcond}$ 
-induces $\qzcond$ to collapse to the prior $\pzonly$.
+It was observed\cite{Kingma2017}\cite{1611.02731} that in the initial phases of training, due to weakness of the term $\pxcond$ the term $\kl{\qzcond}{\pzonly}$ 
+promotes $\qzcond$ to collapse to the prior $\pzonly$.
 
 If the latent variables are independent, then this phenomenon can be diagnosed by looking at the individual Kullback-Leibler divergences
 at each latent dimension, as shown in \ref{kl_as_sum} and, for the diagonal-covariance Normal, in \ref{kl_one_d}, \ref{kl_multivariate}.
@@ -13,26 +13,35 @@ at each latent dimension, as shown in \ref{kl_as_sum} and, for the diagonal-cova
  The implied minimization of the mutual information during optimization of the ELBO forces a high dependence of the $\boldx$ datapoints to the prior $\qzonly$,
  leading to over-regularization of $\qzcond$.
 
-\subsection{KL Annealing}
+\subsection{$\justkl$ Annealing}
 
 \cite{Bowman} has done extensive experiments with variational autoencoders
 in recurrent neural networks, and points out that it's very likely
 that the KL term is much easier to be optimized
-and is quickly brought to 0, forcing the $p(\boldz|\boldx)$ term to
+and is quickly brought to 0, forcing the $\qphizcond$ term to
 collapse to the prior $p(\boldz)$.
-He proposes annealing of the KL term to prevent this phenomenon by
+He proposes annealing of the $\justkl$ term to prevent this phenomenon by
 lowering the contribution of the term in the initial phases of the learning.
 
+A simple implementation for the annealing is the following:
+\begin{nalign}
+\gamma = \frac{\min(t,T)}{T}
+\end{nalign}
+
+Where $t$ is the current epoch number, $T$ is the amount of epochs required to
+reach regimen and $\gamma$ is the coefficient to the $\justkl$ term.
+
 \subsection{Free Bits and Soft Free Bits}
- In order to prevent the collapse of the posterior approximation to the prior, the gradients of the mutual information term can be zeroed by setting a lower-bound
+ In order to prevent the collapse of the posterior approximation to the prior, the gradients of the $\justkl$ term can be zeroed by setting a lower-bound
  value to the \emph{nats} expressed from that term, as in:
 \begin{nalign}
      \max\left[\lambda,\expectxM{\kl{\qzcond}{\pzonly}}\right]
 \end{nalign}
 
 Alternatively, as described in a revision of \cite{1611.02731} \emph{Soft Free Bits}
-can be used adapting a $\justkl$ annealing rate $\gamma$ by updating it
-at every iteration multiplying it by $1+\epsilon$ or $1-\epsilon$
+can be used by adapting a $\justkl$ annealing rate $\gamma$ by updating it
+at every iteration.
+$\gamma$ is hence repeatedly multiplied by $1+\epsilon$ or $1-\epsilon$,
 according to the $\justkl$ being, respectively, larger or lower than $\gamma$.
 This is described by the following algorithm:
 

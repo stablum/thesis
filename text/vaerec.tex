@@ -5,14 +5,20 @@ It extends the AutoRec model making use of the VAE framework.
 
 It has been implemented in three variants:
 
-\paragraph{U-VAERec} 
-reconstructs user rows by learning the conditional distribution
+\paragraph{U-VAERec} assumes the presence of latent variables
+$\boldui$, which represent a specific user $i$ in latent space,
+whose observed ratings are represented by the sparse row $\ric$.
+This model reconstructs user rows by learning the conditional distribution
 $\ptheta{\ric|\boldui}$ assumed to be a diagonal-covariance Gaussian
 and, jointly, the variational approximation to the posterior
 $\qphi{\boldui|\ric}$, also assumed to be a diagonal-covariance Gaussian.
 
-\paragraph{I-VAERec} does the same as \emph{U-VAERec}, 
-but with item columns, learning $\ptheta{\rcj|\boldvj}$
+\paragraph{I-VAERec} is dual to \emph{U-VAERec}.
+It assumes the presence of latent variables $\boldvj$
+which represent a specific item in latent space,
+whose observed ratings are represented by the sparse column $\rcj$.
+Hence, the target of the learning are the parameters of
+the distribution $\ptheta{\rcj|\boldvj}$
 and $\qphi{\boldvj|\rcj}$.
 
 \paragraph{UI-VAERec} reconstructs a vector consisting of the concatenation
@@ -30,11 +36,21 @@ $\boldui$ and $\boldvj$.
 \subsection{Sampling the ratings for the \emph{UI} variants}
 
 Training the \emph{UI-VAERec} would require
-have very long epochs, as the number of training
-datapoints would be the number of ratings.
+very long epochs, as the number of training
+datapoints would be the number of ratings $O(N*M)$.
 To prevent problems related to excessive memory usage,
 as one rating would be stored as a concatenation of
 its user vector $\ric$ and item vector $\rcj$,
 epochs have been implemented as random samplings 
-of a fixed amount of the ratings.
-The same sampling is performed in the test set.
+of a fixed amount (5000) of the ratings.
+The validation set is comprised by a similar sampling, on different ratings.
+It's worth noting that in our implementation 
+the ratings selected in the training set will never be
+present in the vectors of the validation set and vice-versa.
+Moreover, ratings are being split between training ratings and validation ratings
+at the very beginning and this sampling is kept unchanged through the epochs,
+effectively creating two non-overlapping sparse matrices $R^{(t)}$ for training
+and $R^{(v)}$ for validation.
+
+
+
