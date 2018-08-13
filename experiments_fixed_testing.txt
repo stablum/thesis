@@ -516,7 +516,9 @@
     [RUN] like ^^ but free_nats=10
     // harvest_vaerec_20180813_105041/
     [RUN] like ^^ but free_nats=K
-    //
+    // harvest_vaerec_20180813_110512/
+    [RUN] like ^^ but free_nats=0.5*K
+    // 
 
 DONES
 -----

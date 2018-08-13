@@ -29,7 +29,7 @@ lr_begin=2e-6#2e-7#2e-2 #2e-4#2e-6 # 1e-5 # 1e-6 # 0.5 # 5e-3
 lr_annealing_T=10
 max_rating=5.
 
-free_nats=K # 2*K
+free_nats=0.5 * K # 2*K
 soft_free_nats=True
 
 ratings_training_set_subsample_size = 5000
