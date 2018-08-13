@@ -518,6 +518,8 @@
     [RUN] like ^^ but free_nats=K
     // harvest_vaerec_20180813_110512/
         [RUN] like ^^ but input_dropout=0.5
+        // harvest_vaerec_20180813_121326/
+        [RUN] like ^^ but input_dropout=0.8
         // 
     [RUN] like ^^ but free_nats=0.5*K
     // harvest_vaerec_20180813_111622/
