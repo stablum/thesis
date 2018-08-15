@@ -523,6 +523,8 @@
         // harvest_vaerec_20180813_124423/
     [RUN] like ^^ but free_nats=0.5*K
     // harvest_vaerec_20180813_111622/
+        [RUN] like ^^  but input_dropout=0.5
+        // TODO
 
 DONES
 -----
