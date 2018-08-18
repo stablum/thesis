@@ -520,6 +520,8 @@
         [RUN] like ^^ but input_dropout=0.5
         // harvest_vaerec_20180813_121326/
             [RUN] like ^^ but realnvp1:
+                // harvest_vaerec_20180815_133206/
+            [RUN] like ^^ but planar=1:
                 // TODO
         [RUN] like ^^ but input_dropout=0.8
         // harvest_vaerec_20180813_124423/
