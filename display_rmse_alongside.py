@@ -25,10 +25,15 @@ def process(filename):
                         training="missing"
                     else:
                         training=str(stuff['best_training_rmse'])
+                    if 'max_epoch' not in stuff.keys():
+                        max_epoch = "??"
+                    else:
+                        max_epoch = str(stuff['max_epoch'])
                     #print(spaces,"this is a harvest dir:",d)
                     print(
                         spaces+"  "+testing,
-                        "train:"+training
+                        "train:"+training,
+                        "max_epoch:"+max_epoch
                     )
 def main():
     parser = argparse.ArgumentParser(description='Logs summarizer.')
