@@ -1,6 +1,6 @@
 \section{Experiments with regularization techniques}
 
-\subsection{Dropout layer on the input}
+\subsection{Dropout layer on the input of an AutoRec model}
 
 Denosing autoencoders\cite{denoising} improve the quality of the representations
 by forcing resiliance of the neural network by adding noise on the input
@@ -19,3 +19,35 @@ The following plot shows that an improvement in generalization is indeed obtaine
 % python3 plot_2.py  harvest_autorec_20180108_154116 harvest_autorec_20180120_124230 'without input dropout'  'input dropout p=0.1' --save text/autorec_input_dropout.png --epochs 627 --minerr 0.7 --maxerr 1.0
 \label{input_dropout_fig}
 \end{figure}
+
+\subsection{Dropout layer on the input on a deep VaeRec model}
+Additional experiments to very the effectiveness of 
+adding a dropout layer to the input have been performed
+to a deeper model as described in section \ref{soft_free_bits_deep}.
+This base model has been set with "soft free bits" $\lambda=1*K$,
+hence slightly under-regularized.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.9]{vaerec_input_dropout.png}
+\caption{Dropout layer on the input of a deep VaeRec model}
+% python3 plot_3.py harvest_vaerec_20180813_110512 harvest_vaerec_20180813_121326 harvest_vaerec_20180813_124423 "p=0" "p=0.5" p="0.8" --minerr 0.5 --save "text/vaerec_input_dropout.png"
+\label{vaerec_input_dropout_fig}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Best results for deep VaeRec under different $p$ settings of a dropout layer applied on the input}
+ \begin{tabular}{|c | c  | c ||} 
+ \hline
+ $p$ & best training RMSE & best testing RMSE \\ \hline
+ $ 0 $ & 0.5102 & 0.8536\\
+ $ 0.5 $ & 0.6413 & $\mathbf{0.8443}$ \\
+ $ 0.8 $ & 0.8469 & 0.8861
+ \\ \hline
+\end{tabular}
+\end{table}
+
+The use of a dropout layer on the input to enforce a denosing-like behavior
+seems to be beneficial. While $p=0$ results in overfitting and $p=0.8$ results in underfitting, the VaeRec is able to achieve an extremely good performance
+of $0.8443$ on the testing set with $p=0.5$.

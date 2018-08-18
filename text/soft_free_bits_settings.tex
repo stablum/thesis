@@ -43,3 +43,45 @@ The value of $\gamma$ was updated at every minibatch learning iteration.
 \label{kl_annealing2}
 \end{figure}
 
+\subsection{Soft free bits settings in a deeper model with high latent dimensionality}
+\label{soft_free_bits_deep}
+
+In order to verify the effectiveness of the linear relationship between
+the latent dimensionality and the amount of "soft free bits" $\lambda$,
+a different, deeper and with higher dimensionality VaeRec model
+was chosen (without Normalizing Flows).
+
+In this model, the latent dimensionality chosen is 250 and there are
+two hidden layers in both the encoder and decoder.
+L2 regularization has been used with coefficient 100; an initial learning rate
+valued $0.000006$ and annealing $T=10$ has been employed.
+
+The following plot shows the learning evolution
+with different settings of the 
+$\lambda$:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.75]{soft_free_bits.png}
+\caption{"Deep" model with different settings for $\lambda$: $0.5*K$, $1*K$ and $2*K$}
+% python3 plot_3.py  harvest_vaerec_20180809_100337 harvest_vaerec_20180813_110512 harvest_vaerec_20180813_111622 "2*K (500)" "K (250)" "0.5*K (125)"  --minerr 0.4 --maxerr 1.5 --epochs 450 --save text/soft_free_bits.png
+\label{soft_free_bits_fig1}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Best results for deep VaeRec under different "soft free bits" $\lambda$ settings}
+ \begin{tabular}{|c | c | c ||} 
+ \hline
+ $\lambda$ & best training RMSE & best testing RMSE \\ \hline
+ $0.5 * K$ & 0.8085 &  0.8574 \\
+ $1 * K$ & 0.5102 & 0.8536 \\
+ $2 * K$ & 0.3844 & 0.8598
+ \\ \hline
+\end{tabular}
+\end{table}
+
+While $\lambda=2*K$ is obiously under-regularized, there might be a "sweet spot" between the
+under-regularized $\lambda=K$ and the apparently over-regularized $\lambda=0.5*K$.
+The latter case seem to be quite interesting as it seems to have not have converged, even
+after 400 epochs, to a definitive optimum of testing RMSE.
